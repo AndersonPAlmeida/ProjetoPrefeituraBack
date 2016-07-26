@@ -8,7 +8,7 @@ Informações
 
 * Versão rails: 5.0.0
 * Versão ruby: 2.3.1
-* Versão postgresql: 9.x
+* Versão PostgreSQL: 9.x
 
 ## Instalação
 PostgreSQL:
@@ -21,48 +21,46 @@ PostgreSQL:
 
 Git:
 ```bash
-  sudo apt-get install git
+  $ sudo apt-get install git
 ```
 
 Ruby:
 ```bash
-  \curl -L https://get.rvm.io | bash -s stable --ruby
-  source ~/.rvm/scripts/rvm
-  rvm install ruby --latest
+  $ curl -L https://get.rvm.io | bash -s stable --ruby
+  $ source ~/.rvm/scripts/rvm
+  $ rvm install ruby --latest
 ```
 
 Rails:
 ```bash
-  rvm use ruby-2.3.1@rails5.0 --create --default
-  gem install rails -v 5.0.0
+  $ rvm use ruby-2.3.1@rails5.0 --create --default
+  $ gem install rails -v 5.0.0
 ```
 
 Bundler:
 ```bash
-  gem install bundler
+  $ gem install bundler
 ```
 
 ## Execução (desenvolvimento)
 ```bash
-  bundle install
-  export AGENDADOR\_API\_DB\_USER="postgres"
-  export AGENDADOR\_API\_DB\_PASSWORD="123"
-  rake db:create
-  rake db:migrate
-  rails s
+  $ bundle install
+  $ export AGENDADOR_API_DB_USER="postgres"
+  $ export AGENDADOR_API_DB_PASSWORD="123"
+  $ rake db:create
+  $ rake db:migrate
+  $ rails s
 ```
 
 ## Workflow de cada atividade
-
-##### 1. Cria branch da atividade ­> #<IDatividade>[\_Resumo\_do\_que\_faz].
-##### 2. Desenvolver a atividade
-##### 3. Cria teste para a atividade
-##### 4. Roda o teste criado sobre a atividade desenvolvida
-##### 4.1. Se estiver errado
-##### 4.1.1. Volta para o passo 2
-##### 4.2. Se estiver certo
-##### 4.2.1. git commit -sm “Explain (the first word must be an infinitive verb) what this commit does”
-##### 4.2.2. git push origin <nome\_da\_branch>
-##### 4.2.3. Cria merge request para develop
-##### 4.3. Registra o resultado da atividade no redmine.
-##### Ex: #Issue 1234: Create\_DB\_Schema
+1. Criar branch da atividade: #IDatividade[Resumo\_do\_que\_faz].
+2. Desenvolver a atividade
+3. Criar teste para a atividade
+4. Rodar o teste criado sobre a atividade desenvolvida
+  1. Se estiver errado
+    * Voltar para o passo 2
+  2. Se estiver certo
+    * git commit -sm “Explain (the first word must be an infinitive verb) what this commit does”
+    * git push origin nome\_da\_branch
+    * Criar merge request para develop
+  3. Registra o resultado da atividade no redmine. (i.e #Issue 1234: Create\_DB\_Schema
