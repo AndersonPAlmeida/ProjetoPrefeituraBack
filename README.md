@@ -58,7 +58,7 @@ Informações
 
 ##### 4.2. Se estiver certo
 
-##### 4.2.1. git commit ­sm “Explain (the first word must be an infinitive verb) what this commit does”
+##### 4.2.1. git commit -sm “Explain (the first word must be an infinitive verb) what this commit does”
 
 ##### 4.2.2. git push origin <nome\_da\_branch>
 
