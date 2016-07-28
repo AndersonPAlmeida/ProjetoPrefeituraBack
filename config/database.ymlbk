@@ -1,0 +1,25 @@
+# PostgreSQL. Versions 9.1 and up are supported.
+
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  username: <%= ENV['AGENDADOR_API_DB_USER'] %>
+  password: <%= ENV['AGENDADOR_API_DB_PASSWORD'] %>
+  # For details on connection pooling, see rails configuration guide
+  # http://guides.rubyonrails.org/configuring.html#database-pooling
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+
+development:
+  <<: *default
+  database: agendadorAPI_development
+
+test:
+  <<: *default
+  database: agendadorAPI_test
+
+# You can use this database configuration with:
+#   production:
+#     url: <%= ENV['DATABASE_URL'] %>
+production:
+  <<: *default
+  database: agendadorAPI_production

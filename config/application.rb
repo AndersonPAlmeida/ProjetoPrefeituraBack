@@ -26,5 +26,10 @@ module BackEndServer
     # Middleware like session, flash, cookies can be added back manually.
     # Skip views, helpers and assets when generating a new resource.
     config.api_only = true
+
+    # Configure minitest without spec and no fixture
+    config.generators do |g|
+      g.test_framework :minitest, spec: false, fixture: false
+    end
   end
 end
