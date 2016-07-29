@@ -31,5 +31,14 @@ module BackEndServer
     config.generators do |g|
       g.test_framework :minitest, spec: false, fixture: false
     end
+
+    # Allows GET, POST or OPTIONS requests from specified origins on any resource.
+    config.middleware.insert_before 0, Rack::Cors do
+      allow do
+        # Specify which origins should be allowed to make requests (e.g. agendador.c3sl.ufpr.br)
+        origins '*'
+        resource '*', :headers => :any, :methods => [:get, :post, :options]
+      end
+    end
   end
 end
