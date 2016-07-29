@@ -1,9 +1,5 @@
 source 'https://rubygems.org'
 
-# Provides authentication methods
-gem 'devise'
-gem 'devise_token_auth'
-
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 5.0.0'
 
@@ -12,6 +8,20 @@ gem 'pg', '~> 0.18'
 
 # Use Puma as the app server
 gem 'puma', '~> 3.0'
+
+# Provides authentication methods
+gem 'devise'
+gem 'devise_token_auth'
+
+# Provides a clean layer between the model and the controller that 
+# lets us to call to_json or as_json on the ActiveRecord object or 
+# collection as normal, while outputing our desired API format.
+gem 'active_model_serializers'
+
+# Rack::Attack is a rack middleware to protect your web app from bad 
+# clients. It allows safelisting, blocklisting, throttling, and tracking 
+# based on arbitrary properties of the request.
+gem 'rack-attack'
 
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 # gem 'jbuilder', '~> 2.5'

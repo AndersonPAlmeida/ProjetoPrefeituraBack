@@ -40,5 +40,8 @@ module BackEndServer
         resource '*', :headers => :any, :methods => [:get, :post, :options]
       end
     end
+
+    # Protect the API from DDoS, brute force attacks, hammering...
+    config.middleware.use Rack::Attack
   end
 end
