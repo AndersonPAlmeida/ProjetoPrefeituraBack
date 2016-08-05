@@ -3,17 +3,15 @@ class ApplicationController < ActionController::API
   include ActionController::Serialization
   before_action :configure_permitted_parameters, if: :devise_controller?
 
-  protected
+protected
 
   def configure_permitted_parameters
-    devise_parameter_sanitizer.permit(:sign_up_account, 
+    devise_parameter_sanitizer.permit(:sign_up, 
                                       keys: [ :password, 
                                               :password_confirmation, 
                                               :confirm_success_url, 
-                                              :confirm_error_url ])
-
-    devise_parameter_sanitizer.permit(:sign_up_citizen, 
-                                      keys: [ :birth_date, :name, :rg, 
+                                              :confirm_error_urli,
+                                              :birth_date, :name, :rg, 
                                               :address_complement, 
                                               :address_number, 
                                               :address_street, :cep, 

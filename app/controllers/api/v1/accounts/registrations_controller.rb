@@ -1,7 +1,27 @@
 module Api::V1 
   class Accounts::RegistrationsController < DeviseTokenAuth::RegistrationsController
-   def create
-      @resource = resource_class.new(sign_up_params)
+    def create
+      @keys = sign_up_params
+      Rails.logger.info "#{@keys.inspect}"
+      keyset = Citizen.keys
+#      @account_keys = Hash.new
+      ActionController::Parameters.permit_all_parameters = true
+      @account_keys = ActionController::Parameters.new
+
+      keyset.each do |i|
+        if @keys[i] != nil
+          @account_keys[i] = @keys.delete(i) 
+        end
+      end
+
+      #@account_keys = @keys.slice!(*keyset)
+      Rails.logger.info "=============" 
+      Rails.logger.info "#{@keys.inspect}"
+      Rails.logger.info "#{@account_keys.inspect}"
+      Rails.logger.info "=============" 
+
+      @resource = resource_class.new(@keys)
+      @citizen = Citizen.new(@account_keys)
       @resource.provider = "cpf"
 
       # honor devise configuration for case_insensitive_keys
@@ -11,8 +31,9 @@ module Api::V1
       #  @resource.email = sign_up_params[:email]
       #end
 
-      #@resource.cpf = sign_up_params[:cpf]
-      @resource.uid = @resource.cpf
+      # @resource.cpf = sign_up_params[:cpf]
+      # @resource.uid = @resource.cpf
+      @resource.uid = @citizen.cpf
 
       # give redirect value from params priority
       @redirect_url = params[:confirm_success_url]
@@ -34,19 +55,19 @@ module Api::V1
 
       begin
         # override email confirmation, must be sent manually from ctrl
-        resource_class.set_callback("create", :after, :send_on_create_confirmation_instructions)
-        resource_class.skip_callback("create", :after, :send_on_create_confirmation_instructions)
+#        resource_class.set_callback("create", :after, :send_on_create_confirmation_instructions)
+#        resource_class.skip_callback("create", :after, :send_on_create_confirmation_instructions)
         if @resource.save
           yield @resource if block_given?
 
-          unless @resource.confirmed?
-            # user will require email authentication
-            @resource.send_confirmation_instructions({
-              client_config: params[:config_name],
-              redirect_url: @redirect_url
-            })
+#          unless @resource.confirmed?
+#            # user will require email authentication
+#            @resource.send_confirmation_instructions({
+#              client_config: params[:config_name],
+#              redirect_url: @redirect_url
+#            })
 
-          else
+ #         else
             # email auth has been bypassed, authenticate user
             @client_id = SecureRandom.urlsafe_base64(nil, false)
             @token     = SecureRandom.urlsafe_base64(nil, false)
@@ -59,7 +80,7 @@ module Api::V1
             @resource.save!
 
             update_auth_header
-          end
+#          end
           render_create_success
         else
           clean_up_passwords @resource
@@ -72,11 +93,7 @@ module Api::V1
     end 
 
     def sign_up_params
-      params.permit(*params_for_resource(:sign_up_account))
-    end
-
-    def sign_up_citizen_params
-      params.permit(*params_for_resource(:sign_up_citizen))
+      params.permit(*params_for_resource(:sign_up))
     end
   end
 end
