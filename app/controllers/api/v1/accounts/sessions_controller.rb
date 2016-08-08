@@ -21,8 +21,6 @@ module Api::V1
         @resource = resource_class.joins(:citizen)
                                   .where(citizen: {cpf: q_value})
                                   .where(provider: 'cpf').first  
-
-        # @resource = resource_class.where(q, q_value).first
       end
 
       if @resource and valid_params?(field, q_value) and 
