@@ -22,11 +22,11 @@ module Api::V1
       @citizen = Citizen.new(@citizen_params)
 
       # honor devise configuration for case_insensitive_keys
-      if @resouce.case_insensitive_keys.include?(:email)
-        @citizen.email = @citizen_params[:email].try :downcase
-      else
-        @citizen.email = @citizen_params[:email]
-      end
+      #if @resouce.case_insensitive_keys.include?(:email)
+      #  @citizen.email = @citizen_params[:email].try :downcase
+      #else
+      #  @citizen.email = @citizen_params[:email]
+      #end
 
       # set uid to corresponding citizen's cpf
       @resource.uid = @citizen.cpf

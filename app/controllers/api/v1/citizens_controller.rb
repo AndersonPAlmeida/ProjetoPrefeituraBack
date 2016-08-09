@@ -1,5 +1,5 @@
 module Api::V1
-  class CitizensController < ApplicationController
+  class CitizensController < ApiController
     before_action :set_citizen, only: [:show, :update, :destroy]
 
     # GET /citizens
