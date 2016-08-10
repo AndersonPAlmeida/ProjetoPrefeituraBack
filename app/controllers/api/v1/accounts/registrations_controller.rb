@@ -1,32 +1,39 @@
 module Api::V1 
   class Accounts::RegistrationsController < DeviseTokenAuth::RegistrationsController
+
+    # Overrides DeviseTokenAuth's RegistrationsController's create method
+    # it's necessary due to the fact that a citizen and an account has to
+    # be created on registration with the proper params
     def create
-      # permit all parameters for creating @citizen_params
+      # permit all parameters for creating citizen_params
       ActionController::Parameters.permit_all_parameters = true
 
       # distribute params between account and citizen
-      @citizen_params = ActionController::Parameters.new
-      @account_params = sign_up_params
+      citizen_params = ActionController::Parameters.new
+      account_params = sign_up_params
       citizen_keys = Citizen.keys
       citizen_keys.each do |i|
-        if @account_params[i] != nil
-          @citizen_params[i] = @account_params.delete(i)
+        if account_params[i] != nil
+          citizen_params[i] = account_params.delete(i)
         end
       end
 
       # create new account and set provider to cpf
-      @resource = resource_class.new(@account_params)
+      @resource = resource_class.new(account_params)
       @resource.provider = "cpf"
 
+      # honor devise configuration for case_insensitive_keys
+      if resource_class.case_insensitive_keys.include?(:email)
+        @citizen.email = citizen_params[:email].try :downcase
+      else
+        @citizen.email = citizen_params[:email]
+      end
+
       # create net citizen
-      @citizen = Citizen.new(@citizen_params)
+      @citizen = Citizen.new(citizen_params)
 
       # honor devise configuration for case_insensitive_keys
-      #if @resouce.case_insensitive_keys.include?(:email)
-      #  @citizen.email = @citizen_params[:email].try :downcase
-      #else
-      #  @citizen.email = @citizen_params[:email]
-      #end
+      @citizen.email = citizen_params[:email].try :downcase
 
       # set uid to corresponding citizen's cpf
       @resource.uid = @citizen.cpf
@@ -53,6 +60,7 @@ module Api::V1
         # override email confirmation, must be sent manually from ctrl
         resource_class.set_callback("create", :after, :send_on_create_confirmation_instructions)
         resource_class.skip_callback("create", :after, :send_on_create_confirmation_instructions)
+
         if @resource.save
           yield @resource if block_given?
 
@@ -64,6 +72,13 @@ module Api::V1
             })
 
           else
+            @citizen.account_id = @resource.id
+            if @citizen.save
+              @citizen.save!
+            else
+              return render_create_citizen_error
+            end
+
             # email auth has been bypassed, authenticate user
             @client_id = SecureRandom.urlsafe_base64(nil, false)
             @token     = SecureRandom.urlsafe_base64(nil, false)
@@ -86,6 +101,27 @@ module Api::V1
         clean_up_passwords @resource
         render_create_error_email_already_exists
       end
+    end
+
+    # Overrides DeviseTokenAuth's RegistrationsController's 
+    # render_create_error_email_already_exists method in order
+    # to adapt to @citizen.cpf already exists
+    def render_create_error_email_already_exists
+      render json: {
+        status: 'error',
+        data:   resource_data,
+        errors: [I18n.t("devise_token_auth.registrations.email_already_exists", email: @citizen.cpf)]
+      }, status: 422
+    end
+
+    # Overrides DeviseTokenAuth's RegistrationsController's 
+    # render_create_citizen_error method in order to adapt
+    # to show @citizen.cpf
+    def render_create_citizen_error
+      render json: {
+        status: 'error',
+        errors: [I18n.t("registrations.create_citizen_error", cpf: @citizen.cpf)]
+      }, status: 422
     end
   end
 end

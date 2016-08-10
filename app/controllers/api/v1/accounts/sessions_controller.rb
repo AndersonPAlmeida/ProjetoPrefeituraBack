@@ -1,5 +1,9 @@
 module Api::V1
   class Accounts::SessionsController < DeviseTokenAuth::SessionsController
+
+    # Overrides DeviseTokenAuth's SessionsController's in order to query
+    # an account which citizen's cpf correspond to the cpf provided by
+    # the sign_in form
     def create
       # Check
       field = (resource_params.keys.map(&:to_sym) & resource_class.authentication_keys).first
@@ -18,8 +22,9 @@ module Api::V1
           q = "BINARY " + q
         end
 
-        @resource = resource_class.joins(:citizen)
-                                  .where(citizen: {cpf: q_value})
+        # finds account which citizens' cpf correspond to the request's
+        @resource = resource_class.where(citizens: {cpf: q_value})
+                                  .includes(:citizen)
                                   .where(provider: 'cpf').first  
       end
 
@@ -48,6 +53,5 @@ module Api::V1
         render_create_error_bad_credentials
       end
     end 
-
   end
 end

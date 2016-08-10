@@ -20,4 +20,6 @@
 # available at http://guides.rubyonrails.org/i18n.html.
 
 en:
-  hello: "Hello world"
+  registrations:
+    create_citizen_error: "Could not create citizen for '%{cpf}'."
+  
