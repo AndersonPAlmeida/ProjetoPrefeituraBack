@@ -19,7 +19,7 @@ module Api::V1
       @citizen = Citizen.new(citizen_params)
 
       if @citizen.save
-        render json: @citizen, status: :created, location: @citizen
+        render json: @citizen, status: :created
       else
         render json: @citizen.errors, status: :unprocessable_entity
       end
@@ -53,7 +53,7 @@ module Api::V1
                                         :neighborhood, :note, :pcd, :phone1,
                                         :phone2, :photo_content_type,
                                         :photo_file_name, :photo_file_size,
-                                        :photo_update_at)
+                                        :photo_update_at, :account_id)
       end
   end
 end

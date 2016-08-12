@@ -13,21 +13,12 @@ module Api::V1
       account_params = sign_up_params
       citizen_keys = Citizen.keys
       citizen_keys.each do |i|
-        if account_params[i] != nil
-          citizen_params[i] = account_params.delete(i)
-        end
+        citizen_params[i] = account_params.delete(i)
       end
 
       # create new account and set provider to cpf
       @resource = resource_class.new(account_params)
       @resource.provider = "cpf"
-
-      # honor devise configuration for case_insensitive_keys
-      if resource_class.case_insensitive_keys.include?(:email)
-        @citizen.email = citizen_params[:email].try :downcase
-      else
-        @citizen.email = citizen_params[:email]
-      end
 
       # create net citizen
       @citizen = Citizen.new(citizen_params)

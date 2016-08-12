@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
+  devise_for :accounts
   scope module: 'api' do
     namespace :v1 do
-      devise_for :accounts
       mount_devise_token_auth_for 'Account', at: 'auth', controllers: {
         registrations: 'api/v1/accounts/registrations',
         sessions:      'api/v1/accounts/sessions'

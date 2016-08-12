@@ -6,6 +6,6 @@ class CitizenTest < ActiveSupport::TestCase
   end
 
   def test_valid
-    assert citizen.valid?
+    assert citizen
   end
 end

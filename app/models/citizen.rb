@@ -9,28 +9,20 @@ class Citizen < ApplicationRecord
   validates_presence_of   :rg
   validates_presence_of   :cep
   validates_presence_of   :phone1
+
   validates_uniqueness_of :cpf
 
-  validates_length_of :address_number, 
-                       within: 0..10, 
-                       allow_blank: true
-  validates_length_of :name, 
-                       maximum: 255
-  validates_length_of :rg, 
-                       maximum: 13
+  validates_length_of       :name, maximum: 255
+  validates_length_of       :rg, maximum: 13
+  validates_length_of       :address_number, within: 0..10, 
+                             allow_blank: true
 
   validates_numericality_of :address_number, 
                              only_integer: true,
                              allow_blank: true
-  validates_format_of :name, 
-                       with: /\A[^0-9`!@#\$%\^&*+_=]+\z/
-  has_attached_file :photo, 
-                     styles: { large: '500x500#',
-                     medium: '300x300#', 
-                     thumb: '100x100#' },
-                     default_url: 'user.png'
-  validates_attachment_content_type :photo, 
-                                    content_type: /\Aimage\/.*\Z/
+
+  validates_format_of       :name, 
+                             with: /\A[^0-9`!@#\$%\^&*+_=]+\z/
 
   # @return list of citizens' columns
   def self.keys
