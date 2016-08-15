@@ -5,10 +5,9 @@ class ApplicationController < ActionController::API
 
 protected
 
-  # set sign_up hash to keys from citizen's registration form 
-  # set sign_in hash to keys from citizen's login form
-  # set account_update hash to keys required to update citizen's account
+  # permit parameters for devise functions 
   def configure_permitted_parameters
+    # set sign_up hash to keys from citizen's registration form 
     devise_parameter_sanitizer.permit(:sign_up,
                                       keys: [ :password,
                                               :password_confirmation,
@@ -25,7 +24,10 @@ protected
                                               :photo_file_size,
                                               :photo_update_at ])
 
+    # set sign_in hash to keys from citizen's login form
     devise_parameter_sanitizer.permit(:sign_in, keys: [ :cpf, :password ])
+    
+    # set account_update hash to keys required to update citizen's account
     devise_parameter_sanitizer.permit(:account_update, keys: [ :cpf ])
   end
 end

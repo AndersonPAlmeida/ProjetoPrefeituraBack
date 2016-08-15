@@ -1,10 +1,12 @@
 module Api::V1 
   class Accounts::RegistrationsController < DeviseTokenAuth::RegistrationsController
 
-    # Overrides DeviseTokenAuth's RegistrationsController's create method
-    # it's necessary due to the fact that a citizen and an account has to
-    # be created on registration with the proper params
+    # Overrides DeviseTokenAuth's RegistrationsController's create method.
+    # It's necessary due to the fact that a citizen and an account have to
+    # be created on registration with the proper params, while the default
+    # devisetokenauth creates only a user with email
     def create
+
       # permit all parameters for creating citizen_params
       ActionController::Parameters.permit_all_parameters = true
 
@@ -107,7 +109,7 @@ module Api::V1
 
     # Overrides DeviseTokenAuth's RegistrationsController's 
     # render_create_citizen_error method in order to adapt
-    # to show @citizen.cpf
+    # method to show @citizen.cpf
     def render_create_citizen_error
       render json: {
         status: 'error',

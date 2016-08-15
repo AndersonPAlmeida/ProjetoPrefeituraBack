@@ -29,7 +29,7 @@ module BackEndServer
 
     # Configure minitest without spec and no fixture
     config.generators do |g|
-      g.test_framework :minitest, spec: false, fixture: false
+      g.test_framework :minitest, fixture: false
     end
 
     # Allows GET, POST or OPTIONS requests from specified origins on any resource.
