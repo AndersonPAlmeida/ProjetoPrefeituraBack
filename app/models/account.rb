@@ -1,6 +1,7 @@
 class Account < ActiveRecord::Base
   # Associations #
   has_one :citizen
+  has_one :professional
 
   # Devise #
   # Include default devise modules. Other availables are:

@@ -64,8 +64,8 @@ ActiveRecord::Schema.define(version: 20160812124055) do
     t.boolean  "active",       default: true, null: false
     t.datetime "created_at",                  null: false
     t.datetime "updated_at",                  null: false
-    t.integer  "citizen_id"
-    t.index ["citizen_id"], name: "index_professionals_on_citizen_id", using: :btree
+    t.integer  "account_id"
+    t.index ["account_id"], name: "index_professionals_on_account_id", using: :btree
   end
 
   add_foreign_key "citizens", "accounts"

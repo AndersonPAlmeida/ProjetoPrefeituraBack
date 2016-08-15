@@ -1,3 +1,3 @@
 class ProfessionalSerializer < ActiveModel::Serializer
-  attributes :id
+  attributes :id, :registration, :active
 end
