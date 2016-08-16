@@ -26,8 +26,10 @@ class Api::V1::CitizensControllerTest < ActionDispatch::IntegrationTest
 
     describe "Successful request to show citizen" do
       before do 
-        get '/v1/citizens/' + @citizen.id.to_s, params: {}, headers: @auth_headers
+        get '/v1/citizens/' + @citizen.id.to_s, params: {}, 
+                                                headers: @auth_headers
 
+        @body = JSON.parse(response.body)
         @resp_token = response.headers['access-token']
         @resp_client_id = response.headers['client']
         @resp_expiry = response.headers['expiry']
@@ -39,7 +41,11 @@ class Api::V1::CitizensControllerTest < ActionDispatch::IntegrationTest
       end
 
       it "should correspond to the current account" do
-        assert_equal @citizen.id, @controller.current_account.citizen.id
+        assert_equal @body["id"], @controller.current_account.citizen.id
+      end
+
+      it "should correspond to the citizen in the database" do
+        assert_equal @body["cpf"], Citizen.find(@citizen.id).cpf
       end
     end
 
@@ -80,6 +86,7 @@ class Api::V1::CitizensControllerTest < ActionDispatch::IntegrationTest
       end
 
       test "cpf should have been changed" do
+        @citizen = Citizen.where(cpf: @citizen.cpf).first
         assert_equal "7654321", @citizen.cep
       end
     end
