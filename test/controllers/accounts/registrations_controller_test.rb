@@ -5,21 +5,20 @@ class Api::V1::Accounts::RegistrationsControllerTest < ActionDispatch::Integrati
 
     describe "Successful registration" do
       before do
-        assert_difference('Account.count') do
-          assert_difference('Citizen.count') do
-            post '/v1/auth', params: {
-              birth_date: "18/04/1997",
-              cep: "81530-110",
-              cpf: "123.456.789-04",
-              email: "test@example.com", 
-              name: "Test Example",
-              phone1: "121212-1212", 
-              rg: "1234567",
-              password: "123mudar",
-              password_confirmation: "123mudar"
-            } 
-          end
-        end 
+        @account_number = Account.count
+        @citizen_number = Citizen.count
+
+        post '/v1/auth', params: {
+          birth_date: "18/04/1997",
+          cep: "81530-110",
+          cpf: "123.456.789-04",
+          email: "test@example.com", 
+          name: "Test Example",
+          phone1: "121212-1212", 
+          rg: "1234567",
+          password: "123mudar",
+          password_confirmation: "123mudar"
+        } 
 
         @resource = assigns(:resource)
         @data = JSON.parse(response.body)
@@ -27,6 +26,14 @@ class Api::V1::Accounts::RegistrationsControllerTest < ActionDispatch::Integrati
 
       it "should be successful" do
         assert_equal 200, response.status
+      end
+
+      test "number of accounts should have been increased" do
+        assert_equal @account_number + 1, Account.count
+      end
+
+      test "number of citizens should have been increased" do
+        assert_equal @citizen_number + 1, Citizen.count
       end
 
       test "account should have been created" do

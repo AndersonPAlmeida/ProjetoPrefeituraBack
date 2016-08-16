@@ -5,22 +5,14 @@ module Api::V1
     # an account which citizen's cpf correspond to the cpf provided by
     # the sign_in form
     def create
-      # Check
+      # Check which field should be used for authentication, in this case: cpf
       field = (resource_params.keys.map(&:to_sym) & resource_class.authentication_keys).first
 
       @resource = nil
+
+      # get cpf and find correspondent account (@resource)
       if field
         q_value = resource_params[field]
-
-        if resource_class.case_insensitive_keys.include?(field)
-          q_value.downcase!
-        end
-
-        q = "#{field.to_s} = ? AND provider='cpf'"
-
-        if ActiveRecord::Base.connection.adapter_name.downcase.starts_with? 'mysql'
-          q = "BINARY " + q
-        end
 
         # finds account which citizens' cpf correspond to the request's
         @resource = resource_class.where(citizens: {cpf: q_value})
@@ -28,6 +20,7 @@ module Api::V1
                                   .where(provider: 'cpf').first  
       end
 
+      # create token and sign in
       if @resource and valid_params?(field, q_value) and 
          @resource.valid_password?(resource_params[:password]) and 
          (!@resource.respond_to?(:active_for_authentication?) or 
