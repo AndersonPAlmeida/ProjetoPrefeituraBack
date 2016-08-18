@@ -16,8 +16,8 @@ class Api::V1::ProfessionalsControllerTest < ActionDispatch::IntegrationTest
       @professional = Professional.new(active: true,
 				       registration: "123")
       @account.save!
-      @professional.account_id = @account.id
-      @professional.save!
+      @citizen.account_id = @account.id
+      @citizen.save!
       @professional.account_id = @account.id
       @professional.save!
 

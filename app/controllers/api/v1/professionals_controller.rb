@@ -5,7 +5,6 @@ module Api::V1
 	  # GET /professionals
 	  def index
 	    @professionals = Professional.all
-
 	    render json: @professionals
 	  end
 
