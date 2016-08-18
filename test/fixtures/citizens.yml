@@ -6,3 +6,4 @@ john:
   name: "John"
   phone1: "123123123"
   rg: "1233456"
+  active: true

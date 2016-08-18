@@ -4,6 +4,7 @@ class Citizen < ApplicationRecord
 
   # Validations #
   validates_presence_of   :cpf
+  
   validates_presence_of   :name
   validates_presence_of   :birth_date
   validates_presence_of   :rg
@@ -36,5 +37,9 @@ class Citizen < ApplicationRecord
             :photo_file_name, 
             :photo_file_size, 
             :photo_update_at]
+  end
+
+  def self.all_active
+    Citizen.where(active: true)
   end
 end

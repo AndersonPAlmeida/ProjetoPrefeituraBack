@@ -4,7 +4,7 @@ module Api::V1
 
     # GET /citizens
     def index
-      @citizens = Citizen.all
+      @citizens = Citizen.where(active: true)
 
       render json: @citizens
     end
@@ -23,6 +23,7 @@ module Api::V1
     # POST /citizens
     def create
       @citizen = Citizen.new(citizen_params)
+      @citizen.active = true
 
       if @citizen.save
         render json: @citizen, status: :created
@@ -53,7 +54,8 @@ module Api::V1
           errors: ["User #{params[:id]} does not exist."]
         }, status: 400
       else
-        @citizen.destroy
+        @citizen.active = false
+        @citizen.save!
       end
     end
 

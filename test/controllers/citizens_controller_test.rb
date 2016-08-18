@@ -13,6 +13,7 @@ class Api::V1::CitizensControllerTest < ActionDispatch::IntegrationTest
       @account = Account.new(uid: @citizen.cpf,
                              password: "123mudar",
                              password_confirmation: "123mudar")
+      @citizen.active = true
       @account.save!
       @citizen.account_id = @account.id
       @citizen.save!
@@ -94,8 +95,8 @@ class Api::V1::CitizensControllerTest < ActionDispatch::IntegrationTest
 
     describe "Successful request to delete citizen" do
       before do
-        @number_of_citizens = Citizen.count
-        @number_of_account = Account.count
+        @number_of_citizens = Citizen.all_active.count
+
         delete '/v1/citizens/' + @citizen.id.to_s, params: {}, 
                                                    headers: @auth_headers
 
@@ -110,11 +111,11 @@ class Api::V1::CitizensControllerTest < ActionDispatch::IntegrationTest
       end
 
       it "should have been deleted" do
-        assert_nil Citizen.where(id: @citizen.id).first
+        assert_not Citizen.where(id: @citizen.id).first.active
       end
 
       test "number of citizen should be decreased" do
-        assert_equal @number_of_citizens, Citizen.count + 1
+        assert_equal @number_of_citizens, Citizen.all_active.count + 1
       end
 
       # TODO ----------------------------------------------
@@ -125,8 +126,8 @@ class Api::V1::CitizensControllerTest < ActionDispatch::IntegrationTest
 
     describe "Unsuccessful request to delete citizen that doesn't exists" do
       before do
-        @number_of_citizens = Citizen.count
-        @number_of_account = Account.count
+        @number_of_citizens = Citizen.all_active.count
+
         delete '/v1/citizens/222', params: {}, 
                                  headers: @auth_headers
 
@@ -146,7 +147,7 @@ class Api::V1::CitizensControllerTest < ActionDispatch::IntegrationTest
       end
 
       test "number of citizen should not be decreased" do
-        assert_equal @number_of_citizens, Citizen.count
+        assert_equal @number_of_citizens, Citizen.all_active.count
       end
 
       # TODO ----------------------------------------------
