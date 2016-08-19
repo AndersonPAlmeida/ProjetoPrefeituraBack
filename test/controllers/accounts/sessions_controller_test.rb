@@ -7,7 +7,7 @@ class Api::V1::Accounts::SessionsControllerTest < ActionDispatch::IntegrationTes
           post '/v1/auth', params: {
             birth_date: "Apr 18 1997",
             cep: "81530-110",
-            cpf: "12345678904",
+            cpf: "10845922904",
             email: "test@example.com", 
             name: "Test Example",
             phone1: "121212-1212", 
@@ -16,12 +16,12 @@ class Api::V1::Accounts::SessionsControllerTest < ActionDispatch::IntegrationTes
             password_confirmation: "123mudar"
           } 
 
-          @citizen = Citizen.where(cpf: "12345678904").first
+          @citizen = Citizen.where(cpf: "10845922904").first
       end
 
       describe "Successful sign in" do
         before do
-          post '/v1/auth/sign_in', params: {cpf: "12345678904",
+          post '/v1/auth/sign_in', params: {cpf: "10845922904",
                                             password: "123mudar"}, 
                                    headers: @auth_headers
 
@@ -48,7 +48,7 @@ class Api::V1::Accounts::SessionsControllerTest < ActionDispatch::IntegrationTes
 
       describe "Unsuccessful sign in" do
         before do
-          post '/v1/auth/sign_in', params: {cpf: "40987654321",
+          post '/v1/auth/sign_in', params: {cpf: "11111111111",
                                             password: "123mudar"}, 
                                    headers: @auth_headers
 

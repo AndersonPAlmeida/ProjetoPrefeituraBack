@@ -29,7 +29,7 @@ class CitizenTest < ActiveSupport::TestCase
 
     describe "Missing birth date" do
       before do
-        @citizen = Citizen.new(cpf: "12345678910",
+        @citizen = Citizen.new(cpf: "10845922904",
                                cep: "1234567", 
                                email: "test@example.com",
                                name: "Test Example", 
@@ -54,7 +54,7 @@ class CitizenTest < ActiveSupport::TestCase
 
     describe "Missing cep" do
       before do
-        @citizen = Citizen.new(cpf: "12345678910",
+        @citizen = Citizen.new(cpf: "10845922904",
                                birth_date: "Apr 18 1997", 
                                email: "test@example.com",
                                name: "Test Example", 
@@ -79,7 +79,7 @@ class CitizenTest < ActiveSupport::TestCase
 
     describe "Missing name" do
       before do
-        @citizen = Citizen.new(cpf: "12345678910",
+        @citizen = Citizen.new(cpf: "10845922904",
                                birth_date: "Apr 18 1997", 
                                cep: "1234567", 
                                email: "test@example.com",
@@ -104,7 +104,7 @@ class CitizenTest < ActiveSupport::TestCase
 
     describe "Missing phone" do
       before do
-        @citizen = Citizen.new(cpf: "12345678910",
+        @citizen = Citizen.new(cpf: "10845922904",
                                birth_date: "Apr 18 1997", 
                                cep: "1234567",
                                email: "test@example.com",
@@ -129,7 +129,7 @@ class CitizenTest < ActiveSupport::TestCase
 
     describe "Missing rg" do
       before do
-        @citizen = Citizen.new(cpf: "12345678910",
+        @citizen = Citizen.new(cpf: "10845922904",
                                birth_date: "Apr 18 1997", 
                                cep: "1234567",
                                email: "test@example.com",

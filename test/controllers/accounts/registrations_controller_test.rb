@@ -11,7 +11,7 @@ class Api::V1::Accounts::RegistrationsControllerTest < ActionDispatch::Integrati
         post '/v1/auth', params: {
           birth_date: "Apr 18 1997",
           cep: "81530-110",
-          cpf: "12345678904",
+          cpf: "10845922904",
           email: "test@example.com", 
           name: "Test Example",
           phone1: "121212-1212", 
@@ -89,7 +89,7 @@ class Api::V1::Accounts::RegistrationsControllerTest < ActionDispatch::Integrati
         post '/v1/auth', params: {
           birth_date: "Jan 1 1980",
           cep: "1122334",
-          cpf: "11111111111",
+          cpf: "52998224725",
           email: "john@john.com", 
           name: "John",
           phone1: "12341234", 
@@ -130,7 +130,7 @@ class Api::V1::Accounts::RegistrationsControllerTest < ActionDispatch::Integrati
 
         post '/v1/auth', params: {
           cep: "1122334",
-          cpf: "12345678910",
+          cpf: "10845922904",
           email: "john@john.com", 
           name: "John",
           phone1: "12341234", 

@@ -4,6 +4,7 @@ class Citizen < ApplicationRecord
   belongs_to :account
 
   # Validations #
+  validates :cpf, cpf: true
   validates_presence_of   :cpf
   validates_presence_of   :name
   validates_presence_of   :birth_date
