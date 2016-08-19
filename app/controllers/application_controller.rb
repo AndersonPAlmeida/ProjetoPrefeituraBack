@@ -12,7 +12,7 @@ protected
                                       keys: [ :password,
                                               :password_confirmation,
                                               :confirm_success_url,
-                                              :confirm_error_urli,
+                                              :confirm_error_url,
                                               :birth_date, :name, :rg,
                                               :address_complement,
                                               :address_number,

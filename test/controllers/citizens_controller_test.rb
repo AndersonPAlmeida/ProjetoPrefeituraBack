@@ -4,7 +4,7 @@ class Api::V1::CitizensControllerTest < ActionDispatch::IntegrationTest
   describe "Token access" do
     before do
       @citizen = Citizen.new(cpf: "12345678904", 
-                             birth_date: "18/04/1997", 
+                             birth_date: "Apr 18 1997", 
                              cep: "1234567", 
                              email: "test@example.com",
                              name: "Test Example", 
@@ -117,11 +117,6 @@ class Api::V1::CitizensControllerTest < ActionDispatch::IntegrationTest
       test "number of citizen should be decreased" do
         assert_equal @number_of_citizens, Citizen.all_active.count + 1
       end
-
-      # TODO ----------------------------------------------
-      #test "number of account should be decreased" do
-      #  assert_equal @number_of_accounts, Account.count + 1 
-      #end
     end
 
     describe "Unsuccessful request to delete citizen that doesn't exists" do
@@ -149,11 +144,6 @@ class Api::V1::CitizensControllerTest < ActionDispatch::IntegrationTest
       test "number of citizen should not be decreased" do
         assert_equal @number_of_citizens, Citizen.all_active.count
       end
-
-      # TODO ----------------------------------------------
-      #test "number of account should be not decreased" do
-      #  assert_equal @number_of_accounts, Account.count
-      #end
     end
 
     describe "Successful request to update citizen" do

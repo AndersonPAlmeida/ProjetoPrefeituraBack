@@ -27,6 +27,9 @@ module BackEndServer
     # Skip views, helpers and assets when generating a new resource.
     config.api_only = true
 
+    # Configure path for custom validators
+    config.autoload_paths += %W["#{config.root}/app/validators/"]
+
     # Configure minitest without spec and no fixture
     config.generators do |g|
       g.test_framework :minitest, fixture: false

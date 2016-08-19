@@ -14,6 +14,7 @@ module Api::V1
       citizen_params = ActionController::Parameters.new
       account_params = sign_up_params
       citizen_keys = Citizen.keys
+
       citizen_keys.each do |i|
         citizen_params[i] = account_params.delete(i)
       end
@@ -66,9 +67,12 @@ module Api::V1
 
           else
             @citizen.account_id = @resource.id
+            @citizen.active = true
+
             if @citizen.save
               @citizen.save!
             else
+              Account.delete(@citizen.account_id)
               return render_create_citizen_error
             end
 

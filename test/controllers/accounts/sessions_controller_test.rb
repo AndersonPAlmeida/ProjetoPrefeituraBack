@@ -5,7 +5,7 @@ class Api::V1::Accounts::SessionsControllerTest < ActionDispatch::IntegrationTes
     describe "Token access" do
       before do
           post '/v1/auth', params: {
-            birth_date: "18/04/1997",
+            birth_date: "Apr 18 1997",
             cep: "81530-110",
             cpf: "12345678904",
             email: "test@example.com", 
@@ -15,6 +15,7 @@ class Api::V1::Accounts::SessionsControllerTest < ActionDispatch::IntegrationTes
             password: "123mudar",
             password_confirmation: "123mudar"
           } 
+
           @citizen = Citizen.where(cpf: "12345678904").first
       end
 
@@ -22,7 +23,7 @@ class Api::V1::Accounts::SessionsControllerTest < ActionDispatch::IntegrationTes
         before do
           post '/v1/auth/sign_in', params: {cpf: "12345678904",
                                             password: "123mudar"}, 
-                                  headers: @auth_headers
+                                   headers: @auth_headers
 
           @body = JSON.parse(response.body)
           @resp_token = response.headers['access-token']
@@ -49,7 +50,7 @@ class Api::V1::Accounts::SessionsControllerTest < ActionDispatch::IntegrationTes
         before do
           post '/v1/auth/sign_in', params: {cpf: "40987654321",
                                             password: "123mudar"}, 
-                                  headers: @auth_headers
+                                   headers: @auth_headers
 
           @body = JSON.parse(response.body)
           @resp_token = response.headers['access-token']
@@ -62,11 +63,10 @@ class Api::V1::Accounts::SessionsControllerTest < ActionDispatch::IntegrationTes
           assert_equal 401, response.status
         end
 
-        test 'returns error message' do
+        it "should return an error message" do
           assert_not_empty @body['errors']
         end
       end
     end
   end
 end
-

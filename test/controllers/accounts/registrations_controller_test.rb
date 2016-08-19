@@ -9,7 +9,7 @@ class Api::V1::Accounts::RegistrationsControllerTest < ActionDispatch::Integrati
         @citizen_number = Citizen.count
 
         post '/v1/auth', params: {
-          birth_date: "18/04/1997",
+          birth_date: "Apr 18 1997",
           cep: "81530-110",
           cpf: "12345678904",
           email: "test@example.com", 
@@ -47,6 +47,9 @@ class Api::V1::Accounts::RegistrationsControllerTest < ActionDispatch::Integrati
 
     describe "Empty body" do
       before do
+        @number_of_citizens = Citizen.count
+        @number_of_accounts = Account.count
+
         post '/v1/auth', params: {}
 
         @resource = assigns(:resource)
@@ -57,23 +60,34 @@ class Api::V1::Accounts::RegistrationsControllerTest < ActionDispatch::Integrati
         assert_equal 422, response.status
       end
 
-      test 'returns error message' do
+      it "should return an error message" do
         assert_not_empty @data['errors']
       end
 
-      test 'return error status' do
+      it "should return the error status" do
         assert_equal 'error', @data['status']
       end
 
-      test 'user should not have been saved' do
+      test "user should not have been saved" do
         assert @resource.nil?
+      end
+
+      it "should not increase number of citizens" do
+        assert_equal @number_of_citizens, Citizen.count
+      end
+
+      it "should not increase number of accounts" do
+        assert_equal @number_of_accounts, Account.count
       end
     end
 
     describe "Unsuccessful registration" do
       before do
+        @number_of_citizens = Citizen.count
+        @number_of_accounts = Account.count
+
         post '/v1/auth', params: {
-          birth_date: "01/01/1980",
+          birth_date: "Jan 1 1980",
           cep: "1122334",
           cpf: "11111111111",
           email: "john@john.com", 
@@ -92,19 +106,71 @@ class Api::V1::Accounts::RegistrationsControllerTest < ActionDispatch::Integrati
         assert_equal 422, response.status
       end
 
-      test 'returns error message' do
+      it "should return an error message" do
         assert_not_empty @data['errors']
       end
 
-      test 'return error status' do
+      it "should return an error status" do
         assert_equal 'error', @data['status']
+      end
+
+      it "should not increase number of citizens" do
+        assert_equal @number_of_citizens, Citizen.count
+      end
+
+      it "should not increase number of accounts" do
+        assert_equal @number_of_accounts, Account.count
+      end
+    end
+
+    describe "Missing necessary field" do
+      before do
+        @number_of_citizens = Citizen.count
+        @number_of_accounts = Account.count
+
+        post '/v1/auth', params: {
+          cep: "1122334",
+          cpf: "12345678910",
+          email: "john@john.com", 
+          name: "John",
+          phone1: "12341234", 
+          rg: "1234123",
+          password: "123mudar",
+          password_confirmation: "123mudar"
+        }
+
+        @resource = assigns(:resource)
+        @data = JSON.parse(response.body)
+      end
+
+      it "should not be successful" do
+        assert_equal 422, response.status
+      end
+
+      it "should return an error message" do
+        assert_not_empty @data['errors']
+      end
+
+      it "should return the error status" do
+        assert_equal 'error', @data['status']
+      end
+
+      it "should not increase number of citizens" do
+        assert_equal @number_of_citizens, Citizen.count
+      end
+
+      it "should not increase number of accounts" do
+        assert_equal @number_of_accounts, Account.count
       end
     end
 
     describe "Blank cpf" do
       before do
+        @number_of_citizens = Citizen.count
+        @number_of_accounts = Account.count
+
         post '/v1/auth', params: {
-          birth_date: "01/01/1980",
+          birth_date: "Jan 1 1980",
           cep: "1122334",
           email: "john@john.com", 
           name: "John",
@@ -122,12 +188,20 @@ class Api::V1::Accounts::RegistrationsControllerTest < ActionDispatch::Integrati
         assert_equal 422, response.status
       end
 
-      test 'returns error message' do
+      it "should return an error message" do
         assert_not_empty @data['errors']
       end
 
-      test 'return error status' do
+      it "should return the error status" do
         assert_equal 'error', @data['status']
+      end
+
+      it "should not increase number of citizens" do
+        assert_equal @number_of_citizens, Citizen.count
+      end
+
+      it "should not increase number of accounts" do
+        assert_equal @number_of_accounts, Account.count
       end
     end
   end
