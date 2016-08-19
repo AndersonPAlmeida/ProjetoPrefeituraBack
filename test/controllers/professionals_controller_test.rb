@@ -49,7 +49,7 @@ class Api::V1::ProfessionalsControllerTest < ActionDispatch::IntegrationTest
       end
 
       it "should correspond to the professional in the database" do
-        assert_equal @body["cpf"], Professional.find(@professional.id).account.citizen.cpf
+        assert_equal @body["account"]["citizen"]["cpf"], Professional.find(@professional.id).account.citizen.cpf
       end
     end
 
@@ -76,9 +76,8 @@ class Api::V1::ProfessionalsControllerTest < ActionDispatch::IntegrationTest
     describe "Successful request to update professional" do
       before do
         put '/v1/professionals/' + @professional.id.to_s,
-                                       params: {professional: {cep: "7654321"}}, 
+                                       params: {professional: {registration: "7654/21" }}, #{professional: {registration: "7654/21"}}, 
                                        headers: @auth_headers
-
         @resp_token = response.headers['access-token']
         @resp_client_id = response.headers['client']
         @resp_expiry = response.headers['expiry']
@@ -89,9 +88,9 @@ class Api::V1::ProfessionalsControllerTest < ActionDispatch::IntegrationTest
         assert_equal 200, response.status
       end
 
-      test "cpf should have been changed" do
-        @professional = Citizen.where(cpf: @professional.cpf).first.account.professional
-        assert_equal "7654321", @professional.account.citizen.cep
+      test "registration number should have been changed" do
+        @professional = Citizen.where(cpf: @citizen.cpf).first.account.professional
+        assert_equal "7654/21", @professional.registration
       end
     end
   end

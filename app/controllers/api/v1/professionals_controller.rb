@@ -46,7 +46,7 @@ module Api::V1
 
 	    # Only allow a trusted parameter "white list" through.
 	    def professional_params
-	      params.fetch(:professional, {})
+	      params.require(:professional).permit(:registration, :active)
 	    end
 	end
 end
