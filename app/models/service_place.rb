@@ -1,0 +1,2 @@
+class ServicePlace < ApplicationRecord
+end

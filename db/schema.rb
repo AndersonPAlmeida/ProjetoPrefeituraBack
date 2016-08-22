@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160812124055) do
+ActiveRecord::Schema.define(version: 20160822135108) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -32,6 +32,11 @@ ActiveRecord::Schema.define(version: 20160812124055) do
     t.datetime "updated_at"
     t.index ["reset_password_token"], name: "index_accounts_on_reset_password_token", unique: true, using: :btree
     t.index ["uid"], name: "index_accounts_on_uid", unique: true, using: :btree
+  end
+
+  create_table "accounts_service_places", id: false, force: :cascade do |t|
+    t.integer "account_id",       null: false
+    t.integer "service_place_id", null: false
   end
 
   create_table "citizens", force: :cascade do |t|
@@ -66,6 +71,29 @@ ActiveRecord::Schema.define(version: 20160812124055) do
     t.datetime "updated_at",                  null: false
     t.integer  "account_id"
     t.index ["account_id"], name: "index_professionals_on_account_id", using: :btree
+  end
+
+  create_table "professionals_service_places", id: false, force: :cascade do |t|
+    t.integer "professional_id",                 null: false
+    t.integer "service_place_id",                null: false
+    t.string  "role",                            null: false
+    t.boolean "active",           default: true, null: false
+  end
+
+  create_table "service_places", force: :cascade do |t|
+    t.string   "name",                                         null: false
+    t.string   "cep",                limit: 10
+    t.string   "neighborhood",                                 null: false
+    t.string   "address_street",                               null: false
+    t.string   "address_number",     limit: 10,                null: false
+    t.string   "address_complement"
+    t.string   "phone1",             limit: 13
+    t.string   "phone2",             limit: 13
+    t.string   "email"
+    t.string   "url"
+    t.boolean  "active",                        default: true, null: false
+    t.datetime "created_at",                                   null: false
+    t.datetime "updated_at",                                   null: false
   end
 
   add_foreign_key "citizens", "accounts"
