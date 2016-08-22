@@ -3,8 +3,6 @@
 default: &default
   adapter: postgresql
   encoding: unicode
-  username: <%= ENV['AGENDADOR_API_DB_USER'] %>
-  password: <%= ENV['AGENDADOR_API_DB_PASSWORD'] %>
   # For details on connection pooling, see rails configuration guide
   # http://guides.rubyonrails.org/configuring.html#database-pooling
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
@@ -12,10 +10,15 @@ default: &default
 development:
   <<: *default
   database: agendadorAPI_development
+  username: agendador
+  password: 123mudar
 
 test:
   <<: *default
   database: agendadorAPI_test
+  username: agendador
+  password: 123mudar
+  host: <%= ENV['POSTGRES_HOST'] %>
 
 # You can use this database configuration with:
 #   production:
@@ -23,3 +26,5 @@ test:
 production:
   <<: *default
   database: agendadorAPI_production
+  username: <%= ENV['AGENDADOR_API_DB_USER'] %>
+  password: <%= ENV['AGENDADOR_API_DB_PASSWORD'] %>
