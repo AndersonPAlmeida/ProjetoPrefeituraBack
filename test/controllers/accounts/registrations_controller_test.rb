@@ -5,8 +5,8 @@ class Api::V1::Accounts::RegistrationsControllerTest < ActionDispatch::Integrati
 
     describe "Successful registration" do
       before do
-        @account_number = Account.count
-        @citizen_number = Citizen.count
+        @number_of_accounts = Account.count
+        @number_of_citizens = Citizen.count
 
         post '/v1/auth', params: {
           birth_date: "Apr 18 1997",
@@ -29,11 +29,11 @@ class Api::V1::Accounts::RegistrationsControllerTest < ActionDispatch::Integrati
       end
 
       test "number of accounts should have been increased" do
-        assert_equal @account_number + 1, Account.count
+        assert_equal @number_of_accounts + 1, Account.count
       end
 
       test "number of citizens should have been increased" do
-        assert_equal @citizen_number + 1, Citizen.count
+        assert_equal @number_of_citizens + 1, Citizen.count
       end
 
       test "account should have been created" do
@@ -45,6 +45,48 @@ class Api::V1::Accounts::RegistrationsControllerTest < ActionDispatch::Integrati
       end
     end
 
+    describe "Register with invalid cpf" do
+      before do
+        @number_of_accounts = Account.count
+        @number_of_citizens = Citizen.count
+
+        post '/v1/auth', params: {
+          birth_date: "Apr 18 1997",
+          cep: "81530-110",
+          cpf: "12345678910",
+          email: "test@example.com", 
+          name: "Test Example",
+          phone1: "121212-1212", 
+          rg: "1234567",
+          password: "123mudar",
+          password_confirmation: "123mudar"
+        } 
+
+        @resource = assigns(:resource)
+        @data = JSON.parse(response.body)
+      end
+
+      it "should not be successful" do
+        assert_equal 422, response.status
+      end
+
+      it "should return an error message" do
+        assert_not_empty @data['errors']
+      end
+
+      it "should return an error status" do
+        assert_equal 'error', @data['status']
+      end
+
+      it "should not increase number of citizens" do
+        assert_equal @number_of_citizens, Citizen.count
+      end
+
+      it "should not increase number of accounts" do
+        assert_equal @number_of_accounts, Account.count
+      end
+    end
+  
     describe "Empty body" do
       before do
         @number_of_citizens = Citizen.count
