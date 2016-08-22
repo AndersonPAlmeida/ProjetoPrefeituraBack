@@ -29,11 +29,11 @@ class Api::V1::Accounts::RegistrationsControllerTest < ActionDispatch::Integrati
       end
 
       test "number of accounts should have been increased" do
-        assert_equal @number_of_accounts + 1, Account.count
+        assert_equal Account.count, @number_of_accounts + 1
       end
 
       test "number of citizens should have been increased" do
-        assert_equal @number_of_citizens + 1, Citizen.count
+        assert_equal Citizen.count, @number_of_citizens + 1
       end
 
       test "account should have been created" do
@@ -41,7 +41,7 @@ class Api::V1::Accounts::RegistrationsControllerTest < ActionDispatch::Integrati
       end
 
       test "new user data should be returned as json" do
-        assert_equal @data['data']['uid'], @resource.uid
+        assert_equal @resource.uid, @data['data']['uid']
       end
     end
 

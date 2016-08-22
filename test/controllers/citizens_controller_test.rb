@@ -42,11 +42,11 @@ class Api::V1::CitizensControllerTest < ActionDispatch::IntegrationTest
       end
 
       it "should correspond to the current account" do
-        assert_equal @body["id"], @controller.current_account.citizen.id
+        assert_equal @controller.current_account.citizen.id, @body["id"]
       end
 
       it "should correspond to the citizen in the database" do
-        assert_equal @body["cpf"], Citizen.find(@citizen.id).cpf
+        assert_equal Citizen.find(@citizen.id).cpf, @body["cpf"]
       end
     end
 
@@ -89,7 +89,7 @@ class Api::V1::CitizensControllerTest < ActionDispatch::IntegrationTest
       # TODO: change to return only the citizens that SHOULD be displayed
       # (e.g. only local citizens)
       it "should return all citizens" do
-        assert_equal @body.size, Citizen.count
+        assert_equal Citizen.count, @body.size
       end
     end
 
