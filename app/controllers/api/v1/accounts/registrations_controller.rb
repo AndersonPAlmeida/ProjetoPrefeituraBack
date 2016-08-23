@@ -30,7 +30,9 @@ module Api::V1
       @citizen.email = citizen_params[:email].try :downcase
 
       # set uid to corresponding citizen's cpf
-      @resource.uid = @citizen.cpf
+      if !@citizen.cpf.nil?
+        @resource.uid = @citizen.cpf.gsub(/[^0-9]/, '')
+      end
 
       # give redirect value from params priority
       @redirect_url = params[:confirm_success_url]
@@ -106,7 +108,7 @@ module Api::V1
     def render_create_error_email_already_exists
       render json: {
         status: 'error',
-        data:   resource_data,
+        data:   @citizen,
         errors: [I18n.t("devise_token_auth.registrations.email_already_exists", email: @citizen.cpf)]
       }, status: 422
     end
@@ -117,8 +119,13 @@ module Api::V1
     def render_create_citizen_error
       render json: {
         status: 'error',
-        errors: [I18n.t("registrations.create_citizen_error", cpf: @citizen.cpf)]
+        data: @citizen,
+        errors: @citizen.errors
       }, status: 422
+      #render json: {
+      #  status: 'error',
+      #  errors: [I18n.t("registrations.create_citizen_error", cpf: @citizen.cpf)]
+      #}, status: 422
     end
   end
 end

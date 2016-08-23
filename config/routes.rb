@@ -7,6 +7,7 @@ Rails.application.routes.draw do
         sessions:      'api/v1/accounts/sessions'
       }
       resources :citizens
+      resources :city_halls
     end
   end
 end

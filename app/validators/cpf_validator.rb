@@ -1,4 +1,5 @@
 class CpfValidator < ActiveModel::EachValidator
+
   # Validate cpf, if not valid put an error message in 
   # the record.errors[attribute]
   # @param record [ApplicationRecord] the model which owns a cpf
@@ -6,16 +7,21 @@ class CpfValidator < ActiveModel::EachValidator
   # @param value [String] the value of the record's cpf
   def validate_each(record, attribute, value)
     unless validate_cpf(value) 
-      record.errors[attribute] << ("#{value} is not a valid CPF.")
+      record.errors[attribute] << ("#{value} is not a valid CPF")
     end
   end
 
   # @return [boolean] true if cpf is valid
   # @param cpf [String] the cpf to be validated
   def validate_cpf(cpf)
-    arr = cpf.to_s.chars.map(&:to_i)
+    # replace every non numeric char with blank
+    if !cpf.nil?
+      number = cpf.gsub(/[^0-9]/, '')
+    end
+
+    arr = number.to_s.chars.map(&:to_i)
     # cpf with all digits the same should not be valid, i.e. 11111111111
-    if arr.count(arr[0]) == arr.size
+    if arr.count(arr[0]) == arr.size || arr.size != 11
       return false
     end
     # return true if the 10th and the 11th digit are valid

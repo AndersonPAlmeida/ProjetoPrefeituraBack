@@ -4,15 +4,15 @@ class Citizen < ApplicationRecord
   belongs_to :account
 
   # Validations #
-  validates :cpf, cpf: true
-  validates_presence_of   :cpf
-  validates_presence_of   :name
-  validates_presence_of   :birth_date
-  validates_presence_of   :rg
-  validates_presence_of   :cep
-  validates_presence_of   :phone1
+  validates_presence_of     :cpf
+  validates                 :cpf, cpf: true
+  validates_presence_of     :name
+  validates_presence_of     :birth_date
+  validates_presence_of     :rg
+  validates_presence_of     :cep
+  validates_presence_of     :phone1
 
-  validates_uniqueness_of :cpf
+  validates_uniqueness_of   :cpf
 
   validates_length_of       :name, maximum: 255
   validates_length_of       :rg, maximum: 13
