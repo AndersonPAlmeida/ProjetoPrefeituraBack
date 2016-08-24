@@ -41,7 +41,7 @@ class Api::V1::Accounts::RegistrationsControllerTest < ActionDispatch::Integrati
       end
 
       test "new user data should be returned as json" do
-        assert_equal @resource.uid, @data['data']['uid']
+        assert_equal @resource.uid, @data['uid']
       end
     end
 

@@ -5,6 +5,8 @@ class Citizen < ApplicationRecord
 
   # Validations #
   validates :cpf, cpf: true
+  validates :email, email: true, allow_blank: true
+
   validates_presence_of   :cpf
   validates_presence_of   :name
   validates_presence_of   :birth_date
