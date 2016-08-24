@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160818123919) do
+ActiveRecord::Schema.define(version: 20160823123303) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -58,6 +58,35 @@ ActiveRecord::Schema.define(version: 20160818123919) do
     t.integer  "account_id"
     t.boolean  "active"
     t.index ["account_id"], name: "index_citizens_on_account_id", using: :btree
+  end
+
+  create_table "city_halls", force: :cascade do |t|
+    t.integer  "city_id"
+    t.boolean  "active"
+    t.string   "address_number",     limit: 10,                null: false
+    t.string   "address_street",                               null: false
+    t.text     "block_text",                                   null: false
+    t.string   "cep",                limit: 10,                null: false
+    t.boolean  "citizen_access",                default: true, null: false
+    t.boolean  "citizen_register",              default: true, null: false
+    t.string   "name",                                         null: false
+    t.string   "neighborhood",                                 null: false
+    t.integer  "previous_notice",               default: 48,   null: false
+    t.integer  "schedule_period",               default: 90,   null: false
+    t.string   "address_complement"
+    t.text     "description"
+    t.string   "email"
+    t.string   "logo_content_type"
+    t.string   "logo_file_name"
+    t.integer  "logo_file_size"
+    t.date     "logo_updated_at"
+    t.string   "phone1",             limit: 14
+    t.string   "phone2",             limit: 14
+    t.string   "support_email"
+    t.boolean  "show_professional"
+    t.string   "url"
+    t.datetime "created_at",                                   null: false
+    t.datetime "updated_at",                                   null: false
   end
 
   add_foreign_key "citizens", "accounts"

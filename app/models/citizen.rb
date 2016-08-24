@@ -14,7 +14,7 @@ class Citizen < ApplicationRecord
   validates_presence_of   :cep
   validates_presence_of   :phone1
 
-  validates_uniqueness_of :cpf
+  validates_uniqueness_of   :cpf
 
   validates_length_of       :name, maximum: 255
   validates_length_of       :rg, maximum: 13

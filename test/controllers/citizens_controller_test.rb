@@ -162,7 +162,7 @@ class Api::V1::CitizensControllerTest < ActionDispatch::IntegrationTest
         assert_equal 200, response.status
       end
 
-      test "cpf should have been changed" do
+      test "cep should have been changed" do
         @citizen = Citizen.where(cpf: @citizen.cpf).first
         assert_equal "7654321", @citizen.cep
       end
