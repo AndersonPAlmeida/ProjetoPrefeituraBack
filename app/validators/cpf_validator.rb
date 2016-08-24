@@ -1,6 +1,6 @@
 class CpfValidator < ActiveModel::EachValidator
 
-  # Validate cpf, if not valid put an error message in 
+  # Validate cpf, if not valid send an error message to
   # the record.errors[attribute]
   # @param record [ApplicationRecord] the model which owns a cpf
   # @param attribute [Symbol] the attribute to be validated (cpf)
