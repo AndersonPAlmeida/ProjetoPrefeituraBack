@@ -2,6 +2,7 @@ class Account < ActiveRecord::Base
   # Associations #
   has_one :citizen
   has_one :professional
+  has_and_belongs_to_many :service_places
 
   # Devise #
   # Include default devise modules. Other availables are:

@@ -1,7 +1,7 @@
 class ServicePlace < ApplicationRecord
   # Associations #
-  has_many :professionals
-  has_many :accounts
+  has_and_belongs_to_many :professionals
+  has_and_belongs_to_many :accounts
 
   # Validations #
   validates_presence_of :address_number
@@ -22,6 +22,7 @@ class ServicePlace < ApplicationRecord
     return [ :active, :address_number, :address_street,
 	     :name, :neighborhood, :address_complement,
 	     :cep, :email, :phone1, :phone2, :url ] 
+  end
 
   # @return all active service places
   def self.all_active

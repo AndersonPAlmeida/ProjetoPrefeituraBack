@@ -1,6 +1,6 @@
 class Professional < ApplicationRecord
   # Associations #
-  belongs_to :account
+  has_and_belongs_to_many :service_places
 
   # @return list of professional's columns
   def self.keys

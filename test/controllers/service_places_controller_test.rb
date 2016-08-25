@@ -16,17 +16,20 @@ class Api::V1::ServicePlacesControllerTest < ActionDispatch::IntegrationTest
                              password_confirmation: "123mudar") 
       @professional = Professional.new(active: true, 
                                        registration: "123") 
+      @account.save! 
+      @citizen.account_id = @account.id 
+      @citizen.save! 
+      @professional.account_id = @account.id 
+      @professional.save!
+
       @service_place = ServicePlace.new(active: true, 
 					address_number: "123",
 					address_street: "Test Avenue",
 					name: "Example SP",
 					neighborhood:"Neighborhood Example")
-
-      @account.save! 
-      @citizen.account_id = @account.id 
-      @citizen.save! 
-      @professional.account_id = @account.id 
-      @professional.save! 
+      @service_place.save!
+      @service_place.professionals << @professional
+      binding.pry
  
       @auth_headers = @account.create_new_auth_token 
  
@@ -58,6 +61,5 @@ class Api::V1::ServicePlacesControllerTest < ActionDispatch::IntegrationTest
     describe "Successful request to update service place" do
 
     end
-
   end
 end
