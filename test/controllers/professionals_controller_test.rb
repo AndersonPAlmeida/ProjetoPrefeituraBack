@@ -3,7 +3,7 @@ require 'test_helper'
 class Api::V1::ProfessionalsControllerTest < ActionDispatch::IntegrationTest
   describe "Token access" do
     before do
-      @citizen= Citizen.new(cpf: "123.456.789-04", 
+      @citizen= Citizen.new(cpf: "10845922904", 
                              birth_date: "18/04/1997", 
                              cep: "1234567", 
                              email: "test@example.com",
