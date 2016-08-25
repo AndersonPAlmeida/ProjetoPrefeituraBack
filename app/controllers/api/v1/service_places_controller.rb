@@ -45,7 +45,8 @@ class ServicePlacesController < ApplicationController
     end
 
     # Only allow a trusted parameter "white list" through.
-    def service_place_params
-      params.fetch(:service_place, {})
+    def service_place_params 
+      params.require(:service_place).permit(:active, :address_number, :address_street, :name, :neighborhood, :address_complement, :cep, :email, :phone1, :phone2, :url)
     end
+
 end
