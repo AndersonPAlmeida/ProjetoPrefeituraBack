@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160823123303) do
+ActiveRecord::Schema.define(version: 20160826131632) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -32,6 +32,15 @@ ActiveRecord::Schema.define(version: 20160823123303) do
     t.datetime "updated_at"
     t.index ["reset_password_token"], name: "index_accounts_on_reset_password_token", unique: true, using: :btree
     t.index ["uid"], name: "index_accounts_on_uid", unique: true, using: :btree
+  end
+
+  create_table "cities", force: :cascade do |t|
+    t.string   "ibge_code",  null: false
+    t.string   "name",       null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer  "state_id"
+    t.index ["state_id"], name: "index_cities_on_state_id", using: :btree
   end
 
   create_table "citizens", force: :cascade do |t|
@@ -61,7 +70,6 @@ ActiveRecord::Schema.define(version: 20160823123303) do
   end
 
   create_table "city_halls", force: :cascade do |t|
-    t.integer  "city_id"
     t.boolean  "active"
     t.string   "address_number",     limit: 10,                null: false
     t.string   "address_street",                               null: false
@@ -87,7 +95,19 @@ ActiveRecord::Schema.define(version: 20160823123303) do
     t.string   "url"
     t.datetime "created_at",                                   null: false
     t.datetime "updated_at",                                   null: false
+    t.integer  "city_id"
+    t.index ["city_id"], name: "index_city_halls_on_city_id", using: :btree
   end
 
+  create_table "states", force: :cascade do |t|
+    t.string   "abbreviation", limit: 2, null: false
+    t.string   "ibge_code",              null: false
+    t.string   "name",                   null: false
+    t.datetime "created_at",             null: false
+    t.datetime "updated_at",             null: false
+  end
+
+  add_foreign_key "cities", "states"
   add_foreign_key "citizens", "accounts"
+  add_foreign_key "city_halls", "cities"
 end

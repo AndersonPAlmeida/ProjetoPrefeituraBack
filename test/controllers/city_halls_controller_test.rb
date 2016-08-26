@@ -13,10 +13,40 @@ class CityHallsControllerTest < ActionDispatch::IntegrationTest
       @account = Account.new(uid: @citizen.cpf,
                              password: "123mudar",
                              password_confirmation: "123mudar")
+
+      @parana = State.new(abbreviation: "PR",
+                          ibge_code: "41",
+                          name: "Paraná")
+      @santa_catarina = State.new(abbreviation: "SC",
+                                  ibge_code: "42",
+                                  name: "Santa Catarina")
+      @parana.save!
+      @santa_catarina.save!
+
+      @curitiba = City.new(ibge_code: "4106902",
+                           name: "Curitiba",
+                           state_id: @parana.id)
+      @joinville = City.new(ibge_code: "4209102",
+                            name: "Joinville",
+                            state_id: @santa_catarina.id)
+      @curitiba.save!
+      @joinville.save!
+
+      @joinville_city_hall = CityHall.new(name: "Prefeitura de Joinville",
+                                          cep: "1234567",
+                                          neighborhood: "Test neighborhood",
+                                          address_street: "Test street",
+                                          address_number: "123",
+                                          city_id: @joinville.id,
+                                          phone1: "1414141414",
+                                          active: true,
+                                          block_text: "Test block text");
+
       @citizen.active = true
       @account.save!
       @citizen.account_id = @account.id
       @citizen.save!
+      @joinville_city_hall.save!
 
       @auth_headers = @account.create_new_auth_token
 
@@ -35,7 +65,7 @@ class CityHallsControllerTest < ActionDispatch::IntegrationTest
           neighborhood: "Aasdsd",
           address_street: "asdasd",
           address_number: "100",
-          city_id: 4001,
+          city_id: @curitiba.id,
           phone1: "12121212",
           active: true,
           block_text: "hello" 
@@ -57,7 +87,7 @@ class CityHallsControllerTest < ActionDispatch::IntegrationTest
       end
 
       it "should correspond to the information in the database" do
-        assert_equal "100", CityHall.where(city_id: 4001).first.address_number
+        assert_equal "100", CityHall.where(city_id: @curitiba.id).first.address_number
       end
 
       it "should create a city hall" do
@@ -87,7 +117,7 @@ class CityHallsControllerTest < ActionDispatch::IntegrationTest
 
       describe "Successful request to show city hall" do
         before do 
-          @city_hall = CityHall.where(city_id: 4001).first
+          @city_hall = CityHall.where(city_id: @curitiba.id).first
 
           get '/v1/city_halls/' + @city_hall.id.to_s, params: {}, 
                                                       headers: @auth_headers
@@ -108,17 +138,17 @@ class CityHallsControllerTest < ActionDispatch::IntegrationTest
         end
 
         it "should correspond to the information in the database" do
-          assert_equal CityHall.where(city_id: 4001).first.neighborhood, 
+          assert_equal CityHall.where(city_id: @curitiba.id).first.neighborhood, 
                        @body["neighborhood"]
         end
       end
 
       describe "Unsuccessful resquest to update city hall with conflicting city_id" do
         before do
-          @city_hall = CityHall.where(city_id: 4001).first
+          @city_hall = CityHall.where(city_id: @curitiba.id).first
 
           put '/v1/city_halls/' + @city_hall.id.to_s, 
-                                params: {city_hall: {city_id: "1"}},
+                                params: {city_hall: {city_id: @joinville.id}},
                                 headers: @auth_headers
 
           @body = JSON.parse(response.body)
@@ -168,7 +198,7 @@ class CityHallsControllerTest < ActionDispatch::IntegrationTest
           neighborhood: "Aasdsd",
           address_street: "asdasd",
           address_number: "100",
-          city_id: 412,
+          city_id: @curitiba.id,
           phone1: "12121212",
           active: true,
           block_text: "hello" 
@@ -200,7 +230,7 @@ class CityHallsControllerTest < ActionDispatch::IntegrationTest
           neighborhood: "Aasdsd",
           address_street: "asdasd",
           address_number: "100",
-          city_id: 1,
+          city_id: @joinville.id,
           phone1: "12121212",
           active: true,
           block_text: "hello" 
@@ -225,7 +255,7 @@ class CityHallsControllerTest < ActionDispatch::IntegrationTest
     describe "Successful request to delete city hall" do
       before do
         @number_of_city_halls = CityHall.all_active.count
-        @city_hall = CityHall.where(city_id: 1).first
+        @city_hall = CityHall.where(city_id: @joinville.id).first
 
         delete '/v1/city_halls/' + @city_hall.id.to_s, 
                                   params: {}, 
@@ -279,7 +309,7 @@ class CityHallsControllerTest < ActionDispatch::IntegrationTest
 
     describe "Successful request to update city hall" do
       before do
-        @city_hall = CityHall.where(city_id: 1).first
+        @city_hall = CityHall.where(city_id: @joinville.id).first
 
         put '/v1/city_halls/' + @city_hall.id.to_s,
                                 params: {city_hall: {cep: "7654321"}}, 
@@ -296,7 +326,7 @@ class CityHallsControllerTest < ActionDispatch::IntegrationTest
       end
 
       test "cep should have been changed" do
-        @city_hall = CityHall.where(city_id: 1).first
+        @city_hall = CityHall.where(city_id: @joinville.id).first
         assert_equal "7654321", @city_hall.cep
       end
     end
@@ -324,7 +354,7 @@ class CityHallsControllerTest < ActionDispatch::IntegrationTest
 
     describe "Unsuccessful request to update city hall without required field" do
       before do
-        @city_hall = CityHall.where(city_id: 1).first
+        @city_hall = CityHall.where(city_id: @joinville.id).first
 
         put '/v1/city_halls/' + @city_hall.id.to_s, 
                               params: {city_hall: {name: nil}},
