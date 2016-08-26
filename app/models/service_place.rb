@@ -1,6 +1,7 @@
 class ServicePlace < ApplicationRecord
   # Associations #
-  has_and_belongs_to_many :professionals
+  has_many :professionals_service_places
+  has_many :professionals, :through => :professionals_service_places
   has_and_belongs_to_many :accounts
 
   # Validations #

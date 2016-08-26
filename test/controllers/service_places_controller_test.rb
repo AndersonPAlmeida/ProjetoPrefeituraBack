@@ -28,8 +28,9 @@ class Api::V1::ServicePlacesControllerTest < ActionDispatch::IntegrationTest
 					name: "Example SP",
 					neighborhood:"Neighborhood Example")
       @service_place.save!
-      @service_place.professionals << @professional
       binding.pry
+      @service_place.professionals << @professional
+      #binding.pry
  
       @auth_headers = @account.create_new_auth_token 
  
@@ -51,7 +52,7 @@ class Api::V1::ServicePlacesControllerTest < ActionDispatch::IntegrationTest
     end
 
     it "should be successful" do
-      assert_equal @body["id"], @controller.current_account.professional.service_place.first
+      assert_equal @body["id"], @controller.current_account.professional.service_places.first
     end
 
     describe "Successful request to delete service place" do
