@@ -28,12 +28,12 @@ class Api::V1::ServicePlacesControllerTest < ActionDispatch::IntegrationTest
 					name: "Example SP",
 					neighborhood:"Neighborhood Example")
       @service_place.save!
-      binding.pry
-      @service_place.professionals << @professional
-      #binding.pry
- 
+      @role = ProfessionalsServicePlace.new(active:true, role: "adm_c3sl", 
+				   professional_id: @professional.id,
+				   service_place_id: @service_place.id)
+      @role.save!
+
       @auth_headers = @account.create_new_auth_token 
- 
       @token     = @auth_headers['access-token'] 
       @client_id = @auth_headers['client'] 
       @expiry    = @auth_headers['expiry'] 
@@ -49,10 +49,10 @@ class Api::V1::ServicePlacesControllerTest < ActionDispatch::IntegrationTest
         @resp_expiry = response.headers['expiry']
         @resp_uid = response.headers['uid']
       end
-    end
 
-    it "should be successful" do
-      assert_equal @body["id"], @controller.current_account.professional.service_places.first
+      it "should be successful" do
+        assert_equal @body["id"], @controller.current_account.professional.service_places.first.id
+      end
     end
 
     describe "Successful request to delete service place" do
