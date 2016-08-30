@@ -1,11 +1,18 @@
 require "test_helper"
 
 class ServicePlaceTest < ActiveSupport::TestCase
-  def service_place
-    @service_place ||= ServicePlace.new
-  end
+  describe ServicePlace do
+    describe "Sucessful service place test" do
+      before do
+        @service_place = ServicePlace.new(address_number: "10",
+                               address_street: "Faker Street", 
+                               name: "Faker's City Hall", 
+                               neighborhood: "Faker's Neighborhood")
+      end
 
-  def test_valid
-    assert service_place.valid?
+      it "should work fine" do
+	  assert @service_place.save!
+      end
+    end
   end
 end
