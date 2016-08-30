@@ -49,7 +49,7 @@ class Api::V1::ProfessionalsControllerTest < ActionDispatch::IntegrationTest
       end
 
       it "should correspond to the professional in the database" do
-        assert_equal @body["account"]["citizen"]["cpf"], Professional.find(@professional.id).account.citizen.cpf
+        assert_equal @body["citizen"]["cpf"], Professional.find(@professional.id).account.citizen.cpf
       end
     end
 
