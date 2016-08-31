@@ -13,6 +13,9 @@ gem 'puma', '~> 3.0'
 gem 'devise'
 gem 'devise_token_auth'
 
+# Provides authorization methods
+gem 'pundit'
+
 # Provides a clean layer between the model and the controller that 
 # lets us to call to_json or as_json on the ActiveRecord object or 
 # collection as normal, while outputing our desired API format.
