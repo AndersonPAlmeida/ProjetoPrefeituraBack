@@ -1,5 +1,6 @@
 class ServicePlace < ApplicationRecord
   # Associations #
+  belongs_to :city_hall
   has_many :professionals_service_places
   has_many :professionals, :through => :professionals_service_places
   has_and_belongs_to_many :accounts

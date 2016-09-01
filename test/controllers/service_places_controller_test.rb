@@ -11,23 +11,40 @@ class Api::V1::ServicePlacesControllerTest < ActionDispatch::IntegrationTest
                              name: "Test Example",  
                              phone1: "(12)1212-1212", 
                              rg: "1234567") 
+
       @account = Account.new(uid: @citizen.cpf, 
                              password: "123mudar", 
                              password_confirmation: "123mudar") 
+
       @professional = Professional.new(active: true, 
                                        registration: "123") 
+
+      @city_hall = CityHall.new(name: "Prefeitura de Curitiba",
+				cep: "81530110",
+				neighborhood: "random",
+				address_street: "unknown",
+				address_number: "99",
+				city_id: 4001,
+				phone1: "321312",
+				active: true,
+				block_text: "hi"
+			       )
       @account.save! 
       @citizen.account_id = @account.id 
       @citizen.save! 
       @professional.account_id = @account.id 
       @professional.save!
 
+      @city_hall.save!
+
       @service_place = ServicePlace.new(active: true, 
 					address_number: "123",
 					address_street: "Test Avenue",
 					name: "Example SP",
 					neighborhood:"Neighborhood Example")
+      @service_place.city_hall = @city_hall
       @service_place.save!
+ 
       @role = ProfessionalsServicePlace.new(active:true, role: "adm_c3sl", 
 				   professional_id: @professional.id,
 				   service_place_id: @service_place.id)
