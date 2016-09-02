@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160901141211) do
+ActiveRecord::Schema.define(version: 20160902124307) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -92,6 +92,15 @@ ActiveRecord::Schema.define(version: 20160901141211) do
     t.string   "url"
     t.datetime "created_at",                                   null: false
     t.datetime "updated_at",                                   null: false
+  end
+
+  create_table "dependants", force: :cascade do |t|
+    t.boolean  "active",      default: true, null: false
+    t.datetime "deactivated"
+    t.integer  "citizen_id"
+    t.datetime "created_at",                 null: false
+    t.datetime "updated_at",                 null: false
+    t.index ["citizen_id"], name: "index_dependants_on_citizen_id", using: :btree
   end
 
   create_table "professionals", force: :cascade do |t|

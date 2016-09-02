@@ -2,6 +2,7 @@ class Citizen < ApplicationRecord
 
   # Associations #
   belongs_to :account
+  has_one :dependant
 
   # Validations #
   validates :cpf, cpf: true
