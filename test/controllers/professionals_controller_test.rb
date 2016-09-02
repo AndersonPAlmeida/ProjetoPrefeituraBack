@@ -55,6 +55,8 @@ class Api::V1::ProfessionalsControllerTest < ActionDispatch::IntegrationTest
 
     describe "Successful request to delete professional" do
       before do
+        @number_of_professionals = Professional.all_active.count
+
         delete '/v1/professionals/' + @professional.id.to_s, params: {}, 
                                                    headers: @auth_headers
 
@@ -69,7 +71,11 @@ class Api::V1::ProfessionalsControllerTest < ActionDispatch::IntegrationTest
       end
 
       it "should have been deleted" do
-        assert_nil Professional.where(id: @professional.id).first
+        assert_not Professional.where(id: @professional.id).first.active
+      end
+
+      test "number of active professional should be decreased" do
+        assert_equal @number_of_professionals, Professional.all_active.count + 1
       end
     end
 

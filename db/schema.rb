@@ -39,6 +39,15 @@ ActiveRecord::Schema.define(version: 20160901141211) do
     t.integer "service_place_id", null: false
   end
 
+  create_table "cities", force: :cascade do |t|
+    t.string   "ibge_code",  null: false
+    t.string   "name",       null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer  "state_id"
+    t.index ["state_id"], name: "index_cities_on_state_id", using: :btree
+  end
+
   create_table "citizens", force: :cascade do |t|
     t.date     "birth_date"
     t.string   "name"
@@ -128,5 +137,14 @@ ActiveRecord::Schema.define(version: 20160901141211) do
     t.index ["city_hall_id"], name: "index_service_places_on_city_hall_id", using: :btree
   end
 
+  create_table "states", force: :cascade do |t|
+    t.string   "abbreviation", limit: 2, null: false
+    t.string   "ibge_code",              null: false
+    t.string   "name",                   null: false
+    t.datetime "created_at",             null: false
+    t.datetime "updated_at",             null: false
+  end
+
+  add_foreign_key "cities", "states"
   add_foreign_key "citizens", "accounts"
 end

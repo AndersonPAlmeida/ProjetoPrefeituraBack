@@ -5,12 +5,19 @@ module Api::V1
 	  # GET /professionals
 	  def index
 	    @professionals = Professional.all
+
 	    render json: @professionals
 	  end
 
 	  # GET /professionals/1
 	  def show
-	    render json: @professional
+      if @professional.nil?
+        render json: {
+          errors: ["Professional #{params[:id]} does not exist."]
+        }, status: 400
+      else
+  	    render json: @professional
+      end
 	  end
 
 	  # POST /professionals
@@ -26,19 +33,33 @@ module Api::V1
 
 	  # PATCH/PUT /professionals/1
 	  def update
-	    if @professional.update(professional_params)
-	      render json: @professional
-	    else
-	      render json: @professional.errors, status: :unprocessable_entity
-	    end
+      if @professional.nil?
+        render json: {
+          errors: ["Professional #{params[:id]} does not exist."]
+        }, status: 400
+      else
+        if @professional.update(professional_params)
+          render json: @professional
+        else
+          render json: @professional.errors, status: :unprocessable_entity
+        end
+      end
 	  end
 
 	  # DELETE /professionals/1
 	  def destroy
-	    @professional.destroy
+      if @professional.nil?
+        render json: {
+          errors: ["Professional #{params[:id]} does not exist."]
+        }, status: 400
+      else
+        @professional.active = false
+        @professional.save!
+      end
 	  end
 
 	  private
+
 	    # Use callbacks to share common setup or constraints between actions.
 	    def set_professional
 	      @professional = Professional.find(params[:id])
