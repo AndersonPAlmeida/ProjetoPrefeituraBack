@@ -1,4 +1,4 @@
 class DependantSerializer < ActiveModel::Serializer
   attributes :id, :active, :deactivated
-  has_one :citizen
+  belongs_to :citizen
 end
