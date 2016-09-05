@@ -36,7 +36,9 @@ module Api::V1
 
 	  # DELETE /dependants/1
 	  def destroy
-	    @dependant.destroy
+	    @dependant.active = false 
+	    @dependant.deactivated = DateTime.now
+	    @dependant.save
 	  end
 
 	  private

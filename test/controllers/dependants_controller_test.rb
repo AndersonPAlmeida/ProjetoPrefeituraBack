@@ -69,7 +69,7 @@ class Api::V1::DependantsControllerTest < ActionDispatch::IntegrationTest
       end
 
       it "should have been deleted" do
-        assert_nil Dependant.where(id: @dependant.id).first
+        assert_equal Dependant.where(id: @dependant.id).first.active, false
       end
     end
 
