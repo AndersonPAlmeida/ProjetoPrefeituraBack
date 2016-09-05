@@ -19,16 +19,26 @@ class Api::V1::ServicePlacesControllerTest < ActionDispatch::IntegrationTest
       @professional = Professional.new(active: true, 
                                        registration: "123") 
 
+      @parana = State.new(abbreviation: "PR",
+                          ibge_code: "41",
+                          name: "Paraná")
+      @parana.save!
+
+      @curitiba = City.new(ibge_code: "4106902",
+                           name: "Curitiba",
+                           state_id: @parana.id)
+      @curitiba.save!
+
       @city_hall = CityHall.new(name: "Prefeitura de Curitiba",
-				cep: "81530110",
-				neighborhood: "random",
-				address_street: "unknown",
-				address_number: "99",
-				city_id: 4001,
-				phone1: "321312",
-				active: true,
-				block_text: "hi"
-			       )
+                                cep: "81530110",
+                                neighborhood: "random",
+                                address_street: "unknown",
+                                address_number: "99",
+                                city_id: @curitiba.id,
+                                phone1: "321312",
+                                active: true,
+                                block_text: "hi")
+
       @account.save! 
       @citizen.account_id = @account.id 
       @citizen.save! 
@@ -60,6 +70,7 @@ class Api::V1::ServicePlacesControllerTest < ActionDispatch::IntegrationTest
       before do
         get '/v1/service_places/' + @service_place.id.to_s, params: {},
 						  headers: @auth_headers
+
         @body = JSON.parse(response.body)
         @resp_token = response.headers['access-token']
         @resp_client_id = response.headers['client']
