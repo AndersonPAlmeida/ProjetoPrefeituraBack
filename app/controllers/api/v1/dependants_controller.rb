@@ -47,7 +47,7 @@ module Api::V1
 
 	    # Only allow a trusted parameter "white list" through.
 	    def dependant_params
-		params.require(:dependant).permit(:registration, :active)
+		params.require(:dependant).permit(:deactivation, :active)
 	    end
 	end
 end
