@@ -8,6 +8,8 @@ Rails.application.routes.draw do
       }
       resources :citizens
       resources :city_halls
+      resources :professionals
+      resources :service_places
     end
   end
 end
