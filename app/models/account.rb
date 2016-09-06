@@ -3,6 +3,7 @@ class Account < ActiveRecord::Base
   has_one :citizen
   has_one :professional
   has_and_belongs_to_many :service_places
+  has_many :blocks
 
   # Devise #
   # Include default devise modules. Other availables are:

@@ -41,12 +41,10 @@ ActiveRecord::Schema.define(version: 20160906132441) do
 
   create_table "blocks", force: :cascade do |t|
     t.integer "account_id",   null: false
-    t.integer "citizen_id",   null: false
     t.integer "dependant_id"
     t.date    "block_begin"
     t.date    "block_end"
     t.index ["account_id"], name: "index_blocks_on_account_id", using: :btree
-    t.index ["citizen_id"], name: "index_blocks_on_citizen_id", using: :btree
     t.index ["dependant_id"], name: "index_blocks_on_dependant_id", using: :btree
   end
 
