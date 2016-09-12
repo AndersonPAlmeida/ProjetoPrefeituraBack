@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160906132441) do
+ActiveRecord::Schema.define(version: 20160912142006) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -44,8 +44,10 @@ ActiveRecord::Schema.define(version: 20160906132441) do
     t.integer "dependant_id"
     t.date    "block_begin"
     t.date    "block_end"
+    t.integer "sector_id",    null: false
     t.index ["account_id"], name: "index_blocks_on_account_id", using: :btree
     t.index ["dependant_id"], name: "index_blocks_on_dependant_id", using: :btree
+    t.index ["sector_id"], name: "index_blocks_on_sector_id", using: :btree
   end
 
   create_table "citizens", force: :cascade do |t|
@@ -126,6 +128,20 @@ ActiveRecord::Schema.define(version: 20160906132441) do
     t.integer "service_place_id",                null: false
     t.string  "role",                            null: false
     t.boolean "active",           default: true, null: false
+  end
+
+  create_table "sectors", force: :cascade do |t|
+    t.integer  "city_hall_id",       null: false
+    t.boolean  "active"
+    t.integer  "absence_max"
+    t.integer  "blocking_days"
+    t.integer  "cancel_limit"
+    t.text     "description"
+    t.string   "name"
+    t.integer  "shedules_by_sector"
+    t.datetime "created_at",         null: false
+    t.datetime "updated_at",         null: false
+    t.index ["city_hall_id"], name: "index_sectors_on_city_hall_id", using: :btree
   end
 
   create_table "service_places", force: :cascade do |t|
