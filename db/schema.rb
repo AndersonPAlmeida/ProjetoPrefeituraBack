@@ -131,16 +131,16 @@ ActiveRecord::Schema.define(version: 20160912142006) do
   end
 
   create_table "sectors", force: :cascade do |t|
-    t.integer  "city_hall_id",       null: false
+    t.integer  "city_hall_id",        null: false
     t.boolean  "active"
     t.integer  "absence_max"
     t.integer  "blocking_days"
     t.integer  "cancel_limit"
     t.text     "description"
     t.string   "name"
-    t.integer  "shedules_by_sector"
-    t.datetime "created_at",         null: false
-    t.datetime "updated_at",         null: false
+    t.integer  "schedules_by_sector"
+    t.datetime "created_at",          null: false
+    t.datetime "updated_at",          null: false
     t.index ["city_hall_id"], name: "index_sectors_on_city_hall_id", using: :btree
   end
 

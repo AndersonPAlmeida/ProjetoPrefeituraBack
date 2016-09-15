@@ -1,3 +1,4 @@
 class SectorSerializer < ActiveModel::Serializer
-  attributes :id
+  belongs_to :city_hall
+  attributes :id, :name, :absence_max, :blocking_days, :cancel_limit, :description, :name
 end

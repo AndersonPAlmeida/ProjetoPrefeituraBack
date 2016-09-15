@@ -11,7 +11,13 @@ module Api::V1
 
 	  # GET /sectors/1
 	  def show
-	    render json: @sector
+	    if @sector.nil?
+	      render json: {
+	        errors: ["Sector #{params[:id]} does not exist."]
+	      }, status: 400
+	    else
+	      render json: @sector
+	    end
 	  end
 
 	  # POST /sectors
@@ -19,7 +25,7 @@ module Api::V1
 	    @sector = Sector.new(sector_params)
 
 	    if @sector.save
-	      render json: @sector, status: :created, location: @sector
+	      render json: @sector, status: :created
 	    else
 	      render json: @sector.errors, status: :unprocessable_entity
 	    end
@@ -27,27 +33,46 @@ module Api::V1
 
 	  # PATCH/PUT /sectors/1
 	  def update
-	    if @sector.update(sector_params)
-	      render json: @sector
+	    if @sector.nil?
+	      render json: {
+		errors: ["Sector #{params[:id]} does not exist."]
+	      }, status: 400
 	    else
-	      render json: @sector.errors, status: :unprocessable_entity
+	      if @sector.update(sector_params)
+	        render json: @sector
+	      else
+	        render json: {
+		  errors: [@sector.errors, status: :unprocessable_entity]
+		}, status: 422
+	      end
 	    end
 	  end
 
 	  # DELETE /sectors/1
 	  def destroy
-	    @sector.destroy
+	    if @sector.nil?
+	      render json: {
+		errors: ["Sector #{params[:id]} does not exist."]
+	      }, status: 400
+	    else
+	      @sector.active = false
+	      @sector.save!
+	    end
 	  end
 
 	  private
 	    # Use callbacks to share common setup or constraints between actions.
 	    def set_sector
-	      @sector = Sector.find(params[:id])
+	      begin
+	        @sector = Sector.find(params[:id])
+	      rescue
+		@sector = nil
+	      end
 	    end
 
 	    # Only allow a trusted parameter "white list" through.
 	    def sector_params
-		params.require(:sector).permit(:active, :absence_max, :blocking_days, :cancel_limit, :description, :name, :schedules_by_sector);
+		params.require(:sector).permit(:active, :city_hall_id, :absence_max, :blocking_days, :cancel_limit, :description, :name, :schedules_by_sector);
 	    end
 	end
 end

@@ -8,7 +8,7 @@ class CreateSectors < ActiveRecord::Migration[5.0]
       t.integer :cancel_limit
       t.text :description
       t.string :name
-      t.integer :shedules_by_sector
+      t.integer :schedules_by_sector
       t.timestamps
     end
   end
