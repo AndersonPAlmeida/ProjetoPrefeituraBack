@@ -10,6 +10,7 @@ Rails.application.routes.draw do
       resources :city_halls
       resources :professionals
       resources :service_places
+      resources :occupations
     end
   end
 end

@@ -4,7 +4,7 @@ module Api::V1
 
     # GET /citizens
     def index
-      @citizens = Citizen.where(active: true)
+      @citizens = Citizen.all_active
 
       render json: @citizens
     end
