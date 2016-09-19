@@ -8,3 +8,15 @@ joinville:
   phone1: "14141414"
   active: true
   block_text: "hello world"
+
+curitiba:
+  id: 111
+  name: "Prefeitura de Curitiba"
+  cep: "1234567"
+  neighborhood: "Aasdsdaaaaaa"
+  address_street: "asdasdaaaa"
+  address_number: "200"
+  city_id: 4
+  phone1: "14141414"
+  active: true
+  block_text: "hello world" 

@@ -168,12 +168,82 @@ class SectorsControllerTest < ActionDispatch::IntegrationTest
       end
     end
 
+    describe "Successful request to update sector" do
+      before do
+        @sector = Sector.where(city_hall_id: 111).first
+
+        put '/v1/sectors/' + @sector.id.to_s,
+                                params: {sector: {absence_max: "10"}}, 
+                                headers: @auth_headers
+
+        @resp_token = response.headers['access-token']
+        @resp_client_id = response.headers['client']
+        @resp_expiry = response.headers['expiry']
+        @resp_uid = response.headers['uid']
+
+      end
+
+      it "should be successful" do
+        assert_equal 200, response.status
+      end
+
+      test "absence max should have been changed" do
+        @sector = Sector.where(city_hall_id: 111).first
+        assert_equal 10, @sector.absence_max
+      end
+    end
+
+    describe "Unsuccessful resquest to update sector that doesn't exists" do
+      before do
+        put '/v1/sectors/222', params: {sector: {absence_max: "10"}}, 
+                                  headers: @auth_headers
+
+        @body = JSON.parse(response.body)
+        @resp_token = response.headers['access-token']
+        @resp_client_id = response.headers['client']
+        @resp_expiry = response.headers['expiry']
+        @resp_uid = response.headers['uid']
+      end
+
+      it "should not be successful" do
+        assert_equal 400, response.status
+      end
+
+      it "should return an error message" do
+        assert_not_empty @body['errors']
+      end
+    end
+
+    describe "Unsuccessful request to update sector without required field" do
+      before do
+        @sector = Sector.where(city_hall_id: 111).first
+
+        put '/v1/sectors/' + @sector.id.to_s, 
+                              params: {sector: {city_hall_id: nil}},
+                              headers: @auth_headers
+
+        @body = JSON.parse(response.body)
+        @resp_token = response.headers['access-token']
+        @resp_client_id = response.headers['client']
+        @resp_expiry = response.headers['expiry']
+        @resp_uid = response.headers['uid']
+      end
+
+      it "should not be successful" do
+        assert_equal 422, response.status
+      end
+
+      it "should return an error message" do
+        assert_not_empty @body['errors']
+      end
+    end
+ 
     describe "Successful request to delete sector" do
       before do
         @number_of_sectors = Sector.all_active.count
-        @sector = Sector.where(city_hall_id: @city_hall.id).first
+        @sector = Sector.where(city_hall_id: 111).first
 
-        delete '/v1/sectors/' + @city_hall.id.to_s, 
+        delete '/v1/sectors/' + @sector.id.to_s, 
                                   params: {}, 
                                   headers: @auth_headers
 
@@ -195,6 +265,7 @@ class SectorsControllerTest < ActionDispatch::IntegrationTest
         assert_equal @number_of_sectors, Sector.all_active.count + 1
       end
     end
+
     describe "Unsuccessful request to delete sector that doesn't exists" do
 
       before do 
@@ -222,74 +293,5 @@ class SectorsControllerTest < ActionDispatch::IntegrationTest
         assert_equal @number_of_sectors, Sector.all_active.count
       end
     end
-
-    describe "Successful request to update sector" do
-      before do
-        @sector = Sector.where(city_hall_id: @city_hall.id).first
-
-        put '/v1/sectors/' + @sector.id.to_s,
-                                params: {sector: {absence_max: "10"}}, 
-                                headers: @auth_headers
-
-        @resp_token = response.headers['access-token']
-        @resp_client_id = response.headers['client']
-        @resp_expiry = response.headers['expiry']
-        @resp_uid = response.headers['uid']
-      end
-
-      it "should be successful" do
-        assert_equal 200, response.status
-      end
-
-      test "absence max should have been changed" do
-        @sector = Sector.where(city_hall_id: @city_hall.id).first
-        assert_equal "10", @sector.absence_max
-      end
-    end
-
-    describe "Unsuccessful resquest to update sector that doesn't exists" do
-      before do
-        put '/v1/sectors/222', params: {sector: {absence_max: "10"}}, 
-                                  headers: @auth_headers
-
-        @body = JSON.parse(response.body)
-        @resp_token = response.headers['access-token']
-        @resp_client_id = response.headers['client']
-        @resp_expiry = response.headers['expiry']
-        @resp_uid = response.headers['uid']
-      end
-
-      it "should not be successful" do
-        assert_equal 400, response.status
-      end
-
-      it "should return an error message" do
-        assert_not_empty @body['errors']
-      end
-    end
-
-    describe "Unsuccessful request to update sector without required field" do
-      before do
-        @sector = Sector.where(city_hall_id: @city_hall.id).first
-
-        put '/v1/sectors/' + @sector.id.to_s, 
-                              params: {sector: {city_hall_id: nil}},
-                              headers: @auth_headers
-
-        @body = JSON.parse(response.body)
-        @resp_token = response.headers['access-token']
-        @resp_client_id = response.headers['client']
-        @resp_expiry = response.headers['expiry']
-        @resp_uid = response.headers['uid']
-      end
-
-      it "should not be successful" do
-        assert_equal 422, response.status
-      end
-
-      it "should return an error message" do
-        assert_not_empty @body['name']
-      end
-    end
-  end
+ end
 end

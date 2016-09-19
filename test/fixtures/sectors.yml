@@ -1,0 +1,10 @@
+sector_1:
+  active: true
+  city_hall_id: 111
+  name: "Setor 2"
+  absence_max: 1
+  blocking_days: 3
+  cancel_limit: 6
+  description: "fixture sector"
+  schedules_by_sector: 2 
+
