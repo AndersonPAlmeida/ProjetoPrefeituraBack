@@ -1,4 +1,5 @@
 class ServicePlace < ApplicationRecord
+
   # Associations #
   belongs_to :city_hall
   has_many :professionals_service_places
