@@ -12,6 +12,7 @@ Rails.application.routes.draw do
       resources :professionals
       resources :sectors
       resources :service_places
+      resources :service_types
     end
   end
 end

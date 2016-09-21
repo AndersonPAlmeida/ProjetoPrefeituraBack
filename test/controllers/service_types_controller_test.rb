@@ -24,7 +24,17 @@ class SectorsControllerTest < ActionDispatch::IntegrationTest
 				active: true,
 				block_text: "hello") 
 
+      @sector = Sector.new(active: true, 
+		name: "Setor 1", 
+		absence_max: 1, 
+		blocking_days: 2, 
+		cancel_limit: 3, 
+		description: "the number one", 
+		schedules_by_sector: 3)
+
       @city_hall.save!
+      @sector.city_hall = @city_hall
+      @sector.save!
       @citizen.active = true
       @account.save!
       @citizen.account_id = @account.id
@@ -37,18 +47,13 @@ class SectorsControllerTest < ActionDispatch::IntegrationTest
       @expiry    = @auth_headers['expiry']
     end
 
-    describe "Successful request to create sector" do
+    describe "Successful request to create service type" do
       before do
-        @number_of_sectors = Sector.count
-        post '/v1/sectors', params: { sector: { 
+        @number_of_service_types = ServiceType.count
+        post '/v1/service_types', params: { service_type: { 
 		active: true, 
-		city_hall_id: @city_hall.id,
-		name: "Setor 1", 
-		absence_max: 1, 
-		blocking_days: 2, 
-		cancel_limit: 3, 
-		description: "the number one", 
-		schedules_by_sector: 3 
+		sector_id: @sector.id,
+		description: "type one", 
 	}}, headers: @auth_headers
         @body = JSON.parse(response.body)
         @resp_token = response.headers['access-token']
@@ -61,21 +66,21 @@ class SectorsControllerTest < ActionDispatch::IntegrationTest
         assert_equal 201, response.status
       end
 
-      it "should correspond to the created sector" do
-        assert_equal "Setor 1", @body["name"]
+      it "should correspond to the created service type" do
+        assert_equal "type one", @body["description"]
       end
 
       it "should correspond to the information in the database" do
-        assert_equal "the number one", Sector.where(city_hall_id: @city_hall.id).first.description
+        assert_equal "type one", ServiceType.where(sector_id: @sector.id).first.description
       end
 
-      it "should create a sector" do
-        assert_equal @number_of_sectors + 1, Sector.count
+      it "should create a service type" do
+        assert_equal @number_of_service_types + 1, ServiceType.count
       end
 
-      describe "Successful request to show all sectors" do
+      describe "Successful request to show all service types" do
         before do 
-          get '/v1/sectors', params: {}, 
+          get '/v1/service_types', params: {}, 
                                 headers: @auth_headers
 
           @body = JSON.parse(response.body)
@@ -89,16 +94,16 @@ class SectorsControllerTest < ActionDispatch::IntegrationTest
           assert_equal 200, response.status
         end
 
-        it "should return every sector" do
-          assert_equal Sector.count, @body.size
+        it "should return every service type" do
+          assert_equal ServiceType.count, @body.size
         end
       end
 
-      describe "Successful request to show sector" do
+      describe "Successful request to show service type" do
         before do 
-          @sector = Sector.where(city_hall_id: @city_hall.id).first
+          @service_type = ServiceType.where(sector_id: @sector.id).first
 
-          get '/v1/sectors/' + @sector.id.to_s, params: {}, 
+          get '/v1/service_types/' + @service_type.id.to_s, params: {}, 
                                                       headers: @auth_headers
 
           @body = JSON.parse(response.body)
@@ -112,22 +117,21 @@ class SectorsControllerTest < ActionDispatch::IntegrationTest
           assert_equal 200, response.status
         end
 
-        it "should display the requested sector" do
-          assert_equal "Setor 1", @body["name"]
+        it "should display the requested service type" do
+          assert_equal "type one", @body["description"]
         end
 
         it "should correspond to the information in the database" do
-          assert_equal Sector.where(city_hall_id: @city_hall.id).first.name, 
-                       @body["name"]
+          assert_equal ServiceType.where(sector_id: @sector.id).first.name, @body["name"]
         end
       end
 
-      describe "Unsuccessful resquest to update sector with conflicting city_hall_id" do
+      describe "Unsuccessful resquest to update service type with conflicting sector_id" do
         before do
-          @sector = Sector.where(city_hall_id: @city_hall.id).first
+          @service_type = ServiceType.where(sector_id: @sector.id).first
 
-          put '/v1/sectors/' + @sector.id.to_s, 
-                                params: {sector: {city_hall_id: "1"}},
+          put '/v1/service_types/' + @service_type.id.to_s, 
+                                params: {service_type: {sector_id: "222"}},
                                 headers: @auth_headers
 
           @body = JSON.parse(response.body)
@@ -147,9 +151,9 @@ class SectorsControllerTest < ActionDispatch::IntegrationTest
       end
     end
 
-    describe "Unsuccessful request to show sector that doesn't exists" do
+    describe "Unsuccessful request to show service type that doesn't exists" do
       before do 
-        get '/v1/sectors/222', params: {}, 
+        get '/v1/service_types/222', params: {}, 
                                   headers: @auth_headers
 
         @body = JSON.parse(response.body)
@@ -170,10 +174,10 @@ class SectorsControllerTest < ActionDispatch::IntegrationTest
 
     describe "Successful request to update sector" do
       before do
-        @sector = Sector.where(city_hall_id: 111).first
+        @service_type = ServiceType.where(sector_id: @sector.id).first
 
-        put '/v1/sectors/' + @sector.id.to_s,
-                                params: {sector: {absence_max: "10"}}, 
+        put '/v1/service_types/' + @service_type.id.to_s,
+                                params: {service_type: {description: "type one v2"}}, 
                                 headers: @auth_headers
 
         @resp_token = response.headers['access-token']
@@ -187,15 +191,15 @@ class SectorsControllerTest < ActionDispatch::IntegrationTest
         assert_equal 200, response.status
       end
 
-      test "absence max should have been changed" do
-        @sector = Sector.where(city_hall_id: 111).first
-        assert_equal 10, @sector.absence_max
+      test "description should have been changed" do
+        @service_type = ServiceType.where(sector_id: @sector.id).first
+        assert_equal "type one v2", @service_type.description
       end
     end
 
     describe "Unsuccessful resquest to update sector that doesn't exists" do
       before do
-        put '/v1/sectors/222', params: {sector: {absence_max: "10"}}, 
+        put '/v1/service_types/222', params: {service_type: {description: "must fail"}}, 
                                   headers: @auth_headers
 
         @body = JSON.parse(response.body)
@@ -214,12 +218,12 @@ class SectorsControllerTest < ActionDispatch::IntegrationTest
       end
     end
 
-    describe "Unsuccessful request to update sector without required field" do
+    describe "Unsuccessful request to update service_type without required field" do
       before do
-        @sector = Sector.where(city_hall_id: 111).first
+        @service_type = ServiceType.where(sector_id: @sector.id).first
 
-        put '/v1/sectors/' + @sector.id.to_s, 
-                              params: {sector: {city_hall_id: nil}},
+        put '/v1/service_types/' + @sector.id.to_s, 
+                              params: {service_type: {sector_id: nil}},
                               headers: @auth_headers
 
         @body = JSON.parse(response.body)
@@ -238,12 +242,12 @@ class SectorsControllerTest < ActionDispatch::IntegrationTest
       end
     end
  
-    describe "Successful request to delete sector" do
+    describe "Successful request to delete service type" do
       before do
-        @number_of_sectors = Sector.all_active.count
-        @sector = Sector.where(city_hall_id: 111).first
+        @number_of_service_types = ServiceType.all_active.count
+        @service_type = ServiceType.where(sector_id: 111).first
 
-        delete '/v1/sectors/' + @sector.id.to_s, 
+        delete '/v1/service_types/' + @service_type.id.to_s, 
                                   params: {}, 
                                   headers: @auth_headers
 
@@ -258,20 +262,20 @@ class SectorsControllerTest < ActionDispatch::IntegrationTest
       end
 
       it "should have been deleted" do
-        assert_not Sector.where(id: @sector.id).first.active
+        assert_not ServiceType.where(id: @service_type.id).first.active
       end
 
       test "number of sectors should be decreased" do
-        assert_equal @number_of_sectors, Sector.all_active.count + 1
+        assert_equal @number_of_service_types, ServiceType.all_active.count + 1
       end
     end
 
-    describe "Unsuccessful request to delete sector that doesn't exists" do
+    describe "Unsuccessful request to delete service type that doesn't exists" do
 
       before do 
-        @number_of_sectors = Sector.all_active.count
+        @number_of_service_types = ServiceType.all_active.count
 
-        delete '/v1/sectors/222', params: {}, 
+        delete '/v1/service_types/222', params: {}, 
                                      headers: @auth_headers
 
         @body = JSON.parse(response.body)
@@ -289,8 +293,8 @@ class SectorsControllerTest < ActionDispatch::IntegrationTest
         assert_not_empty @body['errors']
       end
 
-      test "number of sectors should not be decreased" do
-        assert_equal @number_of_sectors, Sector.all_active.count
+      test "number of service types should not be decreased" do
+        assert_equal @number_of_service_types, ServiceType.all_active.count
       end
     end
   end
