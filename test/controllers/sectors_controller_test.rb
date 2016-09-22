@@ -147,7 +147,7 @@ class SectorsControllerTest < ActionDispatch::IntegrationTest
       end
     end
 
-    describe "Unsuccessful request to show sector that doesn't exists" do
+    describe "Unsuccessful request to show sector that doesn't exist" do
       before do 
         get '/v1/sectors/222', params: {}, 
                                   headers: @auth_headers

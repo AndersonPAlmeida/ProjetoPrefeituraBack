@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class SectorsControllerTest < ActionDispatch::IntegrationTest
+class ServiceTypesControllerTest < ActionDispatch::IntegrationTest
   describe "Token access" do
     before do
       @citizen = Citizen.new(cpf: "10845922904", 
@@ -29,7 +29,7 @@ class SectorsControllerTest < ActionDispatch::IntegrationTest
 		absence_max: 1, 
 		blocking_days: 2, 
 		cancel_limit: 3, 
-		description: "the number one", 
+		description: "number one", 
 		schedules_by_sector: 3)
 
       @city_hall.save!
@@ -50,17 +50,21 @@ class SectorsControllerTest < ActionDispatch::IntegrationTest
     describe "Successful request to create service type" do
       before do
         @number_of_service_types = ServiceType.count
-        post '/v1/service_types', params: { service_type: { 
-		active: true, 
-		sector_id: @sector.id,
-		description: "type one", 
-	}}, headers: @auth_headers
+
+	post '/v1/service_types', params: {service_type: {
+                active: true,
+                sector_id: @sector.id,
+                description: "type one"
+        }}, headers: @auth_headers
+
+
         @body = JSON.parse(response.body)
         @resp_token = response.headers['access-token']
         @resp_client_id = response.headers['client']
         @resp_expiry = response.headers['expiry']
         @resp_uid = response.headers['uid']
       end
+
 
       it "should be successful" do
         assert_equal 201, response.status
@@ -122,7 +126,7 @@ class SectorsControllerTest < ActionDispatch::IntegrationTest
         end
 
         it "should correspond to the information in the database" do
-          assert_equal ServiceType.where(sector_id: @sector.id).first.name, @body["name"]
+          assert_equal ServiceType.where(sector_id: @sector.id).first.description, @body["description"]
         end
       end
 
@@ -149,152 +153,81 @@ class SectorsControllerTest < ActionDispatch::IntegrationTest
           assert_not_empty @body['errors']
         end
       end
-    end
 
-    describe "Unsuccessful request to show service type that doesn't exists" do
-      before do 
-        get '/v1/service_types/222', params: {}, 
+      describe "Successful request to update sector" do
+        before do
+          @service_type = ServiceType.where(sector_id: @sector.id).first
+
+          put '/v1/service_types/' + @service_type.id.to_s,
+                                  params: {service_type: {description: "type one v2"}}, 
                                   headers: @auth_headers
 
-        @body = JSON.parse(response.body)
-        @resp_token = response.headers['access-token']
-        @resp_client_id = response.headers['client']
-        @resp_expiry = response.headers['expiry']
-        @resp_uid = response.headers['uid']
+          @resp_token = response.headers['access-token']
+          @resp_client_id = response.headers['client']
+          @resp_expiry = response.headers['expiry']
+          @resp_uid = response.headers['uid']
+
+        end
+
+        it "should be successful" do
+          assert_equal 200, response.status
+        end
+
+        test "description should have been changed" do
+          @service_type = ServiceType.where(sector_id: @sector.id).first
+          assert_equal "type one v2", @service_type.description
+        end
       end
 
-      it "should not be successful" do
-        assert_equal 400, response.status
-      end
-
-      it "should return an error message" do
-        assert_not_empty @body['errors']
-      end
-    end
-
-    describe "Successful request to update sector" do
-      before do
-        @service_type = ServiceType.where(sector_id: @sector.id).first
-
-        put '/v1/service_types/' + @service_type.id.to_s,
-                                params: {service_type: {description: "type one v2"}}, 
+      describe "Unsuccessful request to update service_type without required field" do
+        before do
+          @service_type = ServiceType.where(sector_id: @sector.id).first
+          put '/v1/service_types/' + @service_type.id.to_s, 
+                                params: {service_type: {sector_id: nil}},
                                 headers: @auth_headers
 
-        @resp_token = response.headers['access-token']
-        @resp_client_id = response.headers['client']
-        @resp_expiry = response.headers['expiry']
-        @resp_uid = response.headers['uid']
+          @body = JSON.parse(response.body)
+          @resp_token = response.headers['access-token']
+          @resp_client_id = response.headers['client']
+          @resp_expiry = response.headers['expiry']
+          @resp_uid = response.headers['uid']
+        end
 
+        it "should not be successful" do
+          assert_equal 422, response.status
+        end
+
+        it "should return an error message" do
+          assert_not_empty @body['errors']
+        end
       end
 
-      it "should be successful" do
-        assert_equal 200, response.status
-      end
+      describe "Successful request to delete service type" do
+        before do
+          @number_of_service_types = ServiceType.all_active.count
+          @service_type = ServiceType.where(sector_id: @sector.id).first
 
-      test "description should have been changed" do
-        @service_type = ServiceType.where(sector_id: @sector.id).first
-        assert_equal "type one v2", @service_type.description
-      end
-    end
+          delete '/v1/service_types/' + @service_type.id.to_s, 
+                                    params: {}, 
+                                    headers: @auth_headers
 
-    describe "Unsuccessful resquest to update sector that doesn't exists" do
-      before do
-        put '/v1/service_types/222', params: {service_type: {description: "must fail"}}, 
-                                  headers: @auth_headers
-
-        @body = JSON.parse(response.body)
-        @resp_token = response.headers['access-token']
-        @resp_client_id = response.headers['client']
-        @resp_expiry = response.headers['expiry']
-        @resp_uid = response.headers['uid']
-      end
-
-      it "should not be successful" do
-        assert_equal 400, response.status
-      end
-
-      it "should return an error message" do
-        assert_not_empty @body['errors']
-      end
-    end
-
-    describe "Unsuccessful request to update service_type without required field" do
-      before do
-        @service_type = ServiceType.where(sector_id: @sector.id).first
-
-        put '/v1/service_types/' + @sector.id.to_s, 
-                              params: {service_type: {sector_id: nil}},
-                              headers: @auth_headers
-
-        @body = JSON.parse(response.body)
-        @resp_token = response.headers['access-token']
-        @resp_client_id = response.headers['client']
-        @resp_expiry = response.headers['expiry']
-        @resp_uid = response.headers['uid']
-      end
-
-      it "should not be successful" do
-        assert_equal 422, response.status
-      end
-
-      it "should return an error message" do
-        assert_not_empty @body['errors']
-      end
-    end
- 
-    describe "Successful request to delete service type" do
-      before do
-        @number_of_service_types = ServiceType.all_active.count
-        @service_type = ServiceType.where(sector_id: 111).first
-
-        delete '/v1/service_types/' + @service_type.id.to_s, 
-                                  params: {}, 
-                                  headers: @auth_headers
-
-        @resp_token = response.headers['access-token']
-        @resp_client_id = response.headers['client']
-        @resp_expiry = response.headers['expiry']
-        @resp_uid = response.headers['uid']
-      end
+          @resp_token = response.headers['access-token']
+          @resp_client_id = response.headers['client']
+          @resp_expiry = response.headers['expiry']
+          @resp_uid = response.headers['uid']
+        end
      
-      it "should be successful" do
-        assert_equal 204, response.status
-      end
+        it "should be successful" do
+          assert_equal 204, response.status
+        end
 
-      it "should have been deleted" do
-        assert_not ServiceType.where(id: @service_type.id).first.active
-      end
+        it "should have been deleted" do
+          assert_not ServiceType.where(id: @service_type.id).first.active
+        end
 
-      test "number of sectors should be decreased" do
-        assert_equal @number_of_service_types, ServiceType.all_active.count + 1
-      end
-    end
-
-    describe "Unsuccessful request to delete service type that doesn't exists" do
-
-      before do 
-        @number_of_service_types = ServiceType.all_active.count
-
-        delete '/v1/service_types/222', params: {}, 
-                                     headers: @auth_headers
-
-        @body = JSON.parse(response.body)
-        @resp_token = response.headers['access-token']
-        @resp_client_id = response.headers['client']
-        @resp_expiry = response.headers['expiry']
-        @resp_uid = response.headers['uid']
-      end
-
-      it "should not be successful" do
-        assert_equal 400, response.status
-      end
-
-      it "should return an error message" do
-        assert_not_empty @body['errors']
-      end
-
-      test "number of service types should not be decreased" do
-        assert_equal @number_of_service_types, ServiceType.all_active.count
+        test "number of sectors should be decreased" do
+          assert_equal @number_of_service_types, ServiceType.all_active.count + 1
+        end
       end
     end
   end
