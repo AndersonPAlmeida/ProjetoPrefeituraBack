@@ -10,6 +10,7 @@ Rails.application.routes.draw do
       resources :city_halls
       resources :professionals
       resources :service_places
+      post "validate_cep" => "cep#validate"
     end
   end
 end
