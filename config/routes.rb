@@ -6,6 +6,7 @@ Rails.application.routes.draw do
         registrations: 'api/v1/accounts/registrations',
         sessions:      'api/v1/accounts/sessions'
       }
+
       resources :citizens
       resources :city_halls
       resources :professionals

@@ -1,6 +1,6 @@
 class CityHall < ApplicationRecord
 
-  # Relations #
+  # Associations #
   has_many :service_places
 
   # Validations #

@@ -1,5 +1,5 @@
 module Api::V1
-  class CepController < ApiController
+  class CepController < ApplicationController
 
     # POST /validate_cep
     def validate
