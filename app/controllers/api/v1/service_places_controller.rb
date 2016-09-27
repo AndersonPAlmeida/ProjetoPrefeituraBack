@@ -1,5 +1,5 @@
 module Api::V1
-	class ServicePlacesController < ApplicationController
+	class ServicePlacesController < ApiController
 	  before_action :set_service_place, only: [:show, :update, :destroy]
 
 	  # GET /service_places
