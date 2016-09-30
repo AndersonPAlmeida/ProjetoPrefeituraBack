@@ -8,6 +8,7 @@ Rails.application.routes.draw do
       }
       resources :citizens
       resources :city_halls
+      resources :solicitations
     end
   end
 end

@@ -3,6 +3,7 @@ class City < ApplicationRecord
   # Associations #
   has_many :city_halls
   has_many :citizens 
+  has_many :solicitations
   belongs_to :state
 
   # Validations #
