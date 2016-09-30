@@ -16,6 +16,11 @@ require "rails/test_unit/railtie"
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
 
+Correios::CEP.configure do |config|
+  config.log_enabled = false   # It disables the log
+  config.logger = Rails.logger # It uses Rails logger
+end
+
 module BackEndServer
   class Application < Rails::Application
     # Settings in config/environments/* take precedence over those specified here.

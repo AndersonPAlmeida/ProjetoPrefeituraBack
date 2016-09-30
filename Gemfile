@@ -13,6 +13,9 @@ gem 'puma', '~> 3.0'
 gem 'devise'
 gem 'devise_token_auth'
 
+# Provides authorization methods
+gem 'pundit'
+
 # Provides a clean layer between the model and the controller that 
 # lets us to call to_json or as_json on the ActiveRecord object or 
 # collection as normal, while outputing our desired API format.
@@ -35,6 +38,9 @@ gem 'rack-attack'
 
 # Use Rack CORS for handling Cross-Origin Resource Sharing (CORS), making cross-origin AJAX possible
 gem 'rack-cors'
+
+# Get Brazilian address by zipcode, directly from Correios database.
+gem 'correios-cep'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console

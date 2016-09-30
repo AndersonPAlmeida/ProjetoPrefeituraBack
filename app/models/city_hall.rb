@@ -1,4 +1,8 @@
 class CityHall < ApplicationRecord
+
+  # Associations #
+  has_many :service_places
+
   # Validations #
   validates_presence_of     :name, 
                             :cep, 

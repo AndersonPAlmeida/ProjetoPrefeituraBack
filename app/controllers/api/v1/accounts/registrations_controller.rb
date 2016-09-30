@@ -102,6 +102,17 @@ module Api::V1
       end
     end
 
+    # Overrides DeviseTokenAuth's RegistrationsController's
+    # render_create_success method in order to render account
+    # informations with serializer
+    def render_create_success
+      render json: @resource
+      #render json: {
+      #  status: 'success',
+      #  data:   @resource
+      #}
+    end
+
     # Overrides DeviseTokenAuth's RegistrationsController's 
     # render_create_error_email_already_exists method in order
     # to adapt to @citizen.cpf already exists
