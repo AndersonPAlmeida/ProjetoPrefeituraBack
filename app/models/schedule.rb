@@ -2,8 +2,8 @@ class Schedule < ApplicationRecord
   # Associations #
   belongs_to :situation
   belongs_to :shift
-  belongs_to :citizen
   belongs_to :service_place
+  belongs_to :account, optional: true
   
   # @return list of schedule's columns
   def self.keys

@@ -129,8 +129,6 @@ class Api::V1::ShiftsControllerTest < ActionDispatch::IntegrationTest
       describe "Succesful request to show all shifts" do
         before do
 
-          @shift = Shift.where(service_place_id: @service_place.id).first
-	
           get '/v1/shifts/', params: {},
 			     headers: @auth_headers
           @body = JSON.parse(response.body)

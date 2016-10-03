@@ -131,20 +131,20 @@ ActiveRecord::Schema.define(version: 20160927133229) do
   end
 
   create_table "schedules", force: :cascade do |t|
-    t.integer  "shift_id",             null: false
-    t.integer  "situation_id",         null: false
-    t.integer  "service_place_id",     null: false
+    t.integer  "shift_id",               null: false
+    t.integer  "situation_id",           null: false
+    t.integer  "service_place_id",       null: false
     t.integer  "account_id"
-    t.integer  "citizen_ajax_id",      null: false
-    t.integer  "professional_ajax_id", null: false
-    t.integer  "reminder_read",        null: false
-    t.datetime "service_start_time",   null: false
-    t.datetime "service_end_time",     null: false
+    t.integer  "citizen_ajax_read",      null: false
+    t.integer  "professional_ajax_read", null: false
+    t.integer  "reminder_read",          null: false
+    t.datetime "service_start_time",     null: false
+    t.datetime "service_end_time",       null: false
     t.string   "note"
     t.integer  "reminder_email_sent"
     t.integer  "remainder_time"
-    t.datetime "created_at",           null: false
-    t.datetime "updated_at",           null: false
+    t.datetime "created_at",             null: false
+    t.datetime "updated_at",             null: false
     t.index ["account_id"], name: "index_schedules_on_account_id", using: :btree
     t.index ["service_place_id"], name: "index_schedules_on_service_place_id", using: :btree
     t.index ["shift_id"], name: "index_schedules_on_shift_id", using: :btree
