@@ -17,6 +17,7 @@ module Api::V1
 	      }, status: 400
 	    else
 	      render json: @schedule
+	    end
 	  end
 
 	  # POST /schedules
