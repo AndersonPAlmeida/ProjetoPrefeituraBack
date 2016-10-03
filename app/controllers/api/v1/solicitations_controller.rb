@@ -11,7 +11,13 @@ module Api::V1
 
     # GET /solicitations/1
     def show
-      render json: @solicitation
+      if @solicitation.nil?
+        render json: {
+          errors: ["Solicitation #{params[:id]} does not exist."]
+        }, status: 404
+      else
+        render json: @solicitation
+      end
     end
 
     # POST /solicitations
@@ -19,7 +25,7 @@ module Api::V1
       @solicitation = Solicitation.new(solicitation_params)
 
       if @solicitation.save
-        render json: @solicitation, status: :created, location: @solicitation
+        render json: @solicitation, status: :created#, location: @solicitation
       else
         render json: @solicitation.errors, status: :unprocessable_entity
       end
@@ -27,23 +33,39 @@ module Api::V1
 
     # PATCH/PUT /solicitations/1
     def update
-      if @solicitation.update(solicitation_params)
-        render json: @solicitation
+      if @solicitation.nil?
+        render json: {
+          errors: ["Solicitation #{params[:id]} does not exist."]
+        }, status: 404
       else
-        render json: @solicitation.errors, status: :unprocessable_entity
+        if @solicitation.update(solicitation_params)
+          render json: @solicitation
+        else
+          render json: @solicitation.errors, status: :unprocessable_entity
+        end
       end
     end
 
     # DELETE /solicitations/1
     def destroy
-      @solicitation.destroy
+      if @solicitation.nil?
+        render json: {
+          errors: ["Solicitation #{params[:id]} does not exist."]
+        }, status: 404
+      else
+        @solicitation.destroy
+      end
     end
 
   private
 
     # Use callbacks to share common setup or constraints between actions.
     def set_solicitation
-      @solicitation = Solicitation.find(params[:id])
+      begin
+        @solicitation = Solicitation.find(params[:id])
+      rescue
+        @solicitation = nil
+      end
     end
 
     # Only allow a trusted parameter "white list" through.

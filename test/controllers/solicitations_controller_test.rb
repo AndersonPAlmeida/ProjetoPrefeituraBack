@@ -44,6 +44,7 @@ class SolicitationsControllerTest < ActionDispatch::IntegrationTest
           city_id: @curitiba.id,
           name: "Teste",
           cpf: "10845922904",
+          cep: "81530110",
           email: "teste@teste.com",
           phone: "12121212",
           sent: true,
@@ -97,8 +98,8 @@ class SolicitationsControllerTest < ActionDispatch::IntegrationTest
         before do 
           @solicitation = Solicitation.where(city_id: @curitiba.id).first
 
-          get '/v1/solicitation/' + @solicitation.id.to_s, params: {}, 
-                                                           headers: @auth_headers
+          get '/v1/solicitations/' + @solicitation.id.to_s, params: {}, 
+                                                            headers: @auth_headers
 
           @body = JSON.parse(response.body)
           @resp_token = response.headers['access-token']
@@ -119,6 +120,110 @@ class SolicitationsControllerTest < ActionDispatch::IntegrationTest
           assert_equal Solicitation.where(city_id: @curitiba.id).first.name, 
                        @body["name"]
         end
+      end
+
+      describe "Successful request to delete solicitation" do
+        before do
+          @number_of_solicitations = Solicitation.count
+          @solicitation = Solicitation.where(city_id: @curitiba.id).first
+
+          delete '/v1/solicitations/' + @solicitation.id.to_s,
+                                        params: {},
+                                        headers: @auth_headers
+
+          @resp_token = response.headers['access-token']
+          @resp_client_id = response.headers['client']
+          @resp_expiry = response.headers['expiry']
+          @resp_uid = response.headers['uid']
+        end
+
+        it "should be successful" do
+          assert_equal 204, response.status
+        end
+
+        test "number of solicitations decreased" do
+          assert_equal @number_of_solicitations - 1, Solicitation.count
+        end
+      end
+
+      describe "Successful request to update solicitation" do
+        before do
+          @solicitation = Solicitation.where(city_id: @curitiba.id).first
+
+          put '/v1/solicitations/' + @solicitation.id.to_s,
+                                     params: {solicitation: {
+                                       name: "Teste2"
+                                     }},
+                                     headers: @auth_headers
+
+          @resp_token = response.headers['access-token']
+          @resp_client_id = response.headers['client']
+          @resp_expiry = response.headers['expiry']
+          @resp_uid = response.headers['uid']
+        end
+
+        it "should be successful" do
+          assert_equal 200, response.status
+        end
+
+        it "should update solicitation" do
+          assert_equal "Teste2", Solicitation.where(city_id: @curitiba.id).first.name
+        end
+      end
+    end
+
+    describe "Unsuccessful request to show solicitation that doesn't exist" do
+      before do 
+        get '/v1/solicitations/222', params: {}, 
+                                     headers: @auth_headers
+
+        @body = JSON.parse(response.body)
+        @resp_token = response.headers['access-token']
+        @resp_client_id = response.headers['client']
+        @resp_expiry = response.headers['expiry']
+        @resp_uid = response.headers['uid']
+      end
+
+      it "should not be successful" do
+        assert_equal 404, response.status
+      end
+
+      it "should return an error message" do
+        assert_not_empty @body['errors']
+      end
+    end
+
+    describe "Unsuccessful request to create solicitation with invalid cpf" do
+      before do
+        @number_of_solicitations = Solicitation.count
+
+        post '/v1/solicitations', params: {solicitation: {
+          city_id: @curitiba.id,
+          name: "Teste",
+          cpf: "12345678910",
+          cep: "81530110",
+          email: "teste@teste.com",
+          phone: "12121212",
+          sent: true,
+        }}, headers: @auth_headers
+
+        @body = JSON.parse(response.body)
+        @resp_token = response.headers['access-token']
+        @resp_client_id = response.headers['client']
+        @resp_expiry = response.headers['expiry']
+        @resp_uid = response.headers['uid']
+      end
+
+      it "should not be successful" do
+        assert_equal 422, response.status
+      end
+
+      it "should not create a solicitation" do
+        assert_equal @number_of_solicitations, Solicitation.count
+      end
+
+      it "should return an error" do
+        assert_not_empty @body["cpf"]
       end
     end
   end

@@ -280,7 +280,7 @@ class CityHallsControllerTest < ActionDispatch::IntegrationTest
       end
     end
 
-    describe "Unsuccessful request to show city hall that doesn't exists" do
+    describe "Unsuccessful request to delete city hall that doesn't exists" do
       before do 
         @number_of_city_halls = CityHall.all_active.count
 
