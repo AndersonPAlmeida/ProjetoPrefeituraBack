@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160826131632) do
+ActiveRecord::Schema.define(version: 20160928124646) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -32,6 +32,11 @@ ActiveRecord::Schema.define(version: 20160826131632) do
     t.datetime "updated_at"
     t.index ["reset_password_token"], name: "index_accounts_on_reset_password_token", unique: true, using: :btree
     t.index ["uid"], name: "index_accounts_on_uid", unique: true, using: :btree
+  end
+
+  create_table "accounts_service_places", id: false, force: :cascade do |t|
+    t.integer "account_id",       null: false
+    t.integer "service_place_id", null: false
   end
 
   create_table "cities", force: :cascade do |t|
@@ -99,6 +104,65 @@ ActiveRecord::Schema.define(version: 20160826131632) do
     t.index ["city_id"], name: "index_city_halls_on_city_id", using: :btree
   end
 
+  create_table "occupations", force: :cascade do |t|
+    t.string   "description"
+    t.string   "name"
+    t.boolean  "active"
+    t.integer  "city_hall_id"
+    t.datetime "created_at",   null: false
+    t.datetime "updated_at",   null: false
+    t.index ["city_hall_id"], name: "index_occupations_on_city_hall_id", using: :btree
+  end
+
+  create_table "professionals", force: :cascade do |t|
+    t.string   "registration"
+    t.boolean  "active",        default: true, null: false
+    t.datetime "created_at",                   null: false
+    t.datetime "updated_at",                   null: false
+    t.integer  "account_id"
+    t.integer  "occupation_id"
+    t.index ["account_id"], name: "index_professionals_on_account_id", using: :btree
+    t.index ["occupation_id"], name: "index_professionals_on_occupation_id", using: :btree
+  end
+
+  create_table "professionals_service_places", id: false, force: :cascade do |t|
+    t.integer "professional_id",                 null: false
+    t.integer "service_place_id",                null: false
+    t.string  "role",                            null: false
+    t.boolean "active",           default: true, null: false
+  end
+
+  create_table "service_places", force: :cascade do |t|
+    t.string   "name",                                         null: false
+    t.string   "cep",                limit: 10
+    t.string   "neighborhood",                                 null: false
+    t.string   "address_street",                               null: false
+    t.string   "address_number",     limit: 10,                null: false
+    t.string   "address_complement"
+    t.string   "phone1",             limit: 13
+    t.string   "phone2",             limit: 13
+    t.string   "email"
+    t.string   "url"
+    t.boolean  "active",                        default: true, null: false
+    t.datetime "created_at",                                   null: false
+    t.datetime "updated_at",                                   null: false
+    t.integer  "city_hall_id"
+    t.index ["city_hall_id"], name: "index_service_places_on_city_hall_id", using: :btree
+  end
+
+  create_table "solicitations", force: :cascade do |t|
+    t.integer  "city_id"
+    t.string   "name"
+    t.string   "cpf"
+    t.string   "email"
+    t.string   "cep"
+    t.string   "phone"
+    t.boolean  "sent"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["city_id"], name: "index_solicitations_on_city_id", using: :btree
+  end
+
   create_table "states", force: :cascade do |t|
     t.string   "abbreviation", limit: 2, null: false
     t.string   "ibge_code",              null: false
@@ -110,4 +174,6 @@ ActiveRecord::Schema.define(version: 20160826131632) do
   add_foreign_key "cities", "states"
   add_foreign_key "citizens", "accounts"
   add_foreign_key "city_halls", "cities"
+  add_foreign_key "professionals", "occupations"
+  add_foreign_key "solicitations", "cities"
 end
