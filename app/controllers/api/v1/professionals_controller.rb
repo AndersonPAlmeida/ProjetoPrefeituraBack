@@ -58,16 +58,19 @@ module Api::V1
       end
 	  end
 
-	  private
+  private
 
-	    # Use callbacks to share common setup or constraints between actions.
-	    def set_professional
-	      @professional = Professional.find(params[:id])
-	    end
+	  # Use callbacks to share common setup or constraints between actions.
+	  def set_professional
+	    @professional = Professional.find(params[:id])
+	  end
 
-	    # Only allow a trusted parameter "white list" through.
-	    def professional_params
-	      params.require(:professional).permit(:registration, :active)
-	    end
+	  # Only allow a trusted parameter "white list" through.
+	  def professional_params
+	    params.require(:professional).permit(
+        :registration, 
+        :active
+      )
+	  end
 	end
 end

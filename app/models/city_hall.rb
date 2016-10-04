@@ -23,7 +23,7 @@ class CityHall < ApplicationRecord
 
   validates_numericality_of :schedule_period, 
                             :previous_notice, greater_than: 0, 
-                            less_than_or_equal_to: 2000000000
+                             less_than_or_equal_to: 2000000000
 
 
   validates_length_of       :phone1, 

@@ -70,7 +70,15 @@ module Api::V1
 
     # Only allow a trusted parameter "white list" through.
     def solicitation_params
-      params.require(:solicitation).permit(:city_id, :name, :cpf, :email, :cep, :phone, :sent)
+      params.require(:solicitation).permit(
+        :city_id, 
+        :name, 
+        :cpf, 
+        :email, 
+        :cep, 
+        :phone, 
+        :sent
+      )
     end
   end
 end

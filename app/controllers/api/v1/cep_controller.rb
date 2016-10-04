@@ -18,7 +18,9 @@ module Api::V1
 
     # Only allow a trusted parameter "white list" through.
     def cep_params
-      params.require(:cep).permit(:number)
+      params.require(:cep).permit(
+        :number
+      )
     end
   end
 end

@@ -14,18 +14,11 @@ class ServicePlace < ApplicationRecord
 
   validates_length_of   :name, maximum: 255
   validates_length_of   :address_number, within: 0..10,
-			 allow_blank: true
+			                   allow_blank: true
 
   validates_numericality_of :address_number,
-			     only_integer: true,
-			     allow_blank: true
-
-  # @return list of service place's columns
-  def self.keys
-    return [ :active, :address_number, :address_street,
-	     :name, :neighborhood, :address_complement,
-	     :cep, :email, :phone1, :phone2, :url ] 
-  end
+                            only_integer: true,
+                            allow_blank: true
 
   # @return all active service places
   def self.all_active

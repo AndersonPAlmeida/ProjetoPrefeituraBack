@@ -102,6 +102,8 @@ module Api::V1
       end
     end
 
+  protected
+
     # Overrides DeviseTokenAuth's RegistrationsController's
     # render_create_success method in order to render account
     # informations with serializer
