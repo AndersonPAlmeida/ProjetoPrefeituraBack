@@ -6,12 +6,12 @@ Rails.application.routes.draw do
         registrations: 'api/v1/accounts/registrations',
         sessions:      'api/v1/accounts/sessions'
       }
-
       resources :citizens
       resources :city_halls
-      resources :solicitations
+      resources :dependants
       resources :professionals
       resources :service_places
+      resources :solicitations
       post "validate_cep" => "cep#validate"
     end
   end
