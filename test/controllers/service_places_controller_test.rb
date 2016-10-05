@@ -16,8 +16,6 @@ class Api::V1::ServicePlacesControllerTest < ActionDispatch::IntegrationTest
                              password: "123mudar", 
                              password_confirmation: "123mudar") 
 
-      @professional = Professional.new(active: true, 
-                                       registration: "123") 
 
       @parana = State.new(abbreviation: "PR",
                           ibge_code: "41",
@@ -42,10 +40,18 @@ class Api::V1::ServicePlacesControllerTest < ActionDispatch::IntegrationTest
       @account.save! 
       @citizen.account_id = @account.id 
       @citizen.save! 
-      @professional.account_id = @account.id 
-      @professional.save!
 
       @city_hall.save!
+      @occupation = Occupation.new(description: "Teste",
+                                   name: "Tester",
+                                   active: true,
+                                   city_hall_id: @city_hall.id)
+      @occupation.save!
+      @professional = Professional.new(active: true, 
+                                       registration: "123",
+                                       occupation_id: @occupation.id) 
+      @professional.account_id = @account.id 
+      @professional.save!
 
       @service_place = ServicePlace.new(active: true, 
 					address_number: "123",
