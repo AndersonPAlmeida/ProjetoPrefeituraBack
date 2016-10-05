@@ -14,12 +14,21 @@ class ServiceTypesControllerTest < ActionDispatch::IntegrationTest
                              password: "123mudar",
                              password_confirmation: "123mudar")
 
+      @parana = State.new(abbreviation: "PR",
+                          ibge_code: "41",
+                          name: "Paraná")
+      @parana.save!
+
+      @curitiba = City.new(ibge_code: "4106902",
+                           name: "Curitiba",
+                           state_id: @parana.id)
+      @curitiba.save!
       @city_hall = CityHall.new(name: "Prefeitura de Curitiba",
 				cep: "81530110",
 				neighborhood: "Aasdsd",
 				address_street: "asdasd",
 				address_number: "100",
-				city_id: 4001,
+				city_id: @curitiba.id,
 				phone1: "12121212",
 				active: true,
 				block_text: "hello") 
