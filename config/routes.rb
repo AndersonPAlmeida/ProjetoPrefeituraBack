@@ -11,9 +11,11 @@ Rails.application.routes.draw do
       resources :dependants
       resources :occupations
       resources :professionals
+      resources :schedules
       resources :sectors
       resources :service_places
       resources :service_types
+      resources :shifts
       resources :solicitations
       post "validate_cep" => "cep#validate"
     end
