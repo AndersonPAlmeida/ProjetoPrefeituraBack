@@ -5,6 +5,7 @@ class ServicePlace < ApplicationRecord
   has_many :professionals_service_places
   has_many :professionals, :through => :professionals_service_places
   has_and_belongs_to_many :accounts
+  has_and_belongs_to_many :service_types
 
   # Validations #
   validates_presence_of :address_number

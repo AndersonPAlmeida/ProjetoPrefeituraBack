@@ -104,7 +104,7 @@ class SectorsControllerTest < ActionDispatch::IntegrationTest
           end
         end
 
-        describe "Successful request to show city hall" do
+        describe "Successful request to show sector" do
           before do 
             @sector = Sector.where(city_hall_id: @city_hall.id).first
 
@@ -297,7 +297,7 @@ class SectorsControllerTest < ActionDispatch::IntegrationTest
             assert_not_empty @body['errors']
           end
 
-          test "number of city halls should not be decreased" do
+          test "number of sectors should not be decreased" do
             assert_equal @number_of_sectors, Sector.all_active.count
           end
         end
