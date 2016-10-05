@@ -14,7 +14,7 @@ module Api::V1
       if @citizen.nil?
         render json: {
           errors: ["User #{params[:id]} does not exist."]
-        }, status: 400
+        }, status: 404
       else
         render json: @citizen
       end
@@ -37,7 +37,7 @@ module Api::V1
       if @citizen.nil?
         render json: {
           errors: ["User #{params[:id]} does not exist."]
-        }, status: 400
+        }, status: 404
       else
         if @citizen.update(citizen_params)
           render json: @citizen
@@ -52,7 +52,7 @@ module Api::V1
       if @citizen.nil?
         render json: {
           errors: ["User #{params[:id]} does not exist."]
-        }, status: 400
+        }, status: 404
       else
         @citizen.active = false
         @citizen.save!

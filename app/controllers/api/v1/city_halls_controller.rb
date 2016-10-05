@@ -14,7 +14,7 @@ module Api::V1
       if @city_hall.nil?
         render json: {
           errors: ["City hall #{params[:id]} does not exist."]
-        }, status: 400
+        }, status: 404
       else
         render json: @city_hall
       end
@@ -36,7 +36,7 @@ module Api::V1
       if @city_hall.nil?
         render json: {
           errors: ["City hall #{params[:id]} does not exist."]
-        }, status: 400
+        }, status: 404
       else
         if @city_hall.update(city_hall_params)
           render json: @city_hall
@@ -51,7 +51,7 @@ module Api::V1
       if @city_hall.nil?
         render json: {
           errors: ["City hall #{params[:id]} does not exist."]
-        }, status: 400
+        }, status: 404
       else
         @city_hall.active = false
         @city_hall.save!

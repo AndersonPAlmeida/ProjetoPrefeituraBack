@@ -73,7 +73,7 @@ class Api::V1::CitizensControllerTest < ActionDispatch::IntegrationTest
       end 
 
       it "should not be successful" do
-        assert_equal 400, response.status
+        assert_equal 404, response.status
       end
 
       it "should return an error message" do
@@ -144,7 +144,7 @@ class Api::V1::CitizensControllerTest < ActionDispatch::IntegrationTest
       end
      
       it "should not be successful" do
-        assert_equal 400, response.status
+        assert_equal 404, response.status
       end
 
       it "should return an error message" do
@@ -191,7 +191,7 @@ class Api::V1::CitizensControllerTest < ActionDispatch::IntegrationTest
       end
 
       it "should not be successful" do
-        assert_equal 400, response.status
+        assert_equal 404, response.status
       end
 
       it "should return an error message" do

@@ -14,7 +14,7 @@ module Api::V1
       if @professional.nil?
         render json: {
           errors: ["Professional #{params[:id]} does not exist."]
-        }, status: 400
+        }, status: 404
       else
   	    render json: @professional
       end
@@ -36,7 +36,7 @@ module Api::V1
       if @professional.nil?
         render json: {
           errors: ["Professional #{params[:id]} does not exist."]
-        }, status: 400
+        }, status: 404
       else
         if @professional.update(professional_params)
           render json: @professional
@@ -51,7 +51,7 @@ module Api::V1
       if @professional.nil?
         render json: {
           errors: ["Professional #{params[:id]} does not exist."]
-        }, status: 400
+        }, status: 404
       else
         @professional.active = false
         @professional.save!
