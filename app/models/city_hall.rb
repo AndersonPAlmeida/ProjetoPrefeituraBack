@@ -4,13 +4,13 @@ class CityHall < ApplicationRecord
   has_many :service_places
 
   # Validations #
-  validates_presence_of     :name, 
-                            :cep, 
+  validates_presence_of     :name,
+                            :cep,
                             :neighborhood,
-                            :address_street, 
+                            :address_street,
                             :address_number,
-                            :city_id, 
-                            :phone1, 
+                            :city_id,
+                            :phone1,
                             :schedule_period,
                             :previous_notice
   validates_presence_of     :block_text, if: :citizen_access_blocked?
@@ -18,19 +18,19 @@ class CityHall < ApplicationRecord
   validates_uniqueness_of   :city_id
 
   validates_inclusion_of    :active, in: [true, false]
-  validates_inclusion_of    :citizen_access, 
+  validates_inclusion_of    :citizen_access,
                             :citizen_register, in: [true, false]
 
-  validates_numericality_of :schedule_period, 
-                            :previous_notice, greater_than: 0, 
+  validates_numericality_of :schedule_period,
+                            :previous_notice, greater_than: 0,
                              less_than_or_equal_to: 2000000000
 
 
-  validates_length_of       :phone1, 
+  validates_length_of       :phone1,
                             :phone2, maximum: 14
-  validates_length_of       :name, 
-                            :neighborhood, 
-                            :address_street, 
+  validates_length_of       :name,
+                            :neighborhood,
+                            :address_street,
                             :address_complement, maximum: 255
   validates_length_of       :address_number, maximum: 10, allow_blank: true
 
@@ -40,7 +40,7 @@ class CityHall < ApplicationRecord
 
 private
 
-  # @return [boolean] check if citizen can access city hall 
+  # @return [boolean] check if citizen can access city hall
   def citizen_access_blocked?
     !self.citizen_access
   end

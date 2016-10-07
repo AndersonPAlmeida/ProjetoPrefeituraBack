@@ -3,11 +3,11 @@ require 'test_helper'
 class SectorsControllerTest < ActionDispatch::IntegrationTest
   describe "Token access" do
     before do
-      @citizen = Citizen.new(cpf: "10845922904", 
-                             birth_date: "Apr 18 1997", 
-                             cep: "1234567", 
+      @citizen = Citizen.new(cpf: "10845922904",
+                             birth_date: "Apr 18 1997",
+                             cep: "1234567",
                              email: "test@example.com",
-                             name: "Test Example", 
+                             name: "Test Example",
                              phone1: "(12)1212-1212",
                              rg: "1234567")
       @account = Account.new(uid: @citizen.cpf,
@@ -25,14 +25,14 @@ class SectorsControllerTest < ActionDispatch::IntegrationTest
       @joinville.save!
 
       @city_hall = CityHall.new(name: "Prefeitura de Curitiba",
-				cep: "81530110",
-				neighborhood: "Aasdsd",
-				address_street: "asdasd",
-				address_number: "100",
-				city_id: @joinville.id,
-				phone1: "12121212",
-				active: true,
-				block_text: "hello") 
+        cep: "81530110",
+        neighborhood: "Aasdsd",
+        address_street: "asdasd",
+        address_number: "100",
+        city_id: @joinville.id,
+        phone1: "12121212",
+        active: true,
+        block_text: "hello")
 
       @city_hall.save!
       @citizen.active = true
@@ -50,16 +50,16 @@ class SectorsControllerTest < ActionDispatch::IntegrationTest
     describe "Successful request to create sector" do
         before do
           @number_of_sectors = Sector.count
-          post '/v1/sectors', params: { sector: { 
-	  	  active: true, 
-		  city_hall_id: @city_hall.id,
-		  name: "Setor 1", 
-		  absence_max: 1, 
-		  blocking_days: 2, 
-		  cancel_limit: 3, 
-		  description: "the number one", 
-		  schedules_by_sector: 3 
-	  }}, headers: @auth_headers
+          post '/v1/sectors', params: { sector: {
+        active: true,
+      city_hall_id: @city_hall.id,
+      name: "Setor 1",
+      absence_max: 1,
+      blocking_days: 2,
+      cancel_limit: 3,
+      description: "the number one",
+      schedules_by_sector: 3
+    }}, headers: @auth_headers
           @body = JSON.parse(response.body)
           @resp_token = response.headers['access-token']
           @resp_client_id = response.headers['client']
@@ -84,8 +84,8 @@ class SectorsControllerTest < ActionDispatch::IntegrationTest
         end
 
         describe "Successful request to show all sectors" do
-          before do 
-            get '/v1/sectors', params: {}, 
+          before do
+            get '/v1/sectors', params: {},
                                headers: @auth_headers
 
             @body = JSON.parse(response.body)
@@ -105,10 +105,10 @@ class SectorsControllerTest < ActionDispatch::IntegrationTest
         end
 
         describe "Successful request to show sector" do
-          before do 
+          before do
             @sector = Sector.where(city_hall_id: @city_hall.id).first
 
-            get '/v1/sectors/' + @sector.id.to_s, params: {}, 
+            get '/v1/sectors/' + @sector.id.to_s, params: {},
                                                       headers: @auth_headers
 
             @body = JSON.parse(response.body)
@@ -127,7 +127,7 @@ class SectorsControllerTest < ActionDispatch::IntegrationTest
           end
 
           it "should correspond to the information in the database" do
-            assert_equal Sector.where(city_hall_id: @city_hall.id).first.name, 
+            assert_equal Sector.where(city_hall_id: @city_hall.id).first.name,
                          @body["name"]
           end
         end
@@ -136,7 +136,7 @@ class SectorsControllerTest < ActionDispatch::IntegrationTest
           before do
             @sector = Sector.where(city_hall_id: @city_hall.id).first
 
-            put '/v1/sectors/' + @sector.id.to_s, 
+            put '/v1/sectors/' + @sector.id.to_s,
                                 params: {sector: {city_hall_id: "1"}},
                                 headers: @auth_headers
 
@@ -157,8 +157,8 @@ class SectorsControllerTest < ActionDispatch::IntegrationTest
         end
 
         describe "Unsuccessful request to show sector that doesn't exists" do
-          before do 
-            get '/v1/sectors/222', params: {}, 
+          before do
+            get '/v1/sectors/222', params: {},
                                   headers: @auth_headers
 
             @body = JSON.parse(response.body)
@@ -169,7 +169,7 @@ class SectorsControllerTest < ActionDispatch::IntegrationTest
           end
 
           it "should not be successful" do
-            assert_equal 400, response.status
+            assert_equal 404, response.status
           end
 
           it "should return an error message" do
@@ -182,7 +182,7 @@ class SectorsControllerTest < ActionDispatch::IntegrationTest
             @sector = Sector.where(city_hall_id: @city_hall.id).first
 
             put '/v1/sectors/' + @sector.id.to_s,
-                                params: {sector: {absence_max: "10"}}, 
+                                params: {sector: {absence_max: "10"}},
                                 headers: @auth_headers
 
             @resp_token = response.headers['access-token']
@@ -203,7 +203,7 @@ class SectorsControllerTest < ActionDispatch::IntegrationTest
 
         describe "Unsuccessful resquest to update sector that doesn't exists" do
           before do
-            put '/v1/sectors/222', params: {sector: {absence_max: "10"}}, 
+            put '/v1/sectors/222', params: {sector: {absence_max: "10"}},
                                   headers: @auth_headers
 
             @body = JSON.parse(response.body)
@@ -214,7 +214,7 @@ class SectorsControllerTest < ActionDispatch::IntegrationTest
           end
 
           it "should not be successful" do
-            assert_equal 400, response.status
+            assert_equal 404, response.status
           end
 
           it "should return an error message" do
@@ -226,7 +226,7 @@ class SectorsControllerTest < ActionDispatch::IntegrationTest
           before do
             @sector = Sector.where(city_hall_id: @city_hall.id).first
 
-            put '/v1/sectors/' + @sector.id.to_s, 
+            put '/v1/sectors/' + @sector.id.to_s,
                               params: {sector: {city_hall_id: nil}},
                               headers: @auth_headers
 
@@ -245,14 +245,14 @@ class SectorsControllerTest < ActionDispatch::IntegrationTest
             assert_not_empty @body['errors']
           end
         end
- 
+
         describe "Successful request to delete sector" do
           before do
             @number_of_sectors = Sector.all_active.count
             @sector = Sector.where(city_hall_id: @city_hall.id).first
 
-            delete '/v1/sectors/' + @sector.id.to_s, 
-                                  params: {}, 
+            delete '/v1/sectors/' + @sector.id.to_s,
+                                  params: {},
                                   headers: @auth_headers
 
             @resp_token = response.headers['access-token']
@@ -260,7 +260,7 @@ class SectorsControllerTest < ActionDispatch::IntegrationTest
             @resp_expiry = response.headers['expiry']
             @resp_uid = response.headers['uid']
           end
-     
+
           it "should be successful" do
             assert_equal 204, response.status
           end
@@ -276,10 +276,10 @@ class SectorsControllerTest < ActionDispatch::IntegrationTest
 
         describe "Unsuccessful request to delete sector that doesn't exists" do
 
-          before do 
+          before do
             @number_of_sectors = Sector.all_active.count
 
-            delete '/v1/sectors/222', params: {}, 
+            delete '/v1/sectors/222', params: {},
                                      headers: @auth_headers
 
             @body = JSON.parse(response.body)
@@ -290,7 +290,7 @@ class SectorsControllerTest < ActionDispatch::IntegrationTest
           end
 
           it "should not be successful" do
-            assert_equal 400, response.status
+            assert_equal 404, response.status
           end
 
           it "should return an error message" do

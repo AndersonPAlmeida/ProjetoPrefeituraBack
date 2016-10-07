@@ -3,11 +3,11 @@ require 'test_helper'
 class OccupationsControllerTest < ActionDispatch::IntegrationTest
   describe "Token access" do
     before do
-      @citizen = Citizen.new(cpf: "10845922904", 
-                             birth_date: "Apr 18 1997", 
-                             cep: "1234567", 
+      @citizen = Citizen.new(cpf: "10845922904",
+                             birth_date: "Apr 18 1997",
+                             cep: "1234567",
                              email: "test@example.com",
-                             name: "Test Example", 
+                             name: "Test Example",
                              phone1: "(12)1212-1212",
                              rg: "1234567")
       @account = Account.new(uid: @citizen.cpf,
@@ -78,8 +78,8 @@ class OccupationsControllerTest < ActionDispatch::IntegrationTest
       end
 
       describe "Successful request to show all occupations" do
-        before do 
-          get '/v1/occupations', params: {}, 
+        before do
+          get '/v1/occupations', params: {},
                                  headers: @auth_headers
 
           @body = JSON.parse(response.body)
@@ -100,8 +100,8 @@ class OccupationsControllerTest < ActionDispatch::IntegrationTest
     end
 
     describe "Unsuccessful request to show occupation that doesn't exists" do
-      before do 
-        get '/v1/occupations/222', params: {}, 
+      before do
+        get '/v1/occupations/222', params: {},
                                    headers: @auth_headers
 
         @body = JSON.parse(response.body)
@@ -112,7 +112,7 @@ class OccupationsControllerTest < ActionDispatch::IntegrationTest
       end
 
       it "should not be successful" do
-        assert_equal 400, response.status
+        assert_equal 404, response.status
       end
 
       it "should return an error message" do
@@ -147,10 +147,10 @@ class OccupationsControllerTest < ActionDispatch::IntegrationTest
     end
 
     describe "Unsuccessful request to delete occupation that doesn't exists" do
-      before do 
+      before do
         @number_of_occupations = Occupation.all_active.count
 
-        delete '/v1/occupations/222', params: {}, 
+        delete '/v1/occupations/222', params: {},
                                       headers: @auth_headers
 
         @body = JSON.parse(response.body)
@@ -161,7 +161,7 @@ class OccupationsControllerTest < ActionDispatch::IntegrationTest
       end
 
       it "should not be successful" do
-        assert_equal 400, response.status
+        assert_equal 404, response.status
       end
 
       it "should return an error message" do
@@ -173,4 +173,4 @@ class OccupationsControllerTest < ActionDispatch::IntegrationTest
       end
     end
   end
-end 
+end
