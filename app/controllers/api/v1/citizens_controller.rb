@@ -73,24 +73,24 @@ module Api::V1
     # Only allow a trusted parameter "white list" through.
     def citizen_params
       params.require(:citizen).permit(
-        :birth_date, 
-        :name, 
+        :birth_date,
+        :name,
         :rg,
-        :address_complement, 
+        :address_complement,
         :address_number,
-        :address_street, 
-        :cep, 
-        :cpf, 
+        :address_street,
+        :cep,
+        :cpf,
         :email,
-        :neighborhood, 
-        :note, 
-        :pcd, 
+        :neighborhood,
+        :note,
+        :pcd,
         :phone1,
-        :phone2, 
+        :phone2,
         :photo_content_type,
-        :photo_file_name, 
+        :photo_file_name,
         :photo_file_size,
-        :photo_update_at, 
+        :photo_update_at,
         :account_id
       )
     end

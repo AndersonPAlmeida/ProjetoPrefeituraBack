@@ -1,5 +1,5 @@
 module Api::V1
-	class ProfessionalsController < ApiController 
+	class ProfessionalsController < ApiController
 	  before_action :set_professional, only: [:show, :update, :destroy]
 
 	  # GET /professionals
@@ -68,7 +68,7 @@ module Api::V1
 	  # Only allow a trusted parameter "white list" through.
 	  def professional_params
 	    params.require(:professional).permit(
-        :registration, 
+        :registration,
         :active
       )
 	  end

@@ -1,5 +1,5 @@
 module Api::V1
-	class ShiftsController < ApiController 
+	class ShiftsController < ApiController
 	  before_action :set_shift, only: [:show, :update, :destroy]
 
 	  # GET /shifts
@@ -14,7 +14,7 @@ module Api::V1
 	    if @shift.nil?
 	      render json: {
 	        errors: ["Shift #{params[:id]} does not exist."]
-	      }, status: 400
+	      }, status: 404
 	    else
 	      render json: @shift
 	    end
@@ -33,11 +33,17 @@ module Api::V1
 
 	  # PATCH/PUT /shifts/1
 	  def update
-	    if @shift.update(shift_params)
-	      render json: @shift
+      if @shift.nil?
+	      render json: {
+	        errors: ["Shift #{params[:id]} does not exist."]
+	      }, status: 404
 	    else
-	      render json: @shift.errors, status: :unprocessable_entity
-	    end
+  	    if @shift.update(shift_params)
+  	      render json: @shift
+  	    else
+  	      render json: @shift.errors, status: :unprocessable_entity
+  	    end
+      end
 	  end
 
 	  # DELETE /shifts/1
@@ -45,30 +51,36 @@ module Api::V1
 	    if @shift.nil?
 	      render json: {
 	        errors: ["Shift #{params[:id]} does not exist."]
-	      }, status: 400
+	      }, status: 404
 	    else
 	      @shift.active = false
 	      @shift.save!
 	    end
 	  end
 
-	  private
-	    # Use callbacks to share common setup or constraints between actions.
-	    def set_shift
-	      begin
-	        @shift = Shift.find(params[:id])
-	      rescue
-	        @shift = nil
-	      end
-	    end
+  private
+    # Use callbacks to share common setup or constraints between actions.
+    def set_shift
+      begin
+        @shift = Shift.find(params[:id])
+      rescue
+        @shift = nil
+      end
+    end
 
-	    # Only allow a trusted parameter "white list" through.
-	    def shift_params
-	      params.require(:shift).permit(:service_place_id, :service_type_id, 
-	                                    :next_shift_id, :professional_performer_id, 
-	                                    :professional_responsible_id, 
-	                                    :execution_start_time, :execution_end_time, 
-	                                    :service_amount, :notes)
-	    end
+    # Only allow a trusted parameter "white list" through.
+    def shift_params
+      params.require(:shift).permit(
+        :service_place_id,
+        :service_type_id,
+        :next_shift_id,
+        :professional_performer_id,
+        :professional_responsible_id,
+        :execution_start_time,
+        :execution_end_time,
+        :service_amount,
+        :notes
+      )
+    end
 	end
 end

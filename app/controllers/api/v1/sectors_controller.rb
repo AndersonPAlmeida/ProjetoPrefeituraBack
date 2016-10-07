@@ -1,5 +1,5 @@
 module Api::V1
-	class SectorsController < ApiController 
+	class SectorsController < ApiController
 	  before_action :set_sector, only: [:show, :update, :destroy]
 
 	  # GET /sectors
@@ -14,7 +14,7 @@ module Api::V1
 	    if @sector.nil?
 	      render json: {
 	        errors: ["Sector #{params[:id]} does not exist."]
-	      }, status: 400
+	      }, status: 404
 	    else
 	      render json: @sector
 	    end
@@ -35,15 +35,15 @@ module Api::V1
 	  def update
 	    if @sector.nil?
 	      render json: {
-		errors: ["Sector #{params[:id]} does not exist."]
-	      }, status: 400
+		      errors: ["Sector #{params[:id]} does not exist."]
+	      }, status: 404
 	    else
 	      if @sector.update(sector_params)
 	        render json: @sector
 	      else
 	        render json: {
-		  errors: [@sector.errors, status: :unprocessable_entity]
-		}, status: 422
+		        errors: [@sector.errors, status: :unprocessable_entity]
+		      }, status: 422
 	      end
 	    end
 	  end
@@ -52,8 +52,8 @@ module Api::V1
 	  def destroy
 	    if @sector.nil?
 	      render json: {
-		errors: ["Sector #{params[:id]} does not exist."]
-	      }, status: 400
+		      errors: ["Sector #{params[:id]} does not exist."]
+	      }, status: 404
 	    else
 	      @sector.active = false
 	      @sector.save!
@@ -61,18 +61,28 @@ module Api::V1
 	  end
 
 	  private
+
 	    # Use callbacks to share common setup or constraints between actions.
 	    def set_sector
 	      begin
 	        @sector = Sector.find(params[:id])
 	      rescue
-		@sector = nil
+		      @sector = nil
 	      end
 	    end
 
 	    # Only allow a trusted parameter "white list" through.
 	    def sector_params
-		params.require(:sector).permit(:active, :city_hall_id, :absence_max, :blocking_days, :cancel_limit, :description, :name, :schedules_by_sector);
+		    params.require(:sector).permit(
+          :active,
+          :city_hall_id,
+          :absence_max,
+          :blocking_days,
+          :cancel_limit,
+          :description,
+          :name,
+          :schedules_by_sector
+        );
 	    end
 	end
 end

@@ -14,7 +14,7 @@ module Api::V1
       if @occupation.nil?
         render json: {
           errors: ["Occupation #{params[:id]} does not exist."]
-        }, status: 400
+        }, status: 404
       else
         render json: @occupation
       end
@@ -37,7 +37,7 @@ module Api::V1
       if @occupation.nil?
         render json: {
           errors: ["Occupation #{params[:id]} does not exist."]
-        }, status: 400
+        }, status: 404
       else
         if @occupation.update(occupation_params)
           render json: @occupation
@@ -52,7 +52,7 @@ module Api::V1
       if @occupation.nil?
         render json: {
           errors: ["Occupation #{params[:id]} does not exist."]
-        }, status: 400
+        }, status: 404
       else
         @occupation.active = false
         @occupation.save!
@@ -71,8 +71,12 @@ module Api::V1
 
     # Only allow a trusted parameter "white list" through.
     def occupation_params
-      params.require(:occupation).permit(:description, :name, 
-                                         :active, :city_hall_id)
+      params.require(:occupation).permit(
+        :description,
+        :name,
+        :active,
+        :city_hall_id
+      )
     end
   end
 end

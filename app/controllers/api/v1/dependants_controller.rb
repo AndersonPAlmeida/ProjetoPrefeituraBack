@@ -11,7 +11,13 @@ module Api::V1
 
 	  # GET /dependants/1
 	  def show
-	    render json: @dependant
+      if @dependant.nil?
+        render json: {
+          errors: ["Dependant #{params[:id]} does not exist."]
+        }, status: 404
+      else
+	      render json: @dependant
+      end
 	  end
 
 	  # POST /dependants
@@ -27,29 +33,45 @@ module Api::V1
 
 	  # PATCH/PUT /dependants/1
 	  def update
-	    if @dependant.update(dependant_params)
-	      render json: @dependant
-	    else
-	      render json: @dependant.errors, status: :unprocessable_entity
-	    end
+      if @dependant.nil?
+        render json: {
+          errors: ["Dependant #{params[:id]} does not exist."]
+        }, status: 404
+      else
+  	    if @dependant.update(dependant_params)
+  	      render json: @dependant
+  	    else
+  	      render json: @dependant.errors, status: :unprocessable_entity
+  	    end
+      end
 	  end
 
 	  # DELETE /dependants/1
 	  def destroy
-	    @dependant.active = false 
-	    @dependant.deactivated = DateTime.now
-	    @dependant.save
+      if @dependant.nil?
+        render json: {
+          errors: ["Dependant #{params[:id]} does not exist."]
+        }, status: 404
+      else
+	      @dependant.active = false
+        @dependant.deactivated = DateTime.now
+	      @dependant.save
+      end
 	  end
 
-	  private
-	    # Use callbacks to share common setup or constraints between actions.
-	    def set_dependant
-	      @dependant = Dependant.find(params[:id])
-	    end
+  private
 
-	    # Only allow a trusted parameter "white list" through.
-	    def dependant_params
-		params.require(:dependant).permit(:deactivation, :active)
-	    end
+    # Use callbacks to share common setup or constraints between actions.
+    def set_dependant
+      @dependant = Dependant.find(params[:id])
+    end
+
+    # Only allow a trusted parameter "white list" through.
+    def dependant_params
+	    params.require(:dependant).permit(
+        :deactivation,
+        :active
+      )
+    end
 	end
 end
