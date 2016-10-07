@@ -1,7 +1,7 @@
 class Solicitation < ApplicationRecord
 
   # Associations #
-  belongs_to :city
+  belongs_to :city, optional: true
 
   # Validations #
   validates_presence_of   :cpf, :name, :email, :phone, :cep

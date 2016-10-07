@@ -2,7 +2,11 @@ class Citizen < ApplicationRecord
 
   # Associations #
   belongs_to :account
+  belongs_to :city
   has_one    :dependant
+
+  belongs_to :citizen, optional: true, :foreign_key => :responsible_id,
+             :class_name => "Citizen"
 
   # Validations #
   validates :cpf, cpf: true
