@@ -1,61 +1,61 @@
 module Api::V1
-	class SchedulesController < ApiController
-	  before_action :set_schedule, only: [:show, :update, :destroy]
+  class SchedulesController < ApiController
+    before_action :set_schedule, only: [:show, :update, :destroy]
 
-	  # GET /schedules
-	  def index
-	    @schedules = Schedule.all
+    # GET /schedules
+    def index
+      @schedules = Schedule.all
 
-	    render json: @schedules
-	  end
+      render json: @schedules
+    end
 
-	  # GET /schedules/1
-	  def show
-	    if @schedule.nil?
-	      render json: {
-	        errors: [" Schedule #{params[:id]} does not exist."]
-	      }, status: 404
-	    else
-	      render json: @schedule
-	    end
-	  end
+    # GET /schedules/1
+    def show
+      if @schedule.nil?
+        render json: {
+          errors: [" Schedule #{params[:id]} does not exist."]
+        }, status: 404
+      else
+        render json: @schedule
+      end
+    end
 
-	  # POST /schedules
-	  def create
-	    @schedule = Schedule.new(schedule_params)
+    # POST /schedules
+    def create
+      @schedule = Schedule.new(schedule_params)
 
-	    if @schedule.save
-	      render json: @schedule, status: :created
-	    else
-	      render json: @schedule.errors, status: :unprocessable_entity
-	    end
-	  end
+      if @schedule.save
+        render json: @schedule, status: :created
+      else
+        render json: @schedule.errors, status: :unprocessable_entity
+      end
+    end
 
-	  # PATCH/PUT /schedules/1
-	  def update
+    # PATCH/PUT /schedules/1
+    def update
       if @schedule.nil?
         render json: {
           errors: ["Schedule #{params[:id]} does not exist."]
         }, status: 404
       else
-  	    if @schedule.update(schedule_params)
-  	      render json: @schedule
-  	    else
-  	      render json: @schedule.errors, status: :unprocessable_entity
-  	    end
+        if @schedule.update(schedule_params)
+          render json: @schedule
+        else
+          render json: @schedule.errors, status: :unprocessable_entity
+        end
       end
-	  end
+    end
 
-	  # DELETE /schedules/1
-	  def destroy
+    # DELETE /schedules/1
+    def destroy
       if @schedule.nil?
         render json: {
           errors: ["Schedule #{params[:id]} does not exist."]
         }, status: 404
       else
-	      @schedule.destroy
+        @schedule.destroy
       end
-	  end
+    end
 
   private
 
@@ -76,7 +76,7 @@ module Api::V1
         :service_place_id,
         :account_id,
         :citizen_ajax_read,
-	      :professional_ajax_read,
+        :professional_ajax_read,
         :reminder_read,
         :service_start_time,
         :service_end_time,
@@ -85,5 +85,5 @@ module Api::V1
         :reminder_time
       )
     end
-	end
+  end
 end

@@ -1,79 +1,79 @@
 module Api::V1
-	class SectorsController < ApiController
-	  before_action :set_sector, only: [:show, :update, :destroy]
+  class SectorsController < ApiController
+    before_action :set_sector, only: [:show, :update, :destroy]
 
-	  # GET /sectors
-	  def index
-	    @sectors = Sector.all
+    # GET /sectors
+    def index
+      @sectors = Sector.all
 
-	    render json: @sectors
-	  end
+      render json: @sectors
+    end
 
-	  # GET /sectors/1
-	  def show
-	    if @sector.nil?
-	      render json: {
-	        errors: ["Sector #{params[:id]} does not exist."]
-	      }, status: 404
-	    else
-	      render json: @sector
-	    end
-	  end
+    # GET /sectors/1
+    def show
+      if @sector.nil?
+        render json: {
+          errors: ["Sector #{params[:id]} does not exist."]
+        }, status: 404
+      else
+        render json: @sector
+      end
+    end
 
-	  # POST /sectors
-	  def create
-	    @sector = Sector.new(sector_params)
+    # POST /sectors
+    def create
+      @sector = Sector.new(sector_params)
 
-	    if @sector.save
-	      render json: @sector, status: :created
-	    else
-	      render json: @sector.errors, status: :unprocessable_entity
-	    end
-	  end
+      if @sector.save
+        render json: @sector, status: :created
+      else
+        render json: @sector.errors, status: :unprocessable_entity
+      end
+    end
 
-	  # PATCH/PUT /sectors/1
-	  def update
-	    if @sector.nil?
-	      render json: {
-		      errors: ["Sector #{params[:id]} does not exist."]
-	      }, status: 404
-	    else
-	      if @sector.update(sector_params)
-	        render json: @sector
-	      else
-	        render json: {
-		        errors: [@sector.errors, status: :unprocessable_entity]
-		      }, status: 422
-	      end
-	    end
-	  end
+    # PATCH/PUT /sectors/1
+    def update
+      if @sector.nil?
+        render json: {
+          errors: ["Sector #{params[:id]} does not exist."]
+        }, status: 404
+      else
+        if @sector.update(sector_params)
+          render json: @sector
+        else
+          render json: {
+            errors: [@sector.errors, status: :unprocessable_entity]
+          }, status: 422
+        end
+      end
+    end
 
-	  # DELETE /sectors/1
-	  def destroy
-	    if @sector.nil?
-	      render json: {
-		      errors: ["Sector #{params[:id]} does not exist."]
-	      }, status: 404
-	    else
-	      @sector.active = false
-	      @sector.save!
-	    end
-	  end
+    # DELETE /sectors/1
+    def destroy
+      if @sector.nil?
+        render json: {
+          errors: ["Sector #{params[:id]} does not exist."]
+        }, status: 404
+      else
+        @sector.active = false
+        @sector.save!
+      end
+    end
 
-	  private
+    private
 
-	    # Use callbacks to share common setup or constraints between actions.
-	    def set_sector
-	      begin
-	        @sector = Sector.find(params[:id])
-	      rescue
-		      @sector = nil
-	      end
-	    end
+      # Use callbacks to share common setup or constraints between actions.
+      def set_sector
+        begin
+          @sector = Sector.find(params[:id])
+        rescue
+          @sector = nil
+        end
+      end
 
-	    # Only allow a trusted parameter "white list" through.
-	    def sector_params
-		    params.require(:sector).permit(
+      # Only allow a trusted parameter "white list" through.
+      def sector_params
+        params.require(:sector).permit(
           :active,
           :city_hall_id,
           :absence_max,
@@ -83,6 +83,6 @@ module Api::V1
           :name,
           :schedules_by_sector
         );
-	    end
-	end
+      end
+  end
 end

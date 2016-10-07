@@ -1,63 +1,63 @@
 module Api::V1
-	class DependantsController < ApiController
-	  before_action :set_dependant, only: [:show, :update, :destroy]
+  class DependantsController < ApiController
+    before_action :set_dependant, only: [:show, :update, :destroy]
 
-	  # GET /dependants
-	  def index
-	    @dependants = Dependant.all
+    # GET /dependants
+    def index
+      @dependants = Dependant.all
 
-	    render json: @dependants
-	  end
+      render json: @dependants
+    end
 
-	  # GET /dependants/1
-	  def show
+    # GET /dependants/1
+    def show
       if @dependant.nil?
         render json: {
           errors: ["Dependant #{params[:id]} does not exist."]
         }, status: 404
       else
-	      render json: @dependant
+        render json: @dependant
       end
-	  end
+    end
 
-	  # POST /dependants
-	  def create
-	    @dependant = Dependant.new(dependant_params)
+    # POST /dependants
+    def create
+      @dependant = Dependant.new(dependant_params)
 
-	    if @dependant.save
-	      render json: @dependant, status: :created, location: @dependant
-	    else
-	      render json: @dependant.errors, status: :unprocessable_entity
-	    end
-	  end
-
-	  # PATCH/PUT /dependants/1
-	  def update
-      if @dependant.nil?
-        render json: {
-          errors: ["Dependant #{params[:id]} does not exist."]
-        }, status: 404
+      if @dependant.save
+        render json: @dependant, status: :created, location: @dependant
       else
-  	    if @dependant.update(dependant_params)
-  	      render json: @dependant
-  	    else
-  	      render json: @dependant.errors, status: :unprocessable_entity
-  	    end
+        render json: @dependant.errors, status: :unprocessable_entity
       end
-	  end
+    end
 
-	  # DELETE /dependants/1
-	  def destroy
+    # PATCH/PUT /dependants/1
+    def update
       if @dependant.nil?
         render json: {
           errors: ["Dependant #{params[:id]} does not exist."]
         }, status: 404
       else
-	      @dependant.active = false
+        if @dependant.update(dependant_params)
+          render json: @dependant
+        else
+          render json: @dependant.errors, status: :unprocessable_entity
+        end
+      end
+    end
+
+    # DELETE /dependants/1
+    def destroy
+      if @dependant.nil?
+        render json: {
+          errors: ["Dependant #{params[:id]} does not exist."]
+        }, status: 404
+      else
+        @dependant.active = false
         @dependant.deactivated = DateTime.now
-	      @dependant.save
+        @dependant.save
       end
-	  end
+    end
 
   private
 
@@ -68,10 +68,10 @@ module Api::V1
 
     # Only allow a trusted parameter "white list" through.
     def dependant_params
-	    params.require(:dependant).permit(
+      params.require(:dependant).permit(
         :deactivation,
         :active
       )
     end
-	end
+  end
 end

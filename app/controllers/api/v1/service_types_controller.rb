@@ -1,16 +1,16 @@
 module Api::V1
-	class ServiceTypesController < ApiController
-	  before_action :set_service_type, only: [:show, :update, :destroy]
+  class ServiceTypesController < ApiController
+    before_action :set_service_type, only: [:show, :update, :destroy]
 
-	  # GET /service_types
-	  def index
-	    @service_types = ServiceType.all
+    # GET /service_types
+    def index
+      @service_types = ServiceType.all
 
-	    render json: @service_types
-	  end
+      render json: @service_types
+    end
 
-	  # GET /service_types/1
-	  def show
+    # GET /service_types/1
+    def show
       if @service_type.nil?
         render json: {
           errors: ["Service type #{params[:id]} does not exist."]
@@ -18,21 +18,21 @@ module Api::V1
       else
         render json: @service_type
       end
-	  end
+    end
 
-	  # POST /service_types
-	  def create
-	    @service_type = ServiceType.new(service_type_params)
+    # POST /service_types
+    def create
+      @service_type = ServiceType.new(service_type_params)
 
-	    if @service_type.save
-	      render json: @service_type, status: :created
-	    else
-	      render json: @service_type.errors, status: :unprocessable_entity
-	    end
-	  end
+      if @service_type.save
+        render json: @service_type, status: :created
+      else
+        render json: @service_type.errors, status: :unprocessable_entity
+      end
+    end
 
-	  # PATCH/PUT /service_types/1
-	  def update
+    # PATCH/PUT /service_types/1
+    def update
       if @service_type.nil?
         render json: {
           errors: ["Service type #{params[:id]} does not exist."]
@@ -46,10 +46,10 @@ module Api::V1
           }, status: 422
         end
       end
-	  end
+    end
 
-	  # DELETE /service_types/1
-	  def destroy
+    # DELETE /service_types/1
+    def destroy
       if @service_type.nil?
         render json: {
           errors: ["Service type #{params[:id]} does not exist."]
@@ -58,7 +58,7 @@ module Api::V1
         @service_type.active = false
         @service_type.save!
       end
-	  end
+    end
 
   private
 
@@ -67,7 +67,7 @@ module Api::V1
       begin
         @service_type = ServiceType.find(params[:id])
       rescue
-	      @service_type = nil
+        @service_type = nil
       end
     end
 
@@ -79,5 +79,5 @@ module Api::V1
         :description
       )
     end
-	end
+  end
 end
