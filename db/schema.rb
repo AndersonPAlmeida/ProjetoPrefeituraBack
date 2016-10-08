@@ -37,6 +37,8 @@ ActiveRecord::Schema.define(version: 20161007130605) do
   create_table "accounts_service_places", id: false, force: :cascade do |t|
     t.integer "account_id",       null: false
     t.integer "service_place_id", null: false
+    t.index ["account_id", "service_place_id"], name: "idx_accounts_service_places", using: :btree
+    t.index ["service_place_id", "account_id"], name: "idx_service_places_accounts", using: :btree
   end
 
   create_table "blocks", force: :cascade do |t|
@@ -55,14 +57,14 @@ ActiveRecord::Schema.define(version: 20161007130605) do
     t.string   "name",       null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer  "state_id"
+    t.integer  "state_id",   null: false
     t.index ["state_id"], name: "index_cities_on_state_id", using: :btree
   end
 
   create_table "citizens", force: :cascade do |t|
-    t.date     "birth_date"
-    t.string   "name"
-    t.string   "rg"
+    t.date     "birth_date",         null: false
+    t.string   "name",               null: false
+    t.string   "rg",                 null: false
     t.string   "address_complement"
     t.string   "address_number"
     t.string   "address_street"
@@ -81,7 +83,7 @@ ActiveRecord::Schema.define(version: 20161007130605) do
     t.datetime "created_at",         null: false
     t.datetime "updated_at",         null: false
     t.integer  "account_id"
-    t.boolean  "active"
+    t.boolean  "active",             null: false
     t.integer  "city_id"
     t.integer  "responsible_id"
     t.index ["account_id"], name: "index_citizens_on_account_id", using: :btree
@@ -89,7 +91,7 @@ ActiveRecord::Schema.define(version: 20161007130605) do
   end
 
   create_table "city_halls", force: :cascade do |t|
-    t.boolean  "active"
+    t.boolean  "active",                                       null: false
     t.string   "address_number",     limit: 10,                null: false
     t.string   "address_street",                               null: false
     t.text     "block_text",                                   null: false
@@ -114,14 +116,14 @@ ActiveRecord::Schema.define(version: 20161007130605) do
     t.string   "url"
     t.datetime "created_at",                                   null: false
     t.datetime "updated_at",                                   null: false
-    t.integer  "city_id"
+    t.integer  "city_id",                                      null: false
     t.index ["city_id"], name: "index_city_halls_on_city_id", using: :btree
   end
 
   create_table "dependants", force: :cascade do |t|
     t.boolean  "active",      default: true, null: false
     t.datetime "deactivated"
-    t.integer  "citizen_id"
+    t.integer  "citizen_id",                 null: false
     t.datetime "created_at",                 null: false
     t.datetime "updated_at",                 null: false
     t.index ["citizen_id"], name: "index_dependants_on_citizen_id", using: :btree
@@ -131,7 +133,7 @@ ActiveRecord::Schema.define(version: 20161007130605) do
     t.string   "description"
     t.string   "name"
     t.boolean  "active"
-    t.integer  "city_hall_id"
+    t.integer  "city_hall_id", null: false
     t.datetime "created_at",   null: false
     t.datetime "updated_at",   null: false
     t.index ["city_hall_id"], name: "index_occupations_on_city_hall_id", using: :btree
@@ -143,7 +145,7 @@ ActiveRecord::Schema.define(version: 20161007130605) do
     t.datetime "created_at",                   null: false
     t.datetime "updated_at",                   null: false
     t.integer  "account_id"
-    t.integer  "occupation_id"
+    t.integer  "occupation_id",                null: false
     t.index ["account_id"], name: "index_professionals_on_account_id", using: :btree
     t.index ["occupation_id"], name: "index_professionals_on_occupation_id", using: :btree
   end
@@ -153,6 +155,8 @@ ActiveRecord::Schema.define(version: 20161007130605) do
     t.integer "service_place_id",                null: false
     t.string  "role",                            null: false
     t.boolean "active",           default: true, null: false
+    t.index ["professional_id", "service_place_id"], name: "idx_professional_service_place", using: :btree
+    t.index ["service_place_id", "professional_id"], name: "idx_service_place_professional", using: :btree
   end
 
   create_table "schedules", force: :cascade do |t|
@@ -204,13 +208,15 @@ ActiveRecord::Schema.define(version: 20161007130605) do
     t.boolean  "active",                        default: true, null: false
     t.datetime "created_at",                                   null: false
     t.datetime "updated_at",                                   null: false
-    t.integer  "city_hall_id"
+    t.integer  "city_hall_id",                                 null: false
     t.index ["city_hall_id"], name: "index_service_places_on_city_hall_id", using: :btree
   end
 
   create_table "service_places_types", id: false, force: :cascade do |t|
     t.integer "service_type_id",  null: false
     t.integer "service_place_id", null: false
+    t.index ["service_place_id", "service_type_id"], name: "idx_service_place_service_type", using: :btree
+    t.index ["service_type_id", "service_place_id"], name: "idx_service_type_service_place", using: :btree
   end
 
   create_table "service_types", force: :cascade do |t|
@@ -239,16 +245,16 @@ ActiveRecord::Schema.define(version: 20161007130605) do
   end
 
   create_table "situations", force: :cascade do |t|
-    t.string   "description"
+    t.string   "description", null: false
     t.datetime "created_at",  null: false
     t.datetime "updated_at",  null: false
   end
 
   create_table "solicitations", force: :cascade do |t|
     t.integer  "city_id"
-    t.string   "name"
-    t.string   "cpf"
-    t.string   "email"
+    t.string   "name",       null: false
+    t.string   "cpf",        null: false
+    t.string   "email",      null: false
     t.string   "cep"
     t.string   "phone"
     t.boolean  "sent"
@@ -265,11 +271,25 @@ ActiveRecord::Schema.define(version: 20161007130605) do
     t.datetime "updated_at",             null: false
   end
 
+  add_foreign_key "blocks", "accounts"
+  add_foreign_key "blocks", "dependants"
+  add_foreign_key "blocks", "sectors"
   add_foreign_key "cities", "states"
   add_foreign_key "citizens", "accounts"
   add_foreign_key "citizens", "cities"
   add_foreign_key "city_halls", "cities"
+  add_foreign_key "dependants", "citizens"
   add_foreign_key "occupations", "city_halls"
+  add_foreign_key "professionals", "accounts"
   add_foreign_key "professionals", "occupations"
+  add_foreign_key "schedules", "accounts"
+  add_foreign_key "schedules", "service_places"
+  add_foreign_key "schedules", "shifts"
+  add_foreign_key "schedules", "situations"
+  add_foreign_key "sectors", "city_halls"
+  add_foreign_key "service_places", "city_halls"
+  add_foreign_key "service_types", "sectors"
+  add_foreign_key "shifts", "service_places"
+  add_foreign_key "shifts", "service_types"
   add_foreign_key "solicitations", "cities"
 end

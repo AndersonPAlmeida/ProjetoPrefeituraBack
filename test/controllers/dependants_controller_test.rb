@@ -14,14 +14,15 @@ class Api::V1::DependantsControllerTest < ActionDispatch::IntegrationTest
                             state_id: @santa_catarina.id)
       @joinville.save!
 
-      @citizen= Citizen.new(cpf: "10845922904", 
-                             birth_date: "18/04/1997", 
-                             cep: "1234567", 
-                             email: "test@example.com",
-                             name: "Test Example", 
-                             phone1: "(12)1212-1212",
-                             city_id: @joinville.id,
-                             rg: "1234567")
+      @citizen= Citizen.new(active: true,
+                            cpf: "10845922904", 
+                            birth_date: "18/04/1997", 
+                            cep: "1234567", 
+                            email: "test@example.com",
+                            name: "Test Example", 
+                            phone1: "(12)1212-1212",
+                            city_id: @joinville.id,
+                            rg: "1234567")
 
       @account = Account.new(uid: @citizen.cpf,
                              password: "123mudar",

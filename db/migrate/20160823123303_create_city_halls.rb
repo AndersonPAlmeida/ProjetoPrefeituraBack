@@ -1,8 +1,8 @@
 class CreateCityHalls < ActiveRecord::Migration[5.0]
   def change
     create_table :city_halls do |t|
-      t.integer :city_id
-      t.boolean :active
+      t.integer :city_id, null: false
+      t.boolean :active, null: false
       t.string :address_number, null: false, limit: 10
       t.string :address_street, null: false
       t.text :block_text, null: false

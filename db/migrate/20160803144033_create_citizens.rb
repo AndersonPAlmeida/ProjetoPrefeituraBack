@@ -1,9 +1,9 @@
 class CreateCitizens < ActiveRecord::Migration[5.0]
   def change
     create_table :citizens do |t|
-      t.date :birth_date
-      t.string :name
-      t.string :rg
+      t.date :birth_date, null: false
+      t.string :name, null: false
+      t.string :rg, null: false
       t.string :address_complement
       t.string :address_number
       t.string :address_street

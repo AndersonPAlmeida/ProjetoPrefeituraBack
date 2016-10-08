@@ -1,7 +1,7 @@
 class CreateSectors < ActiveRecord::Migration[5.0]
   def change
     create_table :sectors do |t|
-      t.references :city_hall, index: true, null: false
+      t.references :city_hall, index: true, foreign_key: true, null: false
       t.boolean :active
       t.integer :absence_max
       t.integer :blocking_days

@@ -1,8 +1,8 @@
 class CreateShifts < ActiveRecord::Migration[5.0]
   def change
     create_table :shifts do |t|
-      t.references :service_place, index: true, null: false
-      t.references :service_type, index: true, null: false
+      t.references :service_place, foreign_key: true, index: true, null: false
+      t.references :service_type, foreign_key: true, index: true, null: false
       t.integer :next_shift_id
       t.integer :professional_performer_id
       t.integer :professional_responsible_id
