@@ -3,16 +3,30 @@ require 'test_helper'
 class Api::V1::DependantsControllerTest < ActionDispatch::IntegrationTest
   describe "Token access" do
     before do
+
+      @santa_catarina = State.new(abbreviation: "SC",
+                                  ibge_code: "42",
+                                  name: "Santa Catarina")
+      @santa_catarina.save!
+
+      @joinville = City.new(ibge_code: "4209102",
+                            name: "Joinville",
+                            state_id: @santa_catarina.id)
+      @joinville.save!
+
       @citizen= Citizen.new(cpf: "10845922904", 
                              birth_date: "18/04/1997", 
                              cep: "1234567", 
                              email: "test@example.com",
                              name: "Test Example", 
                              phone1: "(12)1212-1212",
+                             city_id: @joinville.id,
                              rg: "1234567")
+
       @account = Account.new(uid: @citizen.cpf,
                              password: "123mudar",
                              password_confirmation: "123mudar")
+
       @dependant = Dependant.new(active: true)
 
       @account.save!

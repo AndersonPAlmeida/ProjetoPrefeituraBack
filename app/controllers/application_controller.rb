@@ -22,6 +22,7 @@ protected
         :address_number,
         :address_street,
         :cep,
+        :city_id,
         :cpf,
         :email,
         :neighborhood,

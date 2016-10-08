@@ -4,6 +4,74 @@ class CitizenTest < ActiveSupport::TestCase
   describe Citizen do
     describe "Missing cpf" do
       before do
+
+        @parana = State.new(abbreviation: "PR",
+                            ibge_code: "41",
+                            name: "Paraná")
+
+        @parana.save!
+
+        @curitiba = City.new(ibge_code: "4106902",
+                             name: "Curitiba",
+                             state_id: @parana.id)
+        @curitiba.save!
+
+        @citizen = Citizen.new(birth_date: "Apr 18 1997", 
+                               cep: "1234567", 
+                               email: "test@example.com",
+                               name: "Test Example", 
+                               phone1: "(12)1212-1212",
+                               city_id: @curitiba.id,
+                               rg: "1234567")
+
+        @account = Account.new(uid: @citizen.cpf,
+                               password: "123mudar",
+                               password_confirmation: "123mudar")
+
+        @citizen.active = true
+        @citizen.account_id = @account.id
+      end
+
+      it "should return an error" do
+        @citizen.save
+        assert_not_empty @citizen.errors.messages[:cpf]
+      end
+
+      it "should not save" do
+        assert_not @citizen.save
+      end
+    end
+
+    describe "Missing city" do
+      before do
+
+        @citizen = Citizen.new(birth_date: "Apr 18 1997", 
+                               cep: "1234567", 
+                               email: "test@example.com",
+                               name: "Test Example", 
+                               phone1: "(12)1212-1212",
+                               rg: "1234567")
+
+        @account = Account.new(uid: @citizen.cpf,
+                               password: "123mudar",
+                               password_confirmation: "123mudar")
+
+        @citizen.active = true
+        @citizen.account_id = @account.id
+      end
+
+      it "should return an error" do
+        @citizen.save
+        assert_not_empty @citizen.errors.messages[:city]
+      end
+
+      it "should not save" do
+        assert_not @citizen.save
+      end
+    end
+
+    describe "Missing city" do
+      before do
         @citizen = Citizen.new(birth_date: "Apr 18 1997", 
                                cep: "1234567", 
                                email: "test@example.com",

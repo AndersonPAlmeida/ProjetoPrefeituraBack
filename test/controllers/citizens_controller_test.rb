@@ -12,6 +12,7 @@ class Api::V1::CitizensControllerTest < ActionDispatch::IntegrationTest
                            name: "Curitiba",
                            state_id: @parana.id)
       @curitiba.save!
+
       @citizen = Citizen.new(cpf: "10845922904", 
                              birth_date: "Apr 18 1997", 
                              cep: "1234567", 
@@ -19,10 +20,12 @@ class Api::V1::CitizensControllerTest < ActionDispatch::IntegrationTest
                              name: "Test Example", 
                              phone1: "(12)1212-1212",
                              rg: "1234567",
-                             city_id: @curitiba)
+                             city_id: @curitiba.id)
+
       @account = Account.new(uid: @citizen.cpf,
                              password: "123mudar",
                              password_confirmation: "123mudar")
+
       @citizen.active = true
       @account.save!
       @citizen.account_id = @account.id

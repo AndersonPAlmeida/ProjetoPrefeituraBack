@@ -3,17 +3,6 @@ require 'test_helper'
 class ServiceTypesControllerTest < ActionDispatch::IntegrationTest
   describe "Token access" do
     before do
-      @citizen = Citizen.new(cpf: "10845922904", 
-                             birth_date: "Apr 18 1997", 
-                             cep: "1234567", 
-                             email: "test@example.com",
-                             name: "Test Example", 
-                             phone1: "(12)1212-1212",
-                             rg: "1234567")
-      @account = Account.new(uid: @citizen.cpf,
-                             password: "123mudar",
-                             password_confirmation: "123mudar")
-
       @parana = State.new(abbreviation: "PR",
                           ibge_code: "41",
                           name: "Paraná")
@@ -23,29 +12,46 @@ class ServiceTypesControllerTest < ActionDispatch::IntegrationTest
                            name: "Curitiba",
                            state_id: @parana.id)
       @curitiba.save!
+
+      @citizen = Citizen.new(cpf: "10845922904", 
+                             birth_date: "Apr 18 1997", 
+                             cep: "1234567", 
+                             email: "test@example.com",
+                             name: "Test Example", 
+                             phone1: "(12)1212-1212",
+                             city_id: @curitiba.id,
+                             rg: "1234567")
+
+      @account = Account.new(uid: @citizen.cpf,
+                             password: "123mudar",
+                             password_confirmation: "123mudar")
+
       @city_hall = CityHall.new(name: "Prefeitura de Curitiba",
-				cep: "81530110",
-				neighborhood: "Aasdsd",
-				address_street: "asdasd",
-				address_number: "100",
-				city_id: @curitiba.id,
-				phone1: "12121212",
-				active: true,
-				block_text: "hello") 
+				                        cep: "81530110",
+				                        neighborhood: "Aasdsd",
+				                        address_street: "asdasd",
+				                        address_number: "100",
+				                        city_id: @curitiba.id,
+				                        phone1: "12121212",
+				                        active: true,
+				                        block_text: "hello") 
 
       @sector = Sector.new(active: true, 
-		name: "Setor 1", 
-		absence_max: 1, 
-		blocking_days: 2, 
-		cancel_limit: 3, 
-		description: "number one", 
-		schedules_by_sector: 3)
+	                         name: "Setor 1", 
+		                       absence_max: 1, 
+		                       blocking_days: 2, 
+		                       cancel_limit: 3, 
+		                       description: "number one", 
+		                       schedules_by_sector: 3)
 
       @city_hall.save!
+
       @sector.city_hall = @city_hall
       @sector.save!
-      @citizen.active = true
+
       @account.save!
+
+      @citizen.active = true
       @citizen.account_id = @account.id
       @citizen.save!
 

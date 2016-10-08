@@ -8,6 +8,17 @@ class Api::V1::Accounts::RegistrationsControllerTest < ActionDispatch::Integrati
         @number_of_accounts = Account.count
         @number_of_citizens = Citizen.count
 
+        @santa_catarina = State.new(abbreviation: "SC",
+                                  ibge_code: "42",
+                                  name: "Santa Catarina")
+        @santa_catarina.save!
+
+        @joinville = City.new(ibge_code: "4209102",
+                            name: "Joinville",
+                            state_id: @santa_catarina.id)
+        @joinville.save!
+
+
         post '/v1/auth', params: {
           birth_date: "Apr 18 1997",
           cep: "81530-110",
@@ -15,6 +26,7 @@ class Api::V1::Accounts::RegistrationsControllerTest < ActionDispatch::Integrati
           email: "test@example.com", 
           name: "Test Example",
           phone1: "121212-1212", 
+          city_id: @joinville.id,
           rg: "1234567",
           password: "123mudar",
           password_confirmation: "123mudar"

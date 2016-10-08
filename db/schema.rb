@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161005141323) do
+ActiveRecord::Schema.define(version: 20161007130605) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -83,6 +83,7 @@ ActiveRecord::Schema.define(version: 20161005141323) do
     t.integer  "account_id"
     t.boolean  "active"
     t.integer  "city_id"
+    t.integer  "responsible_id"
     t.index ["account_id"], name: "index_citizens_on_account_id", using: :btree
     t.index ["city_id"], name: "index_citizens_on_city_id", using: :btree
   end
@@ -154,6 +155,27 @@ ActiveRecord::Schema.define(version: 20161005141323) do
     t.boolean "active",           default: true, null: false
   end
 
+  create_table "schedules", force: :cascade do |t|
+    t.integer  "shift_id",               null: false
+    t.integer  "situation_id",           null: false
+    t.integer  "service_place_id",       null: false
+    t.integer  "account_id"
+    t.integer  "citizen_ajax_read",      null: false
+    t.integer  "professional_ajax_read", null: false
+    t.integer  "reminder_read",          null: false
+    t.datetime "service_start_time",     null: false
+    t.datetime "service_end_time",       null: false
+    t.string   "note"
+    t.integer  "reminder_email_sent"
+    t.integer  "remainder_time"
+    t.datetime "created_at",             null: false
+    t.datetime "updated_at",             null: false
+    t.index ["account_id"], name: "index_schedules_on_account_id", using: :btree
+    t.index ["service_place_id"], name: "index_schedules_on_service_place_id", using: :btree
+    t.index ["shift_id"], name: "index_schedules_on_shift_id", using: :btree
+    t.index ["situation_id"], name: "index_schedules_on_situation_id", using: :btree
+  end
+
   create_table "sectors", force: :cascade do |t|
     t.integer  "city_hall_id",        null: false
     t.boolean  "active"
@@ -198,6 +220,28 @@ ActiveRecord::Schema.define(version: 20161005141323) do
     t.datetime "created_at",  null: false
     t.datetime "updated_at",  null: false
     t.index ["sector_id"], name: "index_service_types_on_sector_id", using: :btree
+  end
+
+  create_table "shifts", force: :cascade do |t|
+    t.integer  "service_place_id",            null: false
+    t.integer  "service_type_id",             null: false
+    t.integer  "next_shift_id"
+    t.integer  "professional_performer_id"
+    t.integer  "professional_responsible_id"
+    t.datetime "execution_start_time"
+    t.datetime "execution_end_time"
+    t.integer  "service_amount"
+    t.text     "notes"
+    t.datetime "created_at",                  null: false
+    t.datetime "updated_at",                  null: false
+    t.index ["service_place_id"], name: "index_shifts_on_service_place_id", using: :btree
+    t.index ["service_type_id"], name: "index_shifts_on_service_type_id", using: :btree
+  end
+
+  create_table "situations", force: :cascade do |t|
+    t.string   "description"
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
   end
 
   create_table "solicitations", force: :cascade do |t|

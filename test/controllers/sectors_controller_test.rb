@@ -3,18 +3,7 @@ require 'test_helper'
 class SectorsControllerTest < ActionDispatch::IntegrationTest
   describe "Token access" do
     before do
-      @citizen = Citizen.new(cpf: "10845922904",
-                             birth_date: "Apr 18 1997",
-                             cep: "1234567",
-                             email: "test@example.com",
-                             name: "Test Example",
-                             phone1: "(12)1212-1212",
-                             rg: "1234567")
-      @account = Account.new(uid: @citizen.cpf,
-                             password: "123mudar",
-                             password_confirmation: "123mudar")
-
-     @santa_catarina = State.new(abbreviation: "SC",
+      @santa_catarina = State.new(abbreviation: "SC",
                                   ibge_code: "42",
                                   name: "Santa Catarina")
       @santa_catarina.save!
@@ -24,18 +13,31 @@ class SectorsControllerTest < ActionDispatch::IntegrationTest
                             state_id: @santa_catarina.id)
       @joinville.save!
 
-      @city_hall = CityHall.new(name: "Prefeitura de Curitiba",
-        cep: "81530110",
-        neighborhood: "Aasdsd",
-        address_street: "asdasd",
-        address_number: "100",
-        city_id: @joinville.id,
-        phone1: "12121212",
-        active: true,
-        block_text: "hello")
+      @citizen = Citizen.new(cpf: "10845922904",
+                             active: true,
+                             birth_date: "Apr 18 1997",
+                             cep: "1234567",
+                             email: "test@example.com",
+                             name: "Test Example",
+                             phone1: "(12)1212-1212",
+                             rg: "1234567",
+                             city_id: @joinville.id)
+
+      @account = Account.new(uid: @citizen.cpf,
+                             password: "123mudar",
+                             password_confirmation: "123mudar")
+
+      @city_hall = CityHall.new(name: "Prefeitura de Joinville",
+                                cep: "81530110",
+                                neighborhood: "Aasdsd",
+                                address_street: "asdasd",
+                                address_number: "100",
+                                city_id: @joinville.id,
+                                phone1: "12121212",
+                                active: true,
+                                block_text: "hello")
 
       @city_hall.save!
-      @citizen.active = true
       @account.save!
       @citizen.account_id = @account.id
       @citizen.save!
@@ -51,15 +53,15 @@ class SectorsControllerTest < ActionDispatch::IntegrationTest
         before do
           @number_of_sectors = Sector.count
           post '/v1/sectors', params: { sector: {
-        active: true,
-      city_hall_id: @city_hall.id,
-      name: "Setor 1",
-      absence_max: 1,
-      blocking_days: 2,
-      cancel_limit: 3,
-      description: "the number one",
-      schedules_by_sector: 3
-    }}, headers: @auth_headers
+                              active: true,
+                              city_hall_id: @city_hall.id,
+                              name: "Setor 1",
+                              absence_max: 1,
+                              blocking_days: 2,
+                              cancel_limit: 3,
+                              description: "the number one",
+                              schedules_by_sector: 3
+                              }}, headers: @auth_headers
           @body = JSON.parse(response.body)
           @resp_token = response.headers['access-token']
           @resp_client_id = response.headers['client']

@@ -4,16 +4,6 @@ class ProfessionalTest < ActiveSupport::TestCase
   describe Professional do
     describe "Sucessful professional test" do
       before do
-        @citizen = Citizen.new(cpf: "10845922904",
-                               birth_date: "Apr 18 1997", 
-                               cep: "1234567", 
-                               email: "test@example.com",
-                               name: "Test Example",
-                               phone1: "(12)1212-1212",
-                               rg: "1234567")
-        @account = Account.new(uid: @citizen.cpf,
-                               password: "123mudar",
-                               password_confirmation: "123mudar")
         @parana = State.new(abbreviation: "PR",
                             ibge_code: "41",
                             name: "Paraná")
@@ -24,6 +14,19 @@ class ProfessionalTest < ActiveSupport::TestCase
                              state_id: @parana.id)
         @curitiba.save!
 
+        @citizen = Citizen.new(cpf: "10845922904",
+                               birth_date: "Apr 18 1997", 
+                               cep: "1234567", 
+                               email: "test@example.com",
+                               name: "Test Example",
+                               phone1: "(12)1212-1212",
+                               city_id: @curitiba.id,
+                               rg: "1234567")
+
+        @account = Account.new(uid: @citizen.cpf,
+                               password: "123mudar",
+                               password_confirmation: "123mudar")
+ 
         @curitiba_city_hall = CityHall.new(name: "Prefeitura de Curitiba",
                                             cep: "1234567",
                                             neighborhood: "Test neighborhood",
@@ -57,5 +60,5 @@ class ProfessionalTest < ActiveSupport::TestCase
     	  assert @professional.save!
       end
     end
-  end
+ end
 end

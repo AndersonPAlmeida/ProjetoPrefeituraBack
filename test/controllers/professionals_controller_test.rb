@@ -3,18 +3,7 @@ require 'test_helper'
 class Api::V1::ProfessionalsControllerTest < ActionDispatch::IntegrationTest
   describe "Token access" do
     before do
-      @citizen= Citizen.new(cpf: "10845922904", 
-                             birth_date: "18/04/1997", 
-                             cep: "1234567", 
-                             email: "test@example.com",
-                             name: "Test Example", 
-                             phone1: "(12)1212-1212",
-                             rg: "1234567")
-
-      @account = Account.new(uid: @citizen.cpf,
-                             password: "123mudar",
-                             password_confirmation: "123mudar")
-      @parana = State.new(abbreviation: "PR",
+     @parana = State.new(abbreviation: "PR",
                           ibge_code: "41",
                           name: "Paraná")
       @parana.save!
@@ -24,6 +13,19 @@ class Api::V1::ProfessionalsControllerTest < ActionDispatch::IntegrationTest
                            state_id: @parana.id)
       @curitiba.save!
 
+      @citizen= Citizen.new(cpf: "10845922904", 
+                             birth_date: "18/04/1997", 
+                             cep: "1234567", 
+                             email: "test@example.com",
+                             name: "Test Example", 
+                             phone1: "(12)1212-1212",
+                             rg: "1234567",
+                             city_id: @curitiba.id)
+
+      @account = Account.new(uid: @citizen.cpf,
+                             password: "123mudar",
+                             password_confirmation: "123mudar")
+ 
       @curitiba_city_hall = CityHall.new(name: "Prefeitura de Curitiba",
                                           cep: "1234567",
                                           neighborhood: "Test neighborhood",
