@@ -33,6 +33,8 @@ class Citizen < ApplicationRecord
   validates_format_of       :name,
                              with: /\A[^0-9`!@#\$%\^&*+_=]+\z/
 
+  validates_inclusion_of    :active, in: [true, false]
+
   # @return list of citizen's columns
   def self.keys
     return [

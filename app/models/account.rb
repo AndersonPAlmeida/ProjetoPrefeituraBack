@@ -6,6 +6,9 @@ class Account < ActiveRecord::Base
   has_and_belongs_to_many :service_places
   has_many :blocks
 
+  # Validations #
+  validates_presence_of :encrypted_password
+
   # Devise #
   # Include default devise modules. Other availables are:
   # :token_authenticable, :confirmable, 

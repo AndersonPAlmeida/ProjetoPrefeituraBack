@@ -121,7 +121,7 @@ ActiveRecord::Schema.define(version: 20161007130605) do
   end
 
   create_table "dependants", force: :cascade do |t|
-    t.boolean  "active",      default: true, null: false
+    t.boolean  "active",      default: true
     t.datetime "deactivated"
     t.integer  "citizen_id",                 null: false
     t.datetime "created_at",                 null: false
@@ -213,8 +213,9 @@ ActiveRecord::Schema.define(version: 20161007130605) do
   end
 
   create_table "service_places_types", id: false, force: :cascade do |t|
-    t.integer "service_type_id",  null: false
-    t.integer "service_place_id", null: false
+    t.integer "service_type_id",                 null: false
+    t.integer "service_place_id",                null: false
+    t.boolean "active",           default: true, null: false
     t.index ["service_place_id", "service_type_id"], name: "idx_service_place_service_type", using: :btree
     t.index ["service_type_id", "service_place_id"], name: "idx_service_type_service_place", using: :btree
   end

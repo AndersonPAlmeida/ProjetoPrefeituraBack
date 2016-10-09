@@ -6,6 +6,13 @@ class Schedule < ApplicationRecord
   belongs_to :service_place
   belongs_to :account, optional: true
 
+  # Validations #
+  validates_presence_of :citizen_ajax_read
+                        :professional_ajax_read
+                        :reminder_read
+                        :service_start_time
+                        :service_end_time
+
   # @return list of schedule's columns
   def self.keys
     return [

@@ -17,6 +17,11 @@ class Shift < ApplicationRecord
               class_name: "Professional"
   has_many    :schedules
 
+  # Validations #
+  validates_presence_of :execution_start_time
+                        :execution_end_time
+                        :service_amount
+
   # @return list of shift's columns
   def self.keys
     return [
