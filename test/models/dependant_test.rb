@@ -2,43 +2,52 @@ require "test_helper"
 
 class DependantTest < ActiveSupport::TestCase
   describe Dependant do
-    describe "Sucessful dependant test" do
-      before do
+    before do
+      @santa_catarina = State.new(abbreviation: "SC",
+                                  ibge_code: "42",
+                                  name: "Santa Catarina")
+      @santa_catarina.save!
 
-       @parana = State.new(abbreviation: "PR",
-                            ibge_code: "41",
-                            name: "Paraná")
-        @parana.save!
+      @joinville = City.new(ibge_code: "4209102",
+                            name: "Joinville",
+                            state_id: @santa_catarina.id)
+      @joinville.save!
 
-        @curitiba = City.new(ibge_code: "4106902",
-                             name: "Curitiba",
-                             state_id: @parana.id)
-        @curitiba.save!
+      @citizen = Citizen.new(cpf: "10845922904",
+                             active: true,
+                             birth_date: "Apr 18 1997",
+                             cep: "1234567",
+                             email: "test@example.com",
+                             name: "Test Example",
+                             phone1: "(12)1212-1212",
+                             rg: "1234567",
+                             city_id: @joinville.id)
 
-        @citizen = Citizen.new(cpf: "10845922904",
-                               birth_date: "Apr 18 1997", 
-                               cep: "1234567", 
-                               email: "test@example.com",
-                               name: "Test Example",
-                               phone1: "(12)1212-1212",
-                               city_id: @curitiba.id,
-                               rg: "1234567")
+      @account = Account.new(uid: @citizen.cpf,
+                             password: "123mudar",
+                             password_confirmation: "123mudar")
 
-        @account = Account.new(uid: @citizen.cpf,
-                               password: "123mudar",
-                               password_confirmation: "123mudar")
+      @dependant = Dependant.new()
 
-	@account.save!
-        @citizen.active = true
-        @citizen.account_id = @account.id
+      @account.save!
+      @citizen.account = @account
+      @citizen.save!
 
-	@citizen.save!
-        @dependant = Dependant.new 
-        @dependant.citizen_id = @citizen.id
+    end
+
+    describe "Missing citizen" do
+      it "should return an error" do
+	      assert_not @dependant.save
+	      assert_not_empty @dependant.errors.messages[:citizen]
       end
+    end
 
-      it "should work fine" do
-	  assert @dependant.save!
+    describe "Successful creation" do
+      it "should create a dependant" do
+        @number_of_dependants = Dependant.count
+        @dependant.citizen = @citizen
+        @dependant.save!
+        assert_equal @number_of_dependants + 1, Dependant.count
       end
     end
   end
