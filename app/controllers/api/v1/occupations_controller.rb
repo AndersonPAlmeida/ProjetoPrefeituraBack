@@ -72,10 +72,10 @@ module Api::V1
     # Only allow a trusted parameter "white list" through.
     def occupation_params
       params.require(:occupation).permit(
-        :description,
-        :name,
         :active,
-        :city_hall_id
+        :city_hall_id,
+        :description,
+        :name
       )
     end
   end

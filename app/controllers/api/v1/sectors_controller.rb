@@ -74,11 +74,12 @@ module Api::V1
       # Only allow a trusted parameter "white list" through.
       def sector_params
         params.require(:sector).permit(
-          :active,
-          :city_hall_id,
+          :id,
           :absence_max,
+          :active,
           :blocking_days,
           :cancel_limit,
+          :city_hall_id,
           :description,
           :name,
           :schedules_by_sector

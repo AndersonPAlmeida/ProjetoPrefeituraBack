@@ -21,19 +21,4 @@ class Shift < ApplicationRecord
   validates_presence_of :execution_start_time
                         :execution_end_time
                         :service_amount
-
-  # @return list of shift's columns
-  def self.keys
-    return [
-      :service_place_id,
-      :service_type_id,
-      :next_shift_id,
-      :professional_performer_id,
-      :professional_responsible_id,
-      :execution_start_time,
-      :execution_end_time,
-      :service_amount,
-      :notes
-    ]
-  end
 end

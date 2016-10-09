@@ -72,14 +72,16 @@ module Api::V1
     # Only allow a trusted parameter "white list" through.
     def service_place_params
       params.require(:service_place).permit(
+        :id,
         :active,
+        :address_complement,
         :address_number,
         :address_street,
+        :cep,
+        :city_hall_id,
+        :email,
         :name,
         :neighborhood,
-        :address_complement,
-        :cep,
-        :email,
         :phone1,
         :phone2,
         :url

@@ -1,4 +1,11 @@
 class SolicitationSerializer < ActiveModel::Serializer
-  attributes :id, :name, :cpf, :email, :cep, :phone, :sent
+  attributes :id, 
+             :cep, 
+             :cpf, 
+             :email, 
+             :name, 
+             :phone, 
+             :sent
+
   has_one :city
 end

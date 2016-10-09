@@ -71,15 +71,16 @@ module Api::V1
     # Only allow a trusted parameter "white list" through.
     def shift_params
       params.require(:shift).permit(
-        :service_place_id,
-        :service_type_id,
-        :next_shift_id,
-        :professional_performer_id,
-        :professional_responsible_id,
+        :id,
         :execution_start_time,
         :execution_end_time,
+        :next_shift_id,
+        :notes,
+        :professional_performer_id,
+        :professional_responsible_id,
         :service_amount,
-        :notes
+        :service_place_id,
+        :service_type_id
       )
     end
   end

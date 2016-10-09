@@ -71,18 +71,19 @@ module Api::V1
     # Only allow a trusted parameter "white list" through.
     def schedule_params
       params.require(:schedule).permit(
-        :shift_id,
-        :situation_id,
-        :service_place_id,
+        :id,
         :account_id,
         :citizen_ajax_read,
+        :note,
         :professional_ajax_read,
         :reminder_read,
+        :reminder_email_sent,
+        :reminder_time,
         :service_start_time,
         :service_end_time,
-        :note,
-        :reminder_email_sent,
-        :reminder_time
+        :service_place_id,
+        :shift_id,
+        :situation_id
       )
     end
   end

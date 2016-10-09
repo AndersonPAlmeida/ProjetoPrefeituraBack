@@ -74,9 +74,10 @@ module Api::V1
     # Only allow a trusted parameter "white list" through.
     def service_type_params
       params.require(:service_type).permit(
+        :id,
         :active,
-        :sector_id,
-        :description
+        :description,
+        :sector_id
       )
     end
   end

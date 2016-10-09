@@ -25,7 +25,7 @@ module Api::V1
       @dependant = Dependant.new(dependant_params)
 
       if @dependant.save
-        render json: @dependant, status: :created, location: @dependant
+        render json: @dependant, status: :created
       else
         render json: @dependant.errors, status: :unprocessable_entity
       end
@@ -69,8 +69,10 @@ module Api::V1
     # Only allow a trusted parameter "white list" through.
     def dependant_params
       params.require(:dependant).permit(
-        :deactivation,
-        :active
+        :id,
+        :active,
+        :citizen_id,
+        :deactivation
       )
     end
   end

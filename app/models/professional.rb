@@ -10,14 +10,6 @@ class Professional < ApplicationRecord
   # Validations #
   validates_presence_of :occupation_id, :account_id
 
-  # @return list of professional's columns
-  def self.keys
-    return [
-      :active,
-      :registration
-    ]
-  end
-
  # @return all active professionals
   def self.all_active
     Professional.where(active: true)

@@ -38,16 +38,16 @@ class Citizen < ApplicationRecord
   # @return list of citizen's columns
   def self.keys
     return [
-      :birth_date,
-      :name,
-      :rg,
+      :active,
       :address_complement,
       :address_number,
       :address_street,
+      :birth_date,
       :cep,
       :city_id,
       :cpf,
       :email,
+      :name,
       :neighborhood,
       :note,
       :pcd,
@@ -57,7 +57,7 @@ class Citizen < ApplicationRecord
       :photo_file_name,
       :photo_file_size,
       :photo_update_at,
-      :active
+      :rg
     ]
   end
 

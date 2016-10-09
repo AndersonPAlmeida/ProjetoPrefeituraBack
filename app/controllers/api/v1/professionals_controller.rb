@@ -25,7 +25,7 @@ module Api::V1
       @professional = Professional.new(professional_params)
 
       if @professional.save
-        render json: @professional, status: :created, location: @professional
+        render json: @professional, status: :created
       else
         render json: @professional.errors, status: :unprocessable_entity
       end
@@ -68,8 +68,11 @@ module Api::V1
     # Only allow a trusted parameter "white list" through.
     def professional_params
       params.require(:professional).permit(
-        :registration,
-        :active
+        :id,
+        :active,
+        :account_id,
+        :occupation_id,
+        :registration
       )
     end
   end

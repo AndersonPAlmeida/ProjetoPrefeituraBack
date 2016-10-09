@@ -46,14 +46,9 @@ class Api::V1::ProfessionalsControllerTest < ActionDispatch::IntegrationTest
 
       @occupation.save!
 
-      @professional = Professional.new(active: true,
-                        				       registration: "123",
-                                       occupation_id: @occupation.id)
       @account.save!
       @citizen.account_id = @account.id
       @citizen.save!
-      @professional.account_id = @account.id
-      @professional.save!
 
       @auth_headers = @account.create_new_auth_token
 
@@ -62,75 +57,139 @@ class Api::V1::ProfessionalsControllerTest < ActionDispatch::IntegrationTest
       @expiry    = @auth_headers['expiry']
     end
 
-    describe "Successful request to show professional" do
+    describe "Successful request to create professional" do
       before do 
-        get '/v1/professionals/' + @professional.id.to_s, params: {}, 
-                                                headers: @auth_headers
+        @number_of_professionals = Professional.count
+
+        post '/v1/professionals', params: {professional: {
+          active: true,
+          registration: "123",
+          occupation_id: @occupation.id,
+          account_id: @account.id
+        }}, headers: @auth_headers
 
         @body = JSON.parse(response.body)
         @resp_token = response.headers['access-token']
         @resp_client_id = response.headers['client']
         @resp_expiry = response.headers['expiry']
         @resp_uid = response.headers['uid']
-      end 
-
-      it "should be successful" do
-        assert_equal 200, response.status
-      end
-
-      it "should correspond to the current account" do
-        assert_equal @body["id"], @controller.current_account.professional.id
-      end
-
-      it "should correspond to the professional in the database" do
-        assert_equal @body["citizen"]["cpf"], Professional.find(@professional.id).account.citizen.cpf
-      end
-    end
-
-    describe "Successful request to delete professional" do
-      before do
-        @number_of_professionals = Professional.all_active.count
-
-        delete '/v1/professionals/' + @professional.id.to_s, params: {}, 
-                                                   headers: @auth_headers
-
-        @resp_token = response.headers['access-token']
-        @resp_client_id = response.headers['client']
-        @resp_expiry = response.headers['expiry']
-        @resp_uid = response.headers['uid']
-      end
-     
-      it "should be successful" do
-        assert_equal 204, response.status
-      end
-
-      it "should have been deleted" do
-        assert_not Professional.where(id: @professional.id).first.active
-      end
-
-      test "number of active professional should be decreased" do
-        assert_equal @number_of_professionals, Professional.all_active.count + 1
-      end
-    end
-
-    describe "Successful request to update professional" do
-      before do
-        put '/v1/professionals/' + @professional.id.to_s,
-                                       params: {professional: {registration: "7654/21" }}, #{professional: {registration: "7654/21"}}, 
-                                       headers: @auth_headers
-        @resp_token = response.headers['access-token']
-        @resp_client_id = response.headers['client']
-        @resp_expiry = response.headers['expiry']
-        @resp_uid = response.headers['uid']
       end
 
       it "should be successful" do
-        assert_equal 200, response.status
+        assert_equal 201, response.status
       end
 
-      test "registration number should have been changed" do
-        @professional = Citizen.where(cpf: @citizen.cpf).first.account.professional
-        assert_equal "7654/21", @professional.registration
+      it "should correspond to the created professional" do
+        assert_equal "123", @body["registration"]
+      end
+
+      it "should correspond to the information in the database" do
+        assert_equal @occupation.id, Professional.where(account_id: @account.id).first.occupation_id
+      end
+
+      it "should create a city hall" do
+        assert_equal @number_of_professionals + 1, Professional.count
+      end
+
+      describe "Successful request to show all professionals" do
+        before do 
+          get '/v1/professionals', params: {}, 
+                                   headers: @auth_headers
+
+          @body = JSON.parse(response.body)
+          @resp_token = response.headers['access-token']
+          @resp_client_id = response.headers['client']
+          @resp_expiry = response.headers['expiry']
+          @resp_uid = response.headers['uid']
+        end
+
+        it "should be successful" do
+          assert_equal 200, response.status
+        end
+
+        it "should return every city hall" do
+          assert_equal Professional.count, @body.size
+        end
+
+      end
+
+      describe "Successful request to show professional" do
+        before do 
+          @professional = Professional.where(account_id: @account.id).first
+          get '/v1/professionals/' + @professional.id.to_s, params: {}, 
+                                                      headers: @auth_headers
+          @body = JSON.parse(response.body)
+          @resp_token = response.headers['access-token']
+          @resp_client_id = response.headers['client']
+          @resp_expiry = response.headers['expiry']
+          @resp_uid = response.headers['uid']
+        end
+
+        it "should be successful" do
+          assert_equal 200, response.status
+        end
+
+        it "should display the requested city hall" do
+          assert_equal "123", @body["registration"]
+        end
+
+        it "should correspond to the information in the database" do
+          assert_equal Professional.where(account_id: @account.id).first.occupation_id, 
+                                          @body["occupation"]["id"]
+        end
+
+      end
+
+      describe "Successful request to delete professional" do
+        before do
+          @professional = Professional.where(account_id: @account.id).first
+
+          @number_of_professionals = Professional.all_active.count
+
+          delete '/v1/professionals/' + @professional.id.to_s, params: {}, 
+                                                     headers: @auth_headers
+
+          @resp_token = response.headers['access-token']
+          @resp_client_id = response.headers['client']
+          @resp_expiry = response.headers['expiry']
+          @resp_uid = response.headers['uid']
+        end
+       
+        it "should be successful" do
+          assert_equal 204, response.status
+        end
+
+        it "should have been deleted" do
+          assert_not Professional.where(id: @professional.id).first.active
+        end
+
+        test "number of active professional should be decreased" do
+          assert_equal @number_of_professionals, Professional.all_active.count + 1
+        end
+      end
+
+      describe "Successful request to update professional" do
+        before do
+          @professional = Professional.where(account_id: @account.id).first
+
+          put '/v1/professionals/' + @professional.id.to_s,
+                                         params: {professional: {registration: "7654/21" }}, #{professional: {registration: "7654/21"}}, 
+                                         headers: @auth_headers
+
+          @resp_token = response.headers['access-token']
+          @resp_client_id = response.headers['client']
+          @resp_expiry = response.headers['expiry']
+          @resp_uid = response.headers['uid']
+        end
+
+        it "should be successful" do
+          assert_equal 200, response.status
+        end
+
+        test "registration number should have been changed" do
+          @professional = Citizen.where(cpf: @citizen.cpf).first.account.professional
+          assert_equal "7654/21", @professional.registration
+        end
       end
     end
   end

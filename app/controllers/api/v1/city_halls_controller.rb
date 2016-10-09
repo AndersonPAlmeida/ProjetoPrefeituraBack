@@ -72,29 +72,30 @@ module Api::V1
     # Only allow a trusted parameter "white list" through.
     def city_hall_params
       params.require(:city_hall).permit(
-        :city_id, 
+        :id,
         :active, 
+        :address_complement, 
         :address_number, 
         :address_street, 
         :block_text, 
-        :cep, 
         :citizen_access, 
         :citizen_register, 
-        :name, 
-        :neighborhood, 
-        :previous_notice, 
-        :schedule_period, 
-        :address_complement, 
+        :city_id, 
+        :cep, 
         :description, 
         :email, 
         :logo_content_type, 
         :logo_file_name, 
         :logo_file_size, 
         :logo_updated_at, 
+        :name, 
+        :neighborhood, 
+        :previous_notice, 
         :phone1, 
         :phone2, 
-        :support_email, 
+        :schedule_period, 
         :show_professional, 
+        :support_email, 
         :url
       )
     end
