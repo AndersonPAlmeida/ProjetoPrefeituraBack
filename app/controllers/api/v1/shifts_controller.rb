@@ -53,7 +53,7 @@ module Api::V1
           errors: ["Shift #{params[:id]} does not exist."]
         }, status: 404
       else
-        @shift.active = false
+        @shift.service_amount = 0
         @shift.save!
       end
     end

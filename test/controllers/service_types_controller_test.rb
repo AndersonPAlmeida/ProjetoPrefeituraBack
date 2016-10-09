@@ -66,7 +66,7 @@ class ServiceTypesControllerTest < ActionDispatch::IntegrationTest
       before do
         @number_of_service_types = ServiceType.count
 
-	post '/v1/service_types', params: {service_type: {
+	      post '/v1/service_types', params: {service_type: {
                 active: true,
                 sector_id: @sector.id,
                 description: "type one"
@@ -100,7 +100,7 @@ class ServiceTypesControllerTest < ActionDispatch::IntegrationTest
       describe "Successful request to show all service types" do
         before do 
           get '/v1/service_types', params: {}, 
-                                headers: @auth_headers
+                                   headers: @auth_headers
 
           @body = JSON.parse(response.body)
           @resp_token = response.headers['access-token']
@@ -145,7 +145,7 @@ class ServiceTypesControllerTest < ActionDispatch::IntegrationTest
         end
       end
 
-      describe "Unsuccessful resquest to update service type with conflicting sector_id" do
+      describe "Unsuccessful request to update service type with conflicting sector_id" do
         before do
           @service_type = ServiceType.where(sector_id: @sector.id).first
 
@@ -169,7 +169,7 @@ class ServiceTypesControllerTest < ActionDispatch::IntegrationTest
         end
       end
 
-      describe "Successful request to update sector" do
+      describe "Successful request to update service type" do
         before do
           @service_type = ServiceType.where(sector_id: @sector.id).first
 
@@ -240,7 +240,7 @@ class ServiceTypesControllerTest < ActionDispatch::IntegrationTest
           assert_not ServiceType.where(id: @service_type.id).first.active
         end
 
-        test "number of sectors should be decreased" do
+        test "number of service types should be decreased" do
           assert_equal @number_of_service_types, ServiceType.all_active.count + 1
         end
       end

@@ -105,7 +105,7 @@ class Api::V1::ShiftsControllerTest < ActionDispatch::IntegrationTest
     describe "Succesful request to create shift" do
       before do
 
-	@number_of_shifts = Shift.count
+        @number_of_shifts = Shift.count
 
         post '/v1/shifts/', params: { shift: {
               execution_start_time: DateTime.now,
@@ -175,6 +175,59 @@ class Api::V1::ShiftsControllerTest < ActionDispatch::IntegrationTest
 
         it "should return every shift" do
           assert_equal Shift.count, @body.size
+        end
+      end
+
+      describe "Successful request to update shift" do
+        before do
+          @shift = Shift.where(service_place_id: @service_place.id).first
+
+          put '/v1/shifts/' + @shift.id.to_s,
+                                  params: {shift: {service_amount: 13}},
+                                  headers: @auth_headers
+
+          @resp_token = response.headers['access-token']
+          @resp_client_id = response.headers['client']
+          @resp_expiry = response.headers['expiry']
+          @resp_uid = response.headers['uid']
+
+        end
+
+        it "should be successful" do
+          assert_equal 200, response.status
+        end
+
+        test "service amount should have been changed" do
+          @shift = Shift.where(service_place_id: @service_place.id).first
+          assert_equal 13, @shift.service_amount
+        end
+      end
+
+      describe "Successful request to delete shift" do
+        before do
+          @number_of_shifts = Shift.count
+          @shift = Shift.where(service_place_id: @service_place.id).first
+
+          delete '/v1/shifts/' + @shift.id.to_s,
+                                    params: {},
+                                    headers: @auth_headers
+
+          @resp_token = response.headers['access-token']
+          @resp_client_id = response.headers['client']
+          @resp_expiry = response.headers['expiry']
+          @resp_uid = response.headers['uid']
+        end
+
+        it "should be successful" do
+          assert_equal 204, response.status
+        end
+
+        it "should have been deleted" do
+          assert_equal 0, Shift.where(id: @shift.id).first.service_amount
+        end
+
+        test "number of shifts should be decreased" do
+          assert_equal @number_of_shifts, Shift.where("service_amount > 0").count + 1
         end
       end
     end

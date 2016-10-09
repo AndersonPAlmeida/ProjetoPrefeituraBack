@@ -25,7 +25,7 @@ module Api::V1
       @service_place = ServicePlace.new(service_place_params)
 
       if @service_place.save
-        render json: @service_place, status: :created, location: @service_place
+        render json: @service_place, status: :created 
       else
         render json: @service_place.errors, status: :unprocessable_entity
       end

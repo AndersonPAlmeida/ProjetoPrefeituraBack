@@ -53,7 +53,8 @@ module Api::V1
           errors: ["Schedule #{params[:id]} does not exist."]
         }, status: 404
       else
-        @schedule.destroy
+        @schedule.situation_id = Situation.where(description: "Cancelado").first.id
+        @schedule.save!
       end
     end
 

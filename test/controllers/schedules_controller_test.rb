@@ -93,8 +93,11 @@ class Api::V1::SchedulesControllerTest < ActionDispatch::IntegrationTest
 
       @shift.save!
 
-      @situation = Situation.new(description: 'Waiting')
+      @situation = Situation.new(description: 'Aguardando')
       @situation.save!
+
+      @deleted = Situation.new(description: 'Cancelado')
+      @deleted.save!
 
       @auth_headers = @account.create_new_auth_token 
       @token     = @auth_headers['access-token'] 
@@ -105,7 +108,7 @@ class Api::V1::SchedulesControllerTest < ActionDispatch::IntegrationTest
     describe "Succesful request to create schedule" do
       before do
 
-	@number_of_schedules = Schedule.count
+	      @number_of_schedules = Schedule.count
 
         post '/v1/schedules/', params: { schedule: {
               shift_id: @shift.id,
@@ -178,6 +181,59 @@ class Api::V1::SchedulesControllerTest < ActionDispatch::IntegrationTest
 
         it "should return every shift" do
           assert_equal Schedule.count, @body.size
+        end
+      end
+
+      describe "Successful request to update schedule" do
+        before do
+          @schedule = Schedule.where(shift_id: @shift.id).first
+
+          put '/v1/schedules/' + @schedule.id.to_s,
+                                  params: {schedule: {reminder_read: 0}},
+                                  headers: @auth_headers
+
+          @resp_token = response.headers['access-token']
+          @resp_client_id = response.headers['client']
+          @resp_expiry = response.headers['expiry']
+          @resp_uid = response.headers['uid']
+
+        end
+
+        it "should be successful" do
+          assert_equal 200, response.status
+        end
+
+        test "reminder read should have been changed" do
+          @schedule = Schedule.where(shift_id: @shift.id).first
+          assert_equal 0, @schedule.reminder_read
+        end
+      end
+
+      describe "Successful request to delete schedule" do
+        before do
+          @number_of_schedules = Schedule.count
+          @schedule = Schedule.where(shift_id: @shift.id).first
+
+          delete '/v1/schedules/' + @schedule.id.to_s,
+                                    params: {},
+                                    headers: @auth_headers
+
+          @resp_token = response.headers['access-token']
+          @resp_client_id = response.headers['client']
+          @resp_expiry = response.headers['expiry']
+          @resp_uid = response.headers['uid']
+        end
+
+        it "should be successful" do
+          assert_equal 204, response.status
+        end
+
+        it "should have been deleted" do
+          assert_equal @deleted.id, Schedule.where(id: @schedule.id).first.situation_id
+        end
+
+        test "number of schedules should be decreased" do
+          assert_equal @number_of_schedules, Schedule.where("situation_id != ?", @deleted.id).count + 1
         end
       end
     end
