@@ -42,7 +42,7 @@ gem 'rack-cors'
 # Get Brazilian address by zipcode, directly from Correios database.
 gem 'correios-cep'
 
-gem 'activerecord-import', '~> 0.11.0'
+gem 'activerecord-import'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console

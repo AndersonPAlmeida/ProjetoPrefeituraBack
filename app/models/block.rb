@@ -1,4 +1,4 @@
-class Block < ActiveRecord::Base
+class Block < ApplicationRecord
   
   # Associations #
   belongs_to :account
