@@ -10,7 +10,7 @@ class Professional < ApplicationRecord
   # Validations #
   validates_presence_of :occupation_id, :account_id
 
- # @return all active professionals
+  # @return all active professionals
   def self.all_active
     Professional.where(active: true)
   end

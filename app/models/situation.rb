@@ -1,8 +1,8 @@
 class Situation < ApplicationRecord
   
   # Associations #
-    has_many :schedules
+  has_many :schedules
 
   # Validations #
-    validates_presence_of :description
+  validates_presence_of :description
 end

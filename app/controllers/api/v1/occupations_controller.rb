@@ -1,5 +1,5 @@
 module Api::V1
-  class OccupationsController < ApplicationController
+  class OccupationsController < ApiController
     before_action :set_occupation, only: [:show, :update, :destroy]
 
     # GET /occupations
