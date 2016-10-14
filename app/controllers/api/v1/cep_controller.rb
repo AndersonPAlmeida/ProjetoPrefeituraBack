@@ -5,12 +5,29 @@ module Api::V1
     def validate
       address = CepValidator.get_address(cep_params[:number]) 
 
+      # Verify if cep is valid
       if address.empty?
         render json: {
           errors: ["Invalid CEP."]
-        }, status: 400
+        }, status: 422
       else
-        render json: address
+        city = City.find_by(name: address[:city])
+        if not city.nil?
+          city_hall = CityHall.where(city_id: city.id)
+
+          # Verify if the city obtained from cep is registered
+          if city_hall.empty?
+            render json: {
+              errors: ["City not registered."]
+            }, status: 404
+          else
+            render json: address
+          end
+        else
+          render json: {
+            errors: ["City not registered."]
+          }, status: 404
+        end
       end
     end
 

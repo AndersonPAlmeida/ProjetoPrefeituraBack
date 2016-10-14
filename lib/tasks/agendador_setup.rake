@@ -5,6 +5,10 @@ namespace :agendador do
   desc "Popula o banco de dados do Agendador"
   task :setup => [:drop_and_create, :environment, :init, :setup_situations,
                   :setup_states, :setup_cities] do
+ 
+    if not Rails.env.production?
+      Rake::Task['agendador:setup_examples'].invoke
+    end
 
     ActiveRecord::Base.connection.disconnect!
 
