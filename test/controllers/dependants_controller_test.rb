@@ -3,32 +3,37 @@ require 'test_helper'
 class Api::V1::DependantsControllerTest < ActionDispatch::IntegrationTest
   describe "Token access" do
     before do
-
-      @santa_catarina = State.new(abbreviation: "SC",
-                                  ibge_code: "42",
-                                  name: "Santa Catarina")
+      @santa_catarina = State.new(
+        abbreviation: "SC",
+        ibge_code: "42",
+        name: "Santa Catarina"
+      )
       @santa_catarina.save!
 
-      @joinville = City.new(ibge_code: "4209102",
-                            name: "Joinville",
-                            state_id: @santa_catarina.id)
+      @joinville = City.new(
+        ibge_code: "4209102",
+        name: "Joinville",
+        state_id: @santa_catarina.id
+      )
       @joinville.save!
 
-      @citizen= Citizen.new(active: true,
-                            cpf: "10845922904", 
-                            birth_date: "18/04/1997", 
-                            cep: "1234567", 
-                            email: "test@example.com",
-                            name: "Test Example", 
-                            phone1: "(12)1212-1212",
-                            city_id: @joinville.id,
-                            rg: "1234567")
+      @citizen= Citizen.new(
+        active: true,
+        cpf: "10845922904", 
+        birth_date: "18/04/1997", 
+        cep: "1234567", 
+        email: "test@example.com",
+        name: "Test Example", 
+        phone1: "(12)1212-1212",
+        city_id: @joinville.id,
+        rg: "1234567"
+      )
 
-      @account = Account.new(uid: @citizen.cpf,
-                             password: "123mudar",
-                             password_confirmation: "123mudar")
-
-
+      @account = Account.new(
+        uid: @citizen.cpf,
+        password: "123mudar",
+        password_confirmation: "123mudar"
+      )
       @account.save!
       @citizen.account_id = @account.id
       @citizen.save!
@@ -124,7 +129,8 @@ class Api::V1::DependantsControllerTest < ActionDispatch::IntegrationTest
           @dependant = Dependant.where(citizen_id: @citizen.id).first
 
           put '/v1/dependants/' + @dependant.id.to_s,
-                                         params: {dependant: { active: false  }},                                       		      headers: @auth_headers
+                                         params: {dependant: { active: false  }},
+                                         headers: @auth_headers
           @resp_token = response.headers['access-token']
           @resp_client_id = response.headers['client']
           @resp_expiry = response.headers['expiry']

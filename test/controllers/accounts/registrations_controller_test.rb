@@ -2,20 +2,23 @@ require 'test_helper'
 
 class Api::V1::Accounts::RegistrationsControllerTest < ActionDispatch::IntegrationTest
   describe Api::V1::Accounts::RegistrationsController do
-
     describe "Successful registration" do
       before do
         @number_of_accounts = Account.count
         @number_of_citizens = Citizen.count
 
-        @santa_catarina = State.new(abbreviation: "SC",
-                                  ibge_code: "42",
-                                  name: "Santa Catarina")
+        @santa_catarina = State.new(
+          abbreviation: "SC",
+          ibge_code: "42",
+          name: "Santa Catarina"
+        )
         @santa_catarina.save!
 
-        @joinville = City.new(ibge_code: "4209102",
-                            name: "Joinville",
-                            state_id: @santa_catarina.id)
+        @joinville = City.new(
+          ibge_code: "4209102",
+          name: "Joinville",
+          state_id: @santa_catarina.id
+        )
         @joinville.save!
 
 

@@ -4,31 +4,34 @@ class Api::V1::Accounts::SessionsControllerTest < ActionDispatch::IntegrationTes
   describe Api::V1::Accounts::SessionsController do
     describe "Token access" do
       before do
-
-      @santa_catarina = State.new(abbreviation: "SC", 
-                                  ibge_code: "42", 
-                                  name: "Santa Catarina") 
-      @santa_catarina.save! 
+        @santa_catarina = State.new(
+          abbreviation: "SC", 
+          ibge_code: "42", 
+          name: "Santa Catarina"
+        )
+        @santa_catarina.save! 
  
-      @joinville = City.new(ibge_code: "4209102", 
-                            name: "Joinville", 
-                            state_id: @santa_catarina.id) 
-      @joinville.save! 
+        @joinville = City.new(
+          ibge_code: "4209102", 
+          name: "Joinville", 
+          state_id: @santa_catarina.id
+        )
+        @joinville.save! 
 
-          post '/v1/auth', params: {
-            birth_date: "Apr 18 1997",
-            cep: "81530-110",
-            cpf: "10845922904",
-            email: "test@example.com", 
-            name: "Test Example",
-            phone1: "121212-1212", 
-            rg: "1234567",
-            city_id: @joinville.id,
-            password: "123mudar",
-            password_confirmation: "123mudar"
-          } 
+        post '/v1/auth', params: {
+          birth_date: "Apr 18 1997",
+          cep: "81530-110",
+          cpf: "10845922904",
+          email: "test@example.com", 
+          name: "Test Example",
+          phone1: "121212-1212", 
+          rg: "1234567",
+          city_id: @joinville.id,
+          password: "123mudar",
+          password_confirmation: "123mudar"
+        } 
 
-          @citizen = Citizen.where(cpf: "10845922904").first
+        @citizen = Citizen.where(cpf: "10845922904").first
       end
 
       describe "Successful sign in" do
