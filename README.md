@@ -33,8 +33,8 @@ Ruby:
 
 Rails:
 ```bash
-  $ rvm use ruby-2.3.1@rails5.0 --create --default
   $ gem install rails -v 5.0.0
+  $ rvm use ruby-2.3.1@rails5.0 --create --default
 ```
 
 Bundler:
@@ -45,21 +45,20 @@ Bundler:
 ## Execução (desenvolvimento)
 ```bash
   $ bundle install
-  $ export AGENDADOR_API_DB_USER="postgres"
-  $ export AGENDADOR_API_DB_PASSWORD="123"
-  $ rake db:create
+  $ export POSTGRES_HOST=localhost
   $ rake db:migrate
+  $ rake agendador:setup
   $ rails s
 ```
 
 ## Workflow de cada atividade
-1. Criar branch da atividade: #IDatividade[Resumo\_do\_que\_faz].
+1. Criar branch da atividade: Issue\_x, onde x corresponde ao ID da issue no projeto AGILE
 2. Desenvolver a atividade
 3. Criar teste para a atividade
 4. Rodar o teste criado sobre a atividade desenvolvida
-  1. Se estiver errado  
+  1. Se estiver errado:
      Voltar para o passo 2
-  2. Se estiver certo  
+  2. Se estiver certo:  
      git commit -sm “Explain (the first word must be an infinitive verb) what this commit does”  
      git push origin nome\_da\_branch  
      Criar merge request para develop  
