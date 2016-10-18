@@ -1,7 +1,10 @@
 class ApplicationController < ActionController::API
   include DeviseTokenAuth::Concerns::SetUserByToken
   include ActionController::Serialization
+  include ActionController::RequestForgeryProtection
+  include Pundit
 
+  protect_from_forgery
   before_action :configure_permitted_parameters, if: :devise_controller?
 
 protected
