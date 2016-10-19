@@ -4,29 +4,41 @@ class Api::V1::Accounts::SessionsControllerTest < ActionDispatch::IntegrationTes
   describe Api::V1::Accounts::SessionsController do
     describe "Token access" do
       before do
-        @santa_catarina = State.new(
-          abbreviation: "SC", 
-          ibge_code: "42", 
-          name: "Santa Catarina"
+        @parana = State.new(
+          abbreviation: "PR",
+          ibge_code: "41",
+          name: "Paraná"
         )
-        @santa_catarina.save! 
- 
-        @joinville = City.new(
-          ibge_code: "4209102", 
-          name: "Joinville", 
-          state_id: @santa_catarina.id
+        @parana.save!
+
+        @curitiba = City.new(
+          ibge_code: "4106902",
+          name: "Curitiba",
+          state_id: @parana.id
         )
-        @joinville.save! 
+        @curitiba.save!
+
+        @curitiba_city_hall = CityHall.new(
+          name: "Prefeitura de Curitiba",
+          cep: "1234567",
+          neighborhood: "Test neighborhood",
+          address_street: "Test street",
+          address_number: "123",
+          city_id: @curitiba.id,
+          phone1: "1414141414",
+          active: true,
+          block_text: "Test block text"
+        );
+        @curitiba_city_hall.save!
 
         post '/v1/auth', params: {
           birth_date: "Apr 18 1997",
-          cep: "81530-110",
+          cep: "81530110",
           cpf: "10845922904",
           email: "test@example.com", 
           name: "Test Example",
           phone1: "121212-1212", 
           rg: "1234567",
-          city_id: @joinville.id,
           password: "123mudar",
           password_confirmation: "123mudar"
         } 

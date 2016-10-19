@@ -25,6 +25,13 @@ module Api::V1
       @citizen = Citizen.new(citizen_params)
       @citizen.active = true
 
+      city = CepController.get_city(citizen_params[:cep])
+      if city.nil?
+        @citizen.city_id = nil
+      else
+        @citizen.city_id = CepController.get_city(citizen_params[:cep]).id
+      end
+
       if @citizen.save
         render json: @citizen, status: :created
       else

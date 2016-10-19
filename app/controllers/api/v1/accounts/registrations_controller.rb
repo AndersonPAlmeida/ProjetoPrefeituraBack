@@ -23,7 +23,14 @@ module Api::V1
       @resource = resource_class.new(account_params)
       @resource.provider = "cpf"
 
-      # create net citizen
+      # create new citizen
+      city = CepController.get_city(citizen_params[:cep])
+      if city.nil?
+        citizen_params[:city_id] = nil
+      else
+        citizen_params[:city_id] = city.id
+      end
+
       @citizen = Citizen.new(citizen_params)
 
       # honor devise configuration for case_insensitive_keys
@@ -108,11 +115,11 @@ module Api::V1
     # render_create_success method in order to render account
     # informations with serializer
     def render_create_success
-      render json: @resource
-      #render json: {
-      #  status: 'success',
-      #  data:   @resource
-      #}
+      #render json: @resource
+      render json: {
+        status: 'success',
+        data:   @resource
+      }, status: 201
     end
 
     # Overrides DeviseTokenAuth's RegistrationsController's 

@@ -183,10 +183,12 @@ namespace :agendador do
     })
     accounts[:alan] = Account.create({
       uid: citizens[:alan].cpf,
-      password: "123mudar",
-      password_confirmation: "123mudar"
+      password: "123456",
+      password_confirmation: "123456"
     })
     citizens[:alan].account = accounts[:alan] 
+    citizens[:alan].save!
+    accounts[:alan].save!
 
     puts "Inserindo cidadão 2 ..."
     citizens[:bruno] = Citizen.create({
@@ -203,8 +205,8 @@ namespace :agendador do
     })
     accounts[:bruno] = Account.create({
       uid: citizens[:bruno].cpf,
-      password: "123mudar",
-      password_confirmation: "123mudar"
+      password: "123456",
+      password_confirmation: "123456"
     })
     citizens[:bruno].account = accounts[:bruno] 
     citizens[:bruno].save!
@@ -225,10 +227,12 @@ namespace :agendador do
     })
     accounts[:cynthia] = Account.create({
       uid: citizens[:cynthia].cpf,
-      password: "123mudar",
-      password_confirmation: "123mudar"
+      password: "123456",
+      password_confirmation: "123456"
     })
     citizens[:cynthia].account = accounts[:cynthia] 
+    citizens[:cynthia].save!
+    accounts[:cynthia].save!
 
     puts "Inserindo cidadão 4 ..."
     citizens[:pedro] = Citizen.create({
@@ -245,10 +249,12 @@ namespace :agendador do
     })
     accounts[:pedro] = Account.create({
       uid: citizens[:pedro].cpf,
-      password: "123mudar",
-      password_confirmation: "123mudar"
+      password: "123456",
+      password_confirmation: "123456"
     })
     citizens[:pedro].account = accounts[:pedro]
+    citizens[:pedro].save!
+    accounts[:pedro].save!
 
     puts "Inserindo cidadão 5 ..."
     citizens[:fabricio] = Citizen.create({
@@ -265,10 +271,12 @@ namespace :agendador do
     })
     accounts[:fabricio] = Account.create({
       uid: citizens[:fabricio].cpf,
-      password: "123mudar",
-      password_confirmation: "123mudar"
+      password: "123456",
+      password_confirmation: "123456"
     })
     citizens[:fabricio].account = accounts[:fabricio]
+    citizens[:fabricio].save!
+    accounts[:fabricio].save!
 
     puts "Inserindo cidadão 6 ..."
     citizens[:mateus] = Citizen.create({
@@ -285,10 +293,12 @@ namespace :agendador do
     })
     accounts[:mateus] = Account.create({
       uid: citizens[:mateus].cpf,
-      password: "123mudar",
-      password_confirmation: "123mudar"
+      password: "123456",
+      password_confirmation: "123456"
     })
     citizens[:mateus].account = accounts[:mateus]
+    citizens[:mateus].save!
+    accounts[:mateus].save!
 
     puts "Inserindo cidadão 7 ..."
     citizens[:joao] = Citizen.create({
@@ -305,10 +315,12 @@ namespace :agendador do
     })
     accounts[:joao] = Account.create({
       uid: citizens[:joao].cpf,
-      password: "123mudar",
-      password_confirmation: "123mudar"
+      password: "123456",
+      password_confirmation: "123456"
     })
     citizens[:joao].account = accounts[:joao]
+    citizens[:joao].save!
+    accounts[:joao].save!
 
     professional_keys = [:fabricio,:pedro,:cynthia,:bruno,:alan]
     accounts.each_with_index do |(k, v), i| # Create professionals with citzens
@@ -339,10 +351,12 @@ namespace :agendador do
     })
     accounts[:paulo] = Account.create({
       uid: citizens[:paulo].cpf,
-      password: "123mudar",
-      password_confirmation: "123mudar"
+      password: "123456",
+      password_confirmation: "123456"
     })
     citizens[:paulo].account = accounts[:paulo]
+    citizens[:paulo].save!
+    accounts[:paulo].save!
 
     puts "Inserindo cidadão 9 ..."
     citizens[:henrique] = Citizen.create({
@@ -359,10 +373,12 @@ namespace :agendador do
     })
     accounts[:henrique] = Account.create({
       uid: citizens[:henrique].cpf,
-      password: "123mudar",
-      password_confirmation: "123mudar"
+      password: "123456",
+      password_confirmation: "123456"
     })
     citizens[:henrique].account = accounts[:henrique]
+    citizens[:henrique].save!
+    accounts[:henrique].save!
 
     puts "Inserindo Dependente A..."
     citizens[:dependentea] = Citizen.create({

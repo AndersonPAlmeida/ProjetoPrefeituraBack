@@ -3,6 +3,18 @@ module Api::V1
 
     # POST /validate_cep
     def validate
+      #unless CepValidador.valid_format?(cep_params[:number])
+      #  render json: {
+      #    errors: ["Invalid CEP."]
+      #  }, status: 422
+      #end
+      if not CepValidator.valid_format?(cep_params[:number])
+        render json: {
+          errors: ["Invalid CEP."]
+        }, status: 422
+        return
+      end
+
       address = CepValidator.get_address(cep_params[:number]) 
 
       # Verify if cep is valid
@@ -29,6 +41,24 @@ module Api::V1
           }, status: 404
         end
       end
+    end
+
+    def self.get_city(cep)
+      if not CepValidator.valid_format?(cep) 
+        return nil
+      end
+
+      address = CepValidator.get_address(cep)
+      if address.nil?
+        return nil
+      end
+
+      state = State.find_by(abbreviation: address[:state])
+      if state.nil?
+        return nil
+      end
+
+      return City.find_by(name: address[:city], state: state.id)
     end
 
   private

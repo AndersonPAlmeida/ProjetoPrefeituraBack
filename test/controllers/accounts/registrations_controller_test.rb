@@ -7,29 +7,40 @@ class Api::V1::Accounts::RegistrationsControllerTest < ActionDispatch::Integrati
         @number_of_accounts = Account.count
         @number_of_citizens = Citizen.count
 
-        @santa_catarina = State.new(
-          abbreviation: "SC",
-          ibge_code: "42",
-          name: "Santa Catarina"
+        @parana = State.new(
+          abbreviation: "PR",
+          ibge_code: "41",
+          name: "Paraná"
         )
-        @santa_catarina.save!
+        @parana.save!
 
-        @joinville = City.new(
-          ibge_code: "4209102",
-          name: "Joinville",
-          state_id: @santa_catarina.id
+        @curitiba = City.new(
+          ibge_code: "4106902",
+          name: "Curitiba",
+          state_id: @parana.id
         )
-        @joinville.save!
+        @curitiba.save!
 
+        @curitiba_city_hall = CityHall.new(
+          name: "Prefeitura de Curitiba",
+          cep: "1234567",
+          neighborhood: "Test neighborhood",
+          address_street: "Test street",
+          address_number: "123",
+          city_id: @curitiba.id,
+          phone1: "1414141414",
+          active: true,
+          block_text: "Test block text"
+        );
+        @curitiba_city_hall.save!
 
         post '/v1/auth', params: {
           birth_date: "Apr 18 1997",
-          cep: "81530-110",
+          cep: "81530110",
           cpf: "10845922904",
           email: "test@example.com", 
           name: "Test Example",
           phone1: "121212-1212", 
-          city_id: @joinville.id,
           rg: "1234567",
           password: "123mudar",
           password_confirmation: "123mudar"
@@ -40,7 +51,7 @@ class Api::V1::Accounts::RegistrationsControllerTest < ActionDispatch::Integrati
       end
 
       it "should be successful" do
-        assert_equal 200, response.status
+        assert_equal 201, response.status
       end
 
       test "number of accounts should have been increased" do
@@ -56,7 +67,7 @@ class Api::V1::Accounts::RegistrationsControllerTest < ActionDispatch::Integrati
       end
 
       test "new user data should be returned as json" do
-        assert_equal @resource.uid, @data['uid']
+        assert_equal @resource.uid, @data["data"]["uid"]
       end
     end
 

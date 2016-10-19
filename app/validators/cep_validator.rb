@@ -1,7 +1,7 @@
 class CepValidator < ActiveModel::EachValidator
   
   # regular expression to describe a valid cep
-  CEP_REGEX = /^[0-9]{2}.[0-9]{3}-[0-9]{3}$/
+  CEP_REGEX = /^[0-9]{8}$/
 
   # Validate cep, if not valid put an error message in 
   # the record.errors[attribute]
@@ -9,7 +9,7 @@ class CepValidator < ActiveModel::EachValidator
   # @param attribute [Symbol] the attribute to be validated (cep)
   # @param value [String] the value of the record's cep
   def validate_each(record, attribute, value)
-    unless CEP_REGEX.match(value) 
+    unless valid_format?(value)
       record.errors[attribute] << ("#{value} is not a valid cep")
     end
   end
@@ -19,5 +19,9 @@ class CepValidator < ActiveModel::EachValidator
   # @return [Json] json containing address information
   def self.get_address(cep)
     Correios::CEP::AddressFinder.get(cep)
+  end
+
+  def self.valid_format?(cep)
+    CEP_REGEX.match(cep)
   end
 end
