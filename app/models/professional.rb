@@ -14,4 +14,15 @@ class Professional < ApplicationRecord
   def self.all_active
     Professional.where(active: true)
   end
+
+  # @return [Array] list of roles
+  def roles
+    self.professionals_service_places.pluck(:role)
+  end
+
+  # @param role [String] role to be verified
+  # @return [Boolean] professional has "role"
+  def has_role? role
+    self.roles.include?(role)
+  end
 end
