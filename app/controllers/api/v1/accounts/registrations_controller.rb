@@ -24,13 +24,7 @@ module Api::V1
       @resource.provider = "cpf"
 
       # create new citizen
-      city = CepController.get_city(citizen_params[:cep])
-      if city.nil?
-        citizen_params[:city_id] = nil
-      else
-        citizen_params[:city_id] = city.id
-      end
-
+      citizen_params[:city_id] = CepController.get_city_id(citizen_params[:cep])
       @citizen = Citizen.new(citizen_params)
 
       # honor devise configuration for case_insensitive_keys

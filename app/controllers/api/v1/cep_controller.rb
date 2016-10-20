@@ -3,11 +3,6 @@ module Api::V1
 
     # POST /validate_cep
     def validate
-      #unless CepValidador.valid_format?(cep_params[:number])
-      #  render json: {
-      #    errors: ["Invalid CEP."]
-      #  }, status: 422
-      #end
       if not CepValidator.valid_format?(cep_params[:number])
         render json: {
           errors: ["Invalid CEP."]
@@ -43,7 +38,7 @@ module Api::V1
       end
     end
 
-    def self.get_city(cep)
+    def self.get_city_id(cep)
       if not CepValidator.valid_format?(cep) 
         return nil
       end
@@ -58,7 +53,7 @@ module Api::V1
         return nil
       end
 
-      return City.find_by(name: address[:city], state: state.id)
+      return City.find_by(name: address[:city], state: state.id).id
     end
 
   private

@@ -172,7 +172,7 @@ namespace :agendador do
     citizens[:alan] = Citizen.create({
       name: "Alan Martins de Souza",
       active: true,
-      cpf: "86565208816",
+      cpf: "30688943799",
       rg: "123456789",
       birth_date: "1993-01-01",
       city: city_halls[0].city,
@@ -194,7 +194,7 @@ namespace :agendador do
     citizens[:bruno] = Citizen.create({
       name: "Bruno Dias",
       active: true,
-      cpf: "10845922904",
+      cpf: "05306107010",
       rg: "123456789",
       birth_date: "1996-01-01",
       city: city_halls[0].city,
@@ -216,7 +216,7 @@ namespace :agendador do
     citizens[:cynthia] = Citizen.create({
       name: "Cynthia Almeida Oliveira",
       active: true,
-      cpf: "73944098641",
+      cpf: "26646762295",
       rg: "123456789",
       birth_date: "1996-02-01",
       city: city_halls[0].city,
@@ -238,7 +238,7 @@ namespace :agendador do
     citizens[:pedro] = Citizen.create({
       name: "Pedro Monteiro Garcia",
       active: true,
-      cpf: "71282068849",
+      cpf: "99003488770",
       rg: "123456789",
       birth_date: "1996-01-01",
       city: city_halls[1].city,
@@ -260,7 +260,7 @@ namespace :agendador do
     citizens[:fabricio] = Citizen.create({
       name: "Fabricio Tissei",
       active: true,
-      cpf: "30819913316",
+      cpf: "52068808765",
       rg: "123456789",
       birth_date: "1994-06-02",
       city: city_halls[1].city,
@@ -282,7 +282,7 @@ namespace :agendador do
     citizens[:mateus] = Citizen.create({
       name: "Mateus Risso",
       active: true,
-      cpf: "92921649535",
+      cpf: "83853416845",
       rg: "123456789",
       birth_date: "1996-02-01",
       city: city_halls[0].city,
@@ -304,7 +304,7 @@ namespace :agendador do
     citizens[:joao] = Citizen.create({
       name: "João Ravedutti ",
       active: true,
-      cpf: "81595107053",
+      cpf: "96525184410",
       rg: "123456789",
       birth_date: "1996-02-01",
       city: city_halls[0].city,
@@ -340,7 +340,7 @@ namespace :agendador do
     citizens[:paulo] = Citizen.create({
       name: "Paulo Brandão",
       active: true,
-      cpf: "47147607694",
+      cpf: "60333178076",
       rg: "123456789",
       birth_date: "1996-02-01",
       city: city_halls[0].city,
@@ -362,7 +362,7 @@ namespace :agendador do
     citizens[:henrique] = Citizen.create({
       name: "Henrique Ravedutti",
       active: true,
-      cpf: "66579143185",
+      cpf: "34518832108",
       rg: "123456789",
       birth_date: "1995-06-02",
       city: city_halls[1].city,

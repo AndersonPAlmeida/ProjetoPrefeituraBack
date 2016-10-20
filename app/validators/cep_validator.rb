@@ -21,6 +21,9 @@ class CepValidator < ActiveModel::EachValidator
     Correios::CEP::AddressFinder.get(cep)
   end
 
+  # Check if cep is in the right format
+  # @param cep [String] cep number
+  # @return [Boolean] cep corresponds to CEP_REGEX
   def self.valid_format?(cep)
     CEP_REGEX.match(cep)
   end
