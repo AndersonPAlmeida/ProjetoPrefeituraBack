@@ -1,5 +1,7 @@
 module Api::V1
-  class SectorsController < ApiController
+  class SectorsController < ApplicationController
+    include Authenticable
+
     before_action :set_sector, only: [:show, :update, :destroy]
 
     # GET /sectors

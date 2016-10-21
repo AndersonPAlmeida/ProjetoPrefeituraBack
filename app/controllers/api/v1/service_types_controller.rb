@@ -1,5 +1,7 @@
 module Api::V1
-  class ServiceTypesController < ApiController
+  class ServiceTypesController < ApplicationController
+    include Authenticable
+
     before_action :set_service_type, only: [:show, :update, :destroy]
 
     # GET /service_types

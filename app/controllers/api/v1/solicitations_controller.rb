@@ -1,5 +1,7 @@
 module Api::V1
-  class SolicitationsController < ApiController
+  class SolicitationsController < ApplicationController
+    include Authenticable
+
     before_action :set_solicitation, only: [:show, :update, :destroy]
 
     # GET /solicitations

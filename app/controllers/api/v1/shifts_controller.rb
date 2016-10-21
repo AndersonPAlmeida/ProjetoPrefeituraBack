@@ -1,5 +1,7 @@
 module Api::V1
-  class ShiftsController < ApiController
+  class ShiftsController < ApplicationController
+    include Authenticable
+
     before_action :set_shift, only: [:show, :update, :destroy]
 
     # GET /shifts

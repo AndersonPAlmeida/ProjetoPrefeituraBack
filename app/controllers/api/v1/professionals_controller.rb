@@ -1,5 +1,7 @@
 module Api::V1
-  class ProfessionalsController < ApiController
+  class ProfessionalsController < ApplicationController
+    include Authenticable
+
     before_action :set_professional, only: [:show, :update, :destroy]
 
     # GET /professionals

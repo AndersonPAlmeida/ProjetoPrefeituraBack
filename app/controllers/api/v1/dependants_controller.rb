@@ -1,5 +1,7 @@
 module Api::V1
-  class DependantsController < ApiController
+  class DependantsController < ApplicationController 
+    include Authenticable
+
     before_action :set_dependant, only: [:show, :update, :destroy]
 
     # GET /dependants

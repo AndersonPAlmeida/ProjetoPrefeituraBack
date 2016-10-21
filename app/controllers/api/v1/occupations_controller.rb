@@ -1,5 +1,7 @@
 module Api::V1
-  class OccupationsController < ApiController
+  class OccupationsController < ApplicationController 
+    include Authenticable
+    
     before_action :set_occupation, only: [:show, :update, :destroy]
 
     # GET /occupations

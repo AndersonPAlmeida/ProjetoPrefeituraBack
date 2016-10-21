@@ -1,5 +1,7 @@
 module Api::V1
-  class CityHallsController < ApiController
+  class CityHallsController < ApplicationController 
+    include Authenticable
+
     before_action :set_city_hall, only: [:show, :update, :destroy]
 
     # GET /city_halls

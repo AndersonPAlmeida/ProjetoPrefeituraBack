@@ -1,5 +1,7 @@
 module Api::V1
-  class ServicePlacesController < ApiController
+  class ServicePlacesController < ApplicationController
+    include Authenticable
+
     before_action :set_service_place, only: [:show, :update, :destroy]
 
     # GET /service_places
