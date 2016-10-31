@@ -106,7 +106,11 @@ class Api::V1::ShiftsControllerTest < ActionDispatch::IntegrationTest
       @shift.save!
 
       @situation = Situation.new(
-        description: 'Waiting'
+        description: "Waiting"
+      )
+      @situation.save!
+      @situation = Situation.new(
+        description: "Disponível"
       )
       @situation.save!
 
@@ -118,17 +122,16 @@ class Api::V1::ShiftsControllerTest < ActionDispatch::IntegrationTest
 
     describe "Succesful request to create shift" do
       before do
-
         @number_of_shifts = Shift.count
+        @number_of_schedules = Schedule.count
 
-        post '/v1/shifts/', params: { shift: {
+        post '/v1/shifts', params: { shift: {
               execution_start_time: DateTime.now,
               execution_end_time: DateTime.now+3,
               service_amount: 3,
               service_type_id: @service_type.id,
               service_place_id: @service_place.id
         }}, headers: @auth_headers
-
 
         @body = JSON.parse(response.body)
         @resp_token = response.headers['access-token']
@@ -143,6 +146,14 @@ class Api::V1::ShiftsControllerTest < ActionDispatch::IntegrationTest
 
       it "should correspond to the created shift" do
         assert_equal 3, @body["service_amount"]
+      end
+      
+      it "should increase de number of schedules in service_amount times" do
+        assert_equal @number_of_schedules + @body["service_amount"], Schedule.count
+      end
+
+      it "should create service_amount schedules" do
+        assert_equal @body["service_amount"], Schedule.where(shift_id: @body["id"]).count
       end
 
       it "should correspond to the information in the database" do
