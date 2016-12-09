@@ -18,7 +18,7 @@ class CepValidator < ActiveModel::EachValidator
   # @param cep [String] cep number
   # @return [Json] json containing address information
   def self.get_address(cep)
-    Correios::CEP::AddressFinder.get(cep)
+    Agendador::CEP::Finder.get(cep)
   end
 
   # Check if cep is in the right format

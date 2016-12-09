@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161007130605) do
+ActiveRecord::Schema.define(version: 20161208133948) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -39,6 +39,20 @@ ActiveRecord::Schema.define(version: 20161007130605) do
     t.integer "service_place_id", null: false
     t.index ["account_id", "service_place_id"], name: "idx_accounts_service_places", using: :btree
     t.index ["service_place_id", "account_id"], name: "idx_service_places_accounts", using: :btree
+  end
+
+  create_table "addresses", force: :cascade do |t|
+    t.string   "zipcode"
+    t.string   "address"
+    t.string   "neighborhood"
+    t.string   "complement"
+    t.string   "complement2"
+    t.datetime "created_at",   null: false
+    t.datetime "updated_at",   null: false
+    t.integer  "city_id"
+    t.integer  "state_id"
+    t.index ["city_id"], name: "index_addresses_on_city_id", using: :btree
+    t.index ["state_id"], name: "index_addresses_on_state_id", using: :btree
   end
 
   create_table "blocks", force: :cascade do |t|
@@ -272,6 +286,8 @@ ActiveRecord::Schema.define(version: 20161007130605) do
     t.datetime "updated_at",             null: false
   end
 
+  add_foreign_key "addresses", "cities"
+  add_foreign_key "addresses", "states"
   add_foreign_key "blocks", "accounts"
   add_foreign_key "blocks", "dependants"
   add_foreign_key "blocks", "sectors"

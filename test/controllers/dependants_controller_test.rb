@@ -47,7 +47,6 @@ class Api::V1::DependantsControllerTest < ActionDispatch::IntegrationTest
 
     describe "Successful request to create dependant" do
       before do 
-
         @number_of_dependants = Dependant.count
 
         post '/v1/dependants', params: {dependant: {
@@ -67,7 +66,7 @@ class Api::V1::DependantsControllerTest < ActionDispatch::IntegrationTest
       end
 
       it "should correspond to the created dependant" do
-        assert_equal @body["citizen_id"], @citizen_id 
+        assert_equal @citizen.id, @body["citizen"]["id"]
       end
 
       it "should create a dependant" do

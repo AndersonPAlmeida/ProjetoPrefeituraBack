@@ -42,6 +42,9 @@ gem 'rack-cors'
 # Get Brazilian address by zipcode, directly from Correios database.
 gem 'correios-cep'
 
+# Curl for ruby
+gem 'curb'
+
 gem 'activerecord-import'
 
 group :development, :test do

@@ -26,13 +26,12 @@ module Api::V1
     def create
       @citizen = Citizen.new(citizen_params)
       @citizen.active = true
-      @citizen.city_id = CepController.get_city_id(citizen_params[:cep])
 
-      #if city.nil?
-      #  @citizen.city_id = nil
-      #else
-      #  @citizen.city_id = CepController.get_city(citizen_params[:cep]).id
-      #end
+      # TODO: the city must come from the front-end, which means that
+      # no request to correios should be made in the back-end, except
+      # the validation in the cep_controller when requested by the
+      # front-end
+      @citizen.city_id = Address.get_city_id(citizen_params[:cep])
 
       if @citizen.save
         render json: @citizen, status: :created
