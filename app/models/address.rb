@@ -40,6 +40,7 @@ class Address < ApplicationRecord
   end
 
 	def self.get_city_id(cep)
+    cep = cep.gsub(/\D/, '')
     if not CepValidator.valid_format?(cep)
       return nil
     end

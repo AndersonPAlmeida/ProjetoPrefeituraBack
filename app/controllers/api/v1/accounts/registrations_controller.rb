@@ -24,7 +24,7 @@ module Api::V1
       @resource.provider = "cpf"
 
       # create new citizen
-      citizen_params[:city_id] = CepController.get_city_id(citizen_params[:cep])
+      citizen_params[:city_id] = Address.get_city_id(citizen_params[:cep])
       @citizen = Citizen.new(citizen_params)
 
       # honor devise configuration for case_insensitive_keys
@@ -136,10 +136,6 @@ module Api::V1
         data: @citizen,
         errors: @citizen.errors
       }, status: 422
-      #render json: {
-      #  status: 'error',
-      #  errors: [I18n.t("registrations.create_citizen_error", cpf: @citizen.cpf)]
-      #}, status: 422
     end
   end
 end

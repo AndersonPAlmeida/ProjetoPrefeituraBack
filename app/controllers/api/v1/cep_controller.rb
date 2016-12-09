@@ -46,24 +46,6 @@ module Api::V1
       end
     end
 
-    def self.get_city_id(cep)
-      if not CepValidator.valid_format?(cep) 
-        return nil
-      end
-
-      address = CepValidator.get_address(cep)
-      if address.nil?
-        return nil
-      end
-
-      state = State.find_by(abbreviation: address[:state])
-      if state.nil?
-        return nil
-      end
-
-      return City.find_by(name: address[:city], state: state.id).id
-    end
-
   private
 
     # Only allow a trusted parameter "white list" through.
