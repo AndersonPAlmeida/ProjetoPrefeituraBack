@@ -85,7 +85,7 @@ class Api::V1::SchedulesControllerTest < ActionDispatch::IntegrationTest
         description: "type one"
       )
       @service_type.sector = @sector
- 
+
       @service_place = ServicePlace.new(
         active: true, 
         address_number: "123",
@@ -128,14 +128,14 @@ class Api::V1::SchedulesControllerTest < ActionDispatch::IntegrationTest
         @number_of_schedules = Schedule.count
 
         post '/v1/schedules/', params: { schedule: {
-              shift_id: @shift.id,
-              situation_id: @situation.id,
-              service_place_id: @service_place.id,
-              citizen_ajax_read: 1,
-              professional_ajax_read: 1,
-              reminder_read: 1,
-              service_start_time: DateTime.now,
-              service_end_time: DateTime.now+5
+          shift_id: @shift.id,
+          situation_id: @situation.id,
+          service_place_id: @service_place.id,
+          citizen_ajax_read: 1,
+          professional_ajax_read: 1,
+          reminder_read: 1,
+          service_start_time: DateTime.now,
+          service_end_time: DateTime.now+5
         }}, headers: @auth_headers
 
         @body = JSON.parse(response.body)
@@ -165,9 +165,9 @@ class Api::V1::SchedulesControllerTest < ActionDispatch::IntegrationTest
         before do
 
           @schedule = Schedule.where(situation_id: @situation.id).first
-  
+
           get '/v1/schedules/' + @schedule.id.to_s, params: {},
-                headers: @auth_headers
+            headers: @auth_headers
           @body = JSON.parse(response.body)
           @resp_token = response.headers['access-token']
           @resp_client_id = response.headers['client']
@@ -184,7 +184,7 @@ class Api::V1::SchedulesControllerTest < ActionDispatch::IntegrationTest
         before do
 
           get '/v1/schedules/', params: {},
-              headers: @auth_headers
+            headers: @auth_headers
           @body = JSON.parse(response.body)
           @resp_token = response.headers['access-token']
           @resp_client_id = response.headers['client']
@@ -206,8 +206,8 @@ class Api::V1::SchedulesControllerTest < ActionDispatch::IntegrationTest
           @schedule = Schedule.where(shift_id: @shift.id).first
 
           put '/v1/schedules/' + @schedule.id.to_s,
-                                  params: {schedule: {reminder_read: 0}},
-                                  headers: @auth_headers
+            params: {schedule: {reminder_read: 0}},
+            headers: @auth_headers
 
           @resp_token = response.headers['access-token']
           @resp_client_id = response.headers['client']
@@ -232,8 +232,8 @@ class Api::V1::SchedulesControllerTest < ActionDispatch::IntegrationTest
           @schedule = Schedule.where(shift_id: @shift.id).first
 
           delete '/v1/schedules/' + @schedule.id.to_s,
-                                    params: {},
-                                    headers: @auth_headers
+            params: {},
+            headers: @auth_headers
 
           @resp_token = response.headers['access-token']
           @resp_client_id = response.headers['client']

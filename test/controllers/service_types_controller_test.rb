@@ -75,9 +75,9 @@ class ServiceTypesControllerTest < ActionDispatch::IntegrationTest
         @number_of_service_types = ServiceType.count
 
         post '/v1/service_types', params: {service_type: {
-                active: true,
-                sector_id: @sector.id,
-                description: "type one"
+          active: true,
+          sector_id: @sector.id,
+          description: "type one"
         }}, headers: @auth_headers
 
 
@@ -108,7 +108,7 @@ class ServiceTypesControllerTest < ActionDispatch::IntegrationTest
       describe "Successful request to show all service types" do
         before do 
           get '/v1/service_types', params: {}, 
-                                   headers: @auth_headers
+            headers: @auth_headers
 
           @body = JSON.parse(response.body)
           @resp_token = response.headers['access-token']
@@ -131,7 +131,7 @@ class ServiceTypesControllerTest < ActionDispatch::IntegrationTest
           @service_type = ServiceType.where(sector_id: @sector.id).first
 
           get '/v1/service_types/' + @service_type.id.to_s, params: {}, 
-                                                      headers: @auth_headers
+            headers: @auth_headers
 
           @body = JSON.parse(response.body)
           @resp_token = response.headers['access-token']
@@ -158,8 +158,8 @@ class ServiceTypesControllerTest < ActionDispatch::IntegrationTest
           @service_type = ServiceType.where(sector_id: @sector.id).first
 
           put '/v1/service_types/' + @service_type.id.to_s, 
-                                params: {service_type: {sector_id: "222"}},
-                                headers: @auth_headers
+            params: {service_type: {sector_id: "222"}},
+            headers: @auth_headers
 
           @body = JSON.parse(response.body)
           @resp_token = response.headers['access-token']
@@ -182,8 +182,8 @@ class ServiceTypesControllerTest < ActionDispatch::IntegrationTest
           @service_type = ServiceType.where(sector_id: @sector.id).first
 
           put '/v1/service_types/' + @service_type.id.to_s,
-                                  params: {service_type: {description: "type one v2"}}, 
-                                  headers: @auth_headers
+            params: {service_type: {description: "type one v2"}}, 
+            headers: @auth_headers
 
           @resp_token = response.headers['access-token']
           @resp_client_id = response.headers['client']
@@ -206,8 +206,8 @@ class ServiceTypesControllerTest < ActionDispatch::IntegrationTest
         before do
           @service_type = ServiceType.where(sector_id: @sector.id).first
           put '/v1/service_types/' + @service_type.id.to_s, 
-                                params: {service_type: {sector_id: nil}},
-                                headers: @auth_headers
+            params: {service_type: {sector_id: nil}},
+            headers: @auth_headers
 
           @body = JSON.parse(response.body)
           @resp_token = response.headers['access-token']
@@ -231,15 +231,15 @@ class ServiceTypesControllerTest < ActionDispatch::IntegrationTest
           @service_type = ServiceType.where(sector_id: @sector.id).first
 
           delete '/v1/service_types/' + @service_type.id.to_s, 
-                                    params: {}, 
-                                    headers: @auth_headers
+            params: {}, 
+            headers: @auth_headers
 
           @resp_token = response.headers['access-token']
           @resp_client_id = response.headers['client']
           @resp_expiry = response.headers['expiry']
           @resp_uid = response.headers['uid']
         end
-     
+
         it "should be successful" do
           assert_equal 204, response.status
         end

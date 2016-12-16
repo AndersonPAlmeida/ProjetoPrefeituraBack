@@ -78,12 +78,12 @@ class Api::V1::ServicePlacesControllerTest < ActionDispatch::IntegrationTest
         @number_of_service_places = ServicePlace.count
 
         post '/v1/service_places', params: {service_place: {
-                active: true,
-                address_number: "123",
-                address_street: "Test Avenue",
-                city_hall_id: @city_hall.id,
-                name: "Example SP",
-                neighborhood: "Neighborhood Example"
+          active: true,
+          address_number: "123",
+          address_street: "Test Avenue",
+          city_hall_id: @city_hall.id,
+          name: "Example SP",
+          neighborhood: "Neighborhood Example"
         }}, headers: @auth_headers
 
         @body = JSON.parse(response.body)
@@ -121,7 +121,7 @@ class Api::V1::ServicePlacesControllerTest < ActionDispatch::IntegrationTest
           @service_place = ServicePlace.where(name: "Example SP").first
 
           get '/v1/service_places/', params: {},
-                                     headers: @auth_headers
+            headers: @auth_headers
 
           @body = JSON.parse(response.body)
           @resp_token = response.headers['access-token']
@@ -145,7 +145,7 @@ class Api::V1::ServicePlacesControllerTest < ActionDispatch::IntegrationTest
           @service_place = ServicePlace.where(name: "Example SP").first
 
           get '/v1/service_places/' + @service_place.id.to_s, params: {},
-                headers: @auth_headers
+            headers: @auth_headers
 
           @body = JSON.parse(response.body)
           @resp_token = response.headers['access-token']
@@ -173,8 +173,8 @@ class Api::V1::ServicePlacesControllerTest < ActionDispatch::IntegrationTest
           @service_place = ServicePlace.where(name: "Example SP").first
 
           put '/v1/service_places/' + @service_place.id.to_s,
-                                  params: {service_place: {name: "New name"}},
-                                  headers: @auth_headers
+            params: {service_place: {name: "New name"}},
+            headers: @auth_headers
 
           @resp_token = response.headers['access-token']
           @resp_client_id = response.headers['client']
@@ -199,8 +199,8 @@ class Api::V1::ServicePlacesControllerTest < ActionDispatch::IntegrationTest
           @service_place = ServicePlace.where(name: "Example SP").first
 
           delete '/v1/service_places/' + @service_place.id.to_s,
-                                    params: {},
-                                    headers: @auth_headers
+            params: {},
+            headers: @auth_headers
 
           @resp_token = response.headers['access-token']
           @resp_client_id = response.headers['client']

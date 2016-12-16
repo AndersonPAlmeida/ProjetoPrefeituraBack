@@ -21,7 +21,7 @@ class StateTest < ActiveSupport::TestCase
     describe "missing abbreviation" do
       before do
         @parana = State.new(ibge_code: "41",
-                           name: "Parana")
+                            name: "Parana")
       end
 
       it "should return an error" do

@@ -7,7 +7,7 @@ class Address < ApplicationRecord
   def self.get_address(zipcode)
     zipcode = zipcode.gsub(/\D/, '')
     address = Address.find_by(zipcode: zipcode)
-  
+
     # if not registered in database or registered but too old (180 days)
     if address.nil? or (Date.today - Date.parse(address.updated_at.to_s) > 180)
       result = CepValidator.get_address(zipcode)
@@ -81,7 +81,7 @@ class Address < ApplicationRecord
     if state.nil?
       return nil
     end
-    
+
     return state.id
   end
 end

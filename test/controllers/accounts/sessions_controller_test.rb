@@ -50,7 +50,7 @@ class Api::V1::Accounts::SessionsControllerTest < ActionDispatch::IntegrationTes
         before do
           post '/v1/auth/sign_in', params: {cpf: "10845922904",
                                             password: "123mudar"}, 
-                                   headers: @auth_headers
+                                            headers: @auth_headers
 
           @body = JSON.parse(response.body)
           @resp_token = response.headers['access-token']
@@ -65,7 +65,7 @@ class Api::V1::Accounts::SessionsControllerTest < ActionDispatch::IntegrationTes
 
         it "should correspond to the current account" do
           assert_equal @controller.current_account.citizen.id, 
-                       Account.where(uid: @body["data"]["uid"]).first.citizen.id
+            Account.where(uid: @body["data"]["uid"]).first.citizen.id
         end
 
         it "should correspond to the citizen in the database" do
@@ -77,7 +77,7 @@ class Api::V1::Accounts::SessionsControllerTest < ActionDispatch::IntegrationTes
         before do
           post '/v1/auth/sign_in', params: {cpf: "11111111111",
                                             password: "123mudar"}, 
-                                   headers: @auth_headers
+                                            headers: @auth_headers
 
           @body = JSON.parse(response.body)
           @resp_token = response.headers['access-token']

@@ -126,11 +126,11 @@ class Api::V1::ShiftsControllerTest < ActionDispatch::IntegrationTest
         @number_of_schedules = Schedule.count
 
         post '/v1/shifts', params: { shift: {
-              execution_start_time: DateTime.now,
-              execution_end_time: DateTime.now+3,
-              service_amount: 3,
-              service_type_id: @service_type.id,
-              service_place_id: @service_place.id
+          execution_start_time: DateTime.now,
+          execution_end_time: DateTime.now+3,
+          service_amount: 3,
+          service_type_id: @service_type.id,
+          service_place_id: @service_place.id
         }}, headers: @auth_headers
 
         @body = JSON.parse(response.body)
@@ -147,7 +147,7 @@ class Api::V1::ShiftsControllerTest < ActionDispatch::IntegrationTest
       it "should correspond to the created shift" do
         assert_equal 3, @body["service_amount"]
       end
-      
+
       it "should increase de number of schedules in service_amount times" do
         assert_equal @number_of_schedules + @body["service_amount"], Schedule.count
       end
@@ -163,14 +163,14 @@ class Api::V1::ShiftsControllerTest < ActionDispatch::IntegrationTest
       it "should create a shift" do
         assert_equal @number_of_shifts + 1, Shift.count
       end
- 
+
       describe "Succesful request to show shift" do
         before do
 
           @shift = Shift.where(service_place_id: @service_place.id).first
-  
+
           get '/v1/shifts/' + @shift.id.to_s, params: {},
-              headers: @auth_headers
+            headers: @auth_headers
           @body = JSON.parse(response.body)
           @resp_token = response.headers['access-token']
           @resp_client_id = response.headers['client']
@@ -186,7 +186,7 @@ class Api::V1::ShiftsControllerTest < ActionDispatch::IntegrationTest
         before do
 
           get '/v1/shifts/', params: {},
-           headers: @auth_headers
+            headers: @auth_headers
           @body = JSON.parse(response.body)
           @resp_token = response.headers['access-token']
           @resp_client_id = response.headers['client']
@@ -208,8 +208,8 @@ class Api::V1::ShiftsControllerTest < ActionDispatch::IntegrationTest
           @shift = Shift.where(service_place_id: @service_place.id).first
 
           put '/v1/shifts/' + @shift.id.to_s,
-                                  params: {shift: {service_amount: 13}},
-                                  headers: @auth_headers
+            params: {shift: {service_amount: 13}},
+            headers: @auth_headers
 
           @resp_token = response.headers['access-token']
           @resp_client_id = response.headers['client']
@@ -234,8 +234,8 @@ class Api::V1::ShiftsControllerTest < ActionDispatch::IntegrationTest
           @shift = Shift.where(service_place_id: @service_place.id).first
 
           delete '/v1/shifts/' + @shift.id.to_s,
-                                    params: {},
-                                    headers: @auth_headers
+            params: {},
+            headers: @auth_headers
 
           @resp_token = response.headers['access-token']
           @resp_client_id = response.headers['client']

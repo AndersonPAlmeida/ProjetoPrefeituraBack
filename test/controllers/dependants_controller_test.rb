@@ -50,8 +50,8 @@ class Api::V1::DependantsControllerTest < ActionDispatch::IntegrationTest
         @number_of_dependants = Dependant.count
 
         post '/v1/dependants', params: {dependant: {
-                               citizen_id: @citizen.id,
-                               active: true
+          citizen_id: @citizen.id,
+          active: true
         }}, headers: @auth_headers
 
         @body = JSON.parse(response.body)
@@ -76,9 +76,9 @@ class Api::V1::DependantsControllerTest < ActionDispatch::IntegrationTest
       describe "Successful request to show dependant" do
         before do 
           @dependant = Dependant.where(citizen_id: @citizen.id).first
-      
+
           get '/v1/dependants/' + @dependant.id.to_s, params: {}, 
-                                                      headers: @auth_headers
+            headers: @auth_headers
 
           @body = JSON.parse(response.body)
           @resp_token = response.headers['access-token']
@@ -105,14 +105,14 @@ class Api::V1::DependantsControllerTest < ActionDispatch::IntegrationTest
           @dependant = Dependant.where(citizen_id: @citizen.id).first
 
           delete '/v1/dependants/' + @dependant.id.to_s, params: {}, 
-                                                     headers: @auth_headers
+            headers: @auth_headers
 
           @resp_token = response.headers['access-token']
           @resp_client_id = response.headers['client']
           @resp_expiry = response.headers['expiry']
           @resp_uid = response.headers['uid']
         end
-       
+
         it "should be successful" do
           assert_equal 204, response.status
         end
@@ -128,8 +128,8 @@ class Api::V1::DependantsControllerTest < ActionDispatch::IntegrationTest
           @dependant = Dependant.where(citizen_id: @citizen.id).first
 
           put '/v1/dependants/' + @dependant.id.to_s,
-                                         params: {dependant: { active: false  }},
-                                         headers: @auth_headers
+            params: {dependant: { active: false  }},
+            headers: @auth_headers
           @resp_token = response.headers['access-token']
           @resp_client_id = response.headers['client']
           @resp_expiry = response.headers['expiry']

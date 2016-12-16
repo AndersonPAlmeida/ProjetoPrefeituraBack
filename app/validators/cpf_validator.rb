@@ -38,7 +38,7 @@ class CpfValidator < ActiveModel::EachValidator
     return (check(10, arr) and check(11, arr))
   end
 
-private
+  private
 
   # @return [boolean] true if last two digits are valid
   # @param aux [Fixnum] the auh-th number to be validated (10 or 11)

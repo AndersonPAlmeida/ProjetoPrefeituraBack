@@ -16,15 +16,13 @@ module Api::V1
 
         # finds account which citizens' cpf correspond to the request's
         @resource = resource_class.where(citizens: {cpf: q_value})
-                                  .includes(:citizen)
-                                  .where(provider: 'cpf').first  
+          .includes(:citizen)
+          .where(provider: 'cpf').first  
       end
 
       # create token and sign in
-      if @resource and valid_params?(field, q_value) and 
-         @resource.valid_password?(resource_params[:password]) and 
-         (!@resource.respond_to?(:active_for_authentication?) or 
-         @resource.active_for_authentication?)
+      if @resource and valid_params?(field, q_value) and @resource.valid_password?(resource_params[:password]) and 
+          (!@resource.respond_to?(:active_for_authentication?) or @resource.active_for_authentication?)
         # create client id
         @client_id = SecureRandom.urlsafe_base64(nil, false)
         @token     = SecureRandom.urlsafe_base64(nil, false)

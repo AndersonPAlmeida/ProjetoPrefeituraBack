@@ -6,5 +6,5 @@ class ProfessionalsServicePlace < ApplicationRecord
 
   # Validations #
   validates_presence_of :active,
-                        :role
+    :role
 end

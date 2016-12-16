@@ -14,12 +14,12 @@ class Account < ApplicationRecord
   # :token_authenticable, :confirmable, 
   # :lockable, :timeoutable and :omniauthable
   devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :trackable, :validatable
+    :recoverable, :rememberable, :trackable, :validatable
 
   # DeviseTokenAuth #
   # Include default DeviseTokenAuth methods.
   include DeviseTokenAuth::Concerns::User
-  
+
   # @return [String] citizen's cpf
   def cpf
     self.citizen.cpf

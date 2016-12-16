@@ -1,7 +1,7 @@
 class ServiceTypeSerializer < ActiveModel::Serializer
   attributes :id, 
-             :active, 
-             :description
+    :active, 
+    :description
 
   belongs_to :sector
 end

@@ -112,7 +112,7 @@ class Api::V1::Accounts::RegistrationsControllerTest < ActionDispatch::Integrati
         assert_equal @number_of_accounts, Account.count
       end
     end
-  
+
     describe "Empty body" do
       before do
         @number_of_citizens = Citizen.count

@@ -42,12 +42,12 @@ class ScheduleTest < ActiveSupport::TestCase
                                    active: true)
 
       @sector = Sector.new(active: true,
-                name: "Setor 1",
-                absence_max: 1,
-                blocking_days: 2,
-                cancel_limit: 3,
-                description: "number one",
-                schedules_by_sector: 3)
+                           name: "Setor 1",
+                           absence_max: 1,
+                           blocking_days: 2,
+                           cancel_limit: 3,
+                           description: "number one",
+                           schedules_by_sector: 3)
 
       @professional = Professional.new(active: true,
                                        registration: "123")

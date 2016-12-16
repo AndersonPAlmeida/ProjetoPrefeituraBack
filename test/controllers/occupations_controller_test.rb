@@ -91,7 +91,7 @@ class OccupationsControllerTest < ActionDispatch::IntegrationTest
       describe "Successful request to show all occupations" do
         before do
           get '/v1/occupations', params: {},
-                                 headers: @auth_headers
+            headers: @auth_headers
 
           @body = JSON.parse(response.body)
           @resp_token = response.headers['access-token']
@@ -113,7 +113,7 @@ class OccupationsControllerTest < ActionDispatch::IntegrationTest
     describe "Unsuccessful request to show occupation that doesn't exists" do
       before do
         get '/v1/occupations/222', params: {},
-                                   headers: @auth_headers
+          headers: @auth_headers
 
         @body = JSON.parse(response.body)
         @resp_token = response.headers['access-token']
@@ -162,7 +162,7 @@ class OccupationsControllerTest < ActionDispatch::IntegrationTest
         @number_of_occupations = Occupation.all_active.count
 
         delete '/v1/occupations/222', params: {},
-                                      headers: @auth_headers
+          headers: @auth_headers
 
         @body = JSON.parse(response.body)
         @resp_token = response.headers['access-token']

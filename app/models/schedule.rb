@@ -8,8 +8,8 @@ class Schedule < ApplicationRecord
 
   # Validations #
   validates_presence_of :citizen_ajax_read
-                        :professional_ajax_read
-                        :reminder_read
-                        :service_start_time
-                        :service_end_time
+  :professional_ajax_read
+  :reminder_read
+  :service_start_time
+  :service_end_time
 end

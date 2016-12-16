@@ -85,7 +85,7 @@ class SolicitationsControllerTest < ActionDispatch::IntegrationTest
       describe "Successful request to show all soliciations" do
         before do 
           get '/v1/solicitations', params: {}, 
-                                   headers: @auth_headers
+            headers: @auth_headers
 
           @body = JSON.parse(response.body)
           @resp_token = response.headers['access-token']
@@ -108,7 +108,7 @@ class SolicitationsControllerTest < ActionDispatch::IntegrationTest
           @solicitation = Solicitation.where(city_id: @curitiba.id).first
 
           get '/v1/solicitations/' + @solicitation.id.to_s, params: {}, 
-                                                            headers: @auth_headers
+            headers: @auth_headers
 
           @body = JSON.parse(response.body)
           @resp_token = response.headers['access-token']
@@ -127,7 +127,7 @@ class SolicitationsControllerTest < ActionDispatch::IntegrationTest
 
         it "should correspond to the information in the database" do
           assert_equal Solicitation.where(city_id: @curitiba.id).first.name, 
-                       @body["name"]
+            @body["name"]
         end
       end
 
@@ -137,8 +137,8 @@ class SolicitationsControllerTest < ActionDispatch::IntegrationTest
           @solicitation = Solicitation.where(city_id: @curitiba.id).first
 
           delete '/v1/solicitations/' + @solicitation.id.to_s,
-                                        params: {},
-                                        headers: @auth_headers
+            params: {},
+            headers: @auth_headers
 
           @resp_token = response.headers['access-token']
           @resp_client_id = response.headers['client']
@@ -160,10 +160,10 @@ class SolicitationsControllerTest < ActionDispatch::IntegrationTest
           @solicitation = Solicitation.where(city_id: @curitiba.id).first
 
           put '/v1/solicitations/' + @solicitation.id.to_s,
-                                     params: {solicitation: {
-                                       name: "Teste2"
-                                     }},
-                                     headers: @auth_headers
+            params: {solicitation: {
+            name: "Teste2"
+          }},
+          headers: @auth_headers
 
           @resp_token = response.headers['access-token']
           @resp_client_id = response.headers['client']
@@ -184,7 +184,7 @@ class SolicitationsControllerTest < ActionDispatch::IntegrationTest
     describe "Unsuccessful request to show solicitation that doesn't exist" do
       before do 
         get '/v1/solicitations/222', params: {}, 
-                                     headers: @auth_headers
+          headers: @auth_headers
 
         @body = JSON.parse(response.body)
         @resp_token = response.headers['access-token']

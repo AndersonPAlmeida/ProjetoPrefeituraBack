@@ -6,7 +6,7 @@ class Citizen < ApplicationRecord
   has_one    :dependant
 
   belongs_to :citizen, optional: true, :foreign_key => :responsible_id,
-             :class_name => "Citizen"
+    :class_name => "Citizen"
 
   # Validations #
   validates :cpf, cpf: true
@@ -24,14 +24,14 @@ class Citizen < ApplicationRecord
   validates_length_of       :name, maximum: 255
   validates_length_of       :rg, maximum: 13
   validates_length_of       :address_number, within: 0..10,
-                             allow_blank: true
+    allow_blank: true
 
   validates_numericality_of :address_number,
-                             only_integer: true,
-                             allow_blank: true
+    only_integer: true,
+    allow_blank: true
 
   validates_format_of       :name,
-                             with: /\A[^0-9`!@#\$%\^&*+_=]+\z/
+    with: /\A[^0-9`!@#\$%\^&*+_=]+\z/
 
   validates_inclusion_of    :active, in: [true, false]
 

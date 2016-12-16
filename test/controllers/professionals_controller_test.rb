@@ -37,7 +37,7 @@ class Api::V1::ProfessionalsControllerTest < ActionDispatch::IntegrationTest
       @account.save!
       @citizen.account_id = @account.id
       @citizen.save!
- 
+
       @curitiba_city_hall = CityHall.new(
         name: "Prefeitura de Curitiba",
         cep: "1234567",
@@ -103,7 +103,7 @@ class Api::V1::ProfessionalsControllerTest < ActionDispatch::IntegrationTest
       describe "Successful request to show all professionals" do
         before do 
           get '/v1/professionals', params: {}, 
-                                   headers: @auth_headers
+            headers: @auth_headers
 
           @body = JSON.parse(response.body)
           @resp_token = response.headers['access-token']
@@ -126,7 +126,7 @@ class Api::V1::ProfessionalsControllerTest < ActionDispatch::IntegrationTest
         before do 
           @professional = Professional.where(account_id: @account.id).first
           get '/v1/professionals/' + @professional.id.to_s, params: {}, 
-                                                      headers: @auth_headers
+            headers: @auth_headers
           @body = JSON.parse(response.body)
           @resp_token = response.headers['access-token']
           @resp_client_id = response.headers['client']
@@ -144,7 +144,7 @@ class Api::V1::ProfessionalsControllerTest < ActionDispatch::IntegrationTest
 
         it "should correspond to the information in the database" do
           assert_equal Professional.where(account_id: @account.id).first.occupation_id, 
-                                          @body["occupation"]["id"]
+            @body["occupation"]["id"]
         end
 
       end
@@ -156,14 +156,14 @@ class Api::V1::ProfessionalsControllerTest < ActionDispatch::IntegrationTest
           @number_of_professionals = Professional.all_active.count
 
           delete '/v1/professionals/' + @professional.id.to_s, params: {}, 
-                                                     headers: @auth_headers
+            headers: @auth_headers
 
           @resp_token = response.headers['access-token']
           @resp_client_id = response.headers['client']
           @resp_expiry = response.headers['expiry']
           @resp_uid = response.headers['uid']
         end
-       
+
         it "should be successful" do
           assert_equal 204, response.status
         end
@@ -182,8 +182,8 @@ class Api::V1::ProfessionalsControllerTest < ActionDispatch::IntegrationTest
           @professional = Professional.where(account_id: @account.id).first
 
           put '/v1/professionals/' + @professional.id.to_s,
-                                         params: {professional: {registration: "7654/21" }}, #{professional: {registration: "7654/21"}}, 
-                                         headers: @auth_headers
+            params: {professional: {registration: "7654/21" }}, #{professional: {registration: "7654/21"}}, 
+            headers: @auth_headers
 
           @resp_token = response.headers['access-token']
           @resp_client_id = response.headers['client']

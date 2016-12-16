@@ -48,7 +48,7 @@ class Api::V1::CitizensControllerTest < ActionDispatch::IntegrationTest
     describe "Successful request to show citizen" do
       before do 
         get '/v1/citizens/' + @citizen.id.to_s, params: {}, 
-                                                headers: @auth_headers
+          headers: @auth_headers
 
         @body = JSON.parse(response.body)
         @resp_token = response.headers['access-token']
@@ -73,7 +73,7 @@ class Api::V1::CitizensControllerTest < ActionDispatch::IntegrationTest
     describe "Unsuccessful request to show citizen that doesn't exists" do
       before do 
         get '/v1/citizens/222', params: {}, 
-                                headers: @auth_headers
+          headers: @auth_headers
 
         @body = JSON.parse(response.body)
         @resp_token = response.headers['access-token']
@@ -105,7 +105,7 @@ class Api::V1::CitizensControllerTest < ActionDispatch::IntegrationTest
       it "should be successful" do
         assert_equal 200, response.status
       end
-  
+
       # TODO: change to return only the citizens that SHOULD be displayed
       # (e.g. only local citizens)
       it "should return all citizens" do
@@ -118,14 +118,14 @@ class Api::V1::CitizensControllerTest < ActionDispatch::IntegrationTest
         @number_of_citizens = Citizen.all_active.count
 
         delete '/v1/citizens/' + @citizen.id.to_s, params: {}, 
-                                                   headers: @auth_headers
+          headers: @auth_headers
 
         @resp_token = response.headers['access-token']
         @resp_client_id = response.headers['client']
         @resp_expiry = response.headers['expiry']
         @resp_uid = response.headers['uid']
       end
-     
+
       it "should be successful" do
         assert_equal 204, response.status
       end
@@ -144,7 +144,7 @@ class Api::V1::CitizensControllerTest < ActionDispatch::IntegrationTest
         @number_of_citizens = Citizen.all_active.count
 
         delete '/v1/citizens/222', params: {}, 
-                                 headers: @auth_headers
+          headers: @auth_headers
 
         @body = JSON.parse(response.body)
         @resp_token = response.headers['access-token']
@@ -152,7 +152,7 @@ class Api::V1::CitizensControllerTest < ActionDispatch::IntegrationTest
         @resp_expiry = response.headers['expiry']
         @resp_uid = response.headers['uid']
       end
-     
+
       it "should not be successful" do
         assert_equal 404, response.status
       end
@@ -169,8 +169,8 @@ class Api::V1::CitizensControllerTest < ActionDispatch::IntegrationTest
     describe "Successful request to update citizen" do
       before do
         put '/v1/citizens/' + @citizen.id.to_s,
-                                       params: {citizen: {cep: "7654321"}}, 
-                                       headers: @auth_headers
+          params: {citizen: {cep: "7654321"}}, 
+          headers: @auth_headers
 
         @resp_token = response.headers['access-token']
         @resp_client_id = response.headers['client']
@@ -191,7 +191,7 @@ class Api::V1::CitizensControllerTest < ActionDispatch::IntegrationTest
     describe "Unsuccessful resquest to update citizen that doesn't exists" do
       before do
         put '/v1/citizens/222', params: {citizen: {cep: "7654321"}}, 
-                                headers: @auth_headers
+          headers: @auth_headers
 
         @body = JSON.parse(response.body)
         @resp_token = response.headers['access-token']
@@ -212,8 +212,8 @@ class Api::V1::CitizensControllerTest < ActionDispatch::IntegrationTest
     describe "Unsuccessful resquest to update citizen with conflicting cpf" do
       before do
         put '/v1/citizens/' + @citizen.id.to_s, 
-                              params: {citizen: {cpf: "11111111111"}},
-                              headers: @auth_headers
+          params: {citizen: {cpf: "11111111111"}},
+          headers: @auth_headers
 
         @body = JSON.parse(response.body)
         @resp_token = response.headers['access-token']
@@ -234,8 +234,8 @@ class Api::V1::CitizensControllerTest < ActionDispatch::IntegrationTest
     describe "Unsuccessful request to update citizen without required field" do
       before do
         put '/v1/citizens/' + @citizen.id.to_s, 
-                              params: {citizen: {name: nil}},
-                              headers: @auth_headers
+          params: {citizen: {name: nil}},
+          headers: @auth_headers
 
         @body = JSON.parse(response.body)
         @resp_token = response.headers['access-token']

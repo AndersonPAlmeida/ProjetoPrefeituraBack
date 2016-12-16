@@ -1,7 +1,7 @@
 module Api::V1
   class OccupationsController < ApplicationController 
     include Authenticable
-    
+
     before_action :set_occupation, only: [:show, :update, :destroy]
 
     # GET /occupations
@@ -61,7 +61,7 @@ module Api::V1
       end
     end
 
-  private
+    private
     # Use callbacks to share common setup or constraints between actions.
     def set_occupation
       begin

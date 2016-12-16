@@ -47,7 +47,7 @@ module Api::V1
       end
     end
 
-  private
+    private
 
     # Only allow a trusted parameter "white list" through.
     def cep_params

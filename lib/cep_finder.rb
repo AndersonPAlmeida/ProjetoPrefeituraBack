@@ -8,15 +8,15 @@ module Agendador
 
       def self.get(zipcode)
         xml_text= '<?xml version="1.0" encoding="UTF-8"?>' +
-                  '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" ' +
-                  'xmlns:cli="http://cliente.bean.master.sigep.bsb.correios.com.br/">' +
-                    '<soapenv:Header />' +
-                    '<soapenv:Body>' +
-                      '<cli:consultaCEP>' +
-                        "<cep>#{zipcode}</cep>" +
-                      '</cli:consultaCEP>' +
-                    '</soapenv:Body>' +
-                  '</soapenv:Envelope>'
+          '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" ' +
+          'xmlns:cli="http://cliente.bean.master.sigep.bsb.correios.com.br/">' +
+          '<soapenv:Header />' +
+          '<soapenv:Body>' +
+          '<cli:consultaCEP>' +
+          "<cep>#{zipcode}</cep>" +
+          '</cli:consultaCEP>' +
+          '</soapenv:Body>' +
+          '</soapenv:Envelope>'
 
         http = Curl.post("https://apps.correios.com.br/SigepMasterJPA/AtendeClienteService/AtendeCliente", xml_text)
 

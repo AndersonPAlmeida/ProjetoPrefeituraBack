@@ -6,11 +6,11 @@ class Sector < ApplicationRecord
 
   # Validations #
   validates_presence_of :absence_max
-                        :blocking_days
-                        :cancel_limit
-                        :description
-                        :name
-                        :schedules_by_sector
+  :blocking_days
+  :cancel_limit
+  :description
+  :name
+  :schedules_by_sector
 
   validates_inclusion_of :active, in: [true, false]
 

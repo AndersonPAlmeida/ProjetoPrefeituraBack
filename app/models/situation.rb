@@ -1,5 +1,5 @@
 class Situation < ApplicationRecord
-  
+
   # Associations #
   has_many :schedules
 

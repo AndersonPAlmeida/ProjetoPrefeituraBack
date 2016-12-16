@@ -1,5 +1,5 @@
 class CepValidator < ActiveModel::EachValidator
-  
+
   # regular expression to describe a valid cep
   CEP_REGEX = /^[0-9]{8}$/
 

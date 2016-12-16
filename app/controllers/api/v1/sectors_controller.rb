@@ -62,28 +62,28 @@ module Api::V1
 
     private
 
-      # Use callbacks to share common setup or constraints between actions.
-      def set_sector
-        begin
-          @sector = Sector.find(params[:id])
-        rescue
-          @sector = nil
-        end
+    # Use callbacks to share common setup or constraints between actions.
+    def set_sector
+      begin
+        @sector = Sector.find(params[:id])
+      rescue
+        @sector = nil
       end
+    end
 
-      # Only allow a trusted parameter "white list" through.
-      def sector_params
-        params.require(:sector).permit(
-          :id,
-          :absence_max,
-          :active,
-          :blocking_days,
-          :cancel_limit,
-          :city_hall_id,
-          :description,
-          :name,
-          :schedules_by_sector
-        );
-      end
+    # Only allow a trusted parameter "white list" through.
+    def sector_params
+      params.require(:sector).permit(
+        :id,
+        :absence_max,
+        :active,
+        :blocking_days,
+        :cancel_limit,
+        :city_hall_id,
+        :description,
+        :name,
+        :schedules_by_sector
+      );
+    end
   end
 end

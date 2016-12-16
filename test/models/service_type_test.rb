@@ -12,7 +12,7 @@ class ServiceTypeTest < ActiveSupport::TestCase
                            name: "Curitiba",
                            state_id: @parana.id)
       @curitiba.save!
-      
+
       @city_hall = CityHall.new(name: "Prefeitura de Curitiba",
                                 cep: "81530110",
                                 neighborhood: "Aasdsd",
