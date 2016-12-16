@@ -37,8 +37,8 @@ class DependantTest < ActiveSupport::TestCase
 
     describe "Missing citizen" do
       it "should return an error" do
-	      assert_not @dependant.save
-	      assert_not_empty @dependant.errors.messages[:citizen]
+        assert_not @dependant.save
+        assert_not_empty @dependant.errors.messages[:citizen]
       end
     end
 

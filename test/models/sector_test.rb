@@ -37,8 +37,8 @@ class SectorTest < ActiveSupport::TestCase
     describe "Missing city hall" do
       it "should return an error" do
         @sector.save
-	      assert_not @sector.save
-	      assert_not_empty @sector.errors.messages[:city_hall]
+        assert_not @sector.save
+        assert_not_empty @sector.errors.messages[:city_hall]
       end
     end
 

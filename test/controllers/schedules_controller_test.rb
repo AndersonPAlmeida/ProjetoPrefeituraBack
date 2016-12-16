@@ -82,16 +82,16 @@ class Api::V1::SchedulesControllerTest < ActionDispatch::IntegrationTest
 
       @service_type = ServiceType.new(
         active: true,
-	      description: "type one"
+        description: "type one"
       )
       @service_type.sector = @sector
  
       @service_place = ServicePlace.new(
         active: true, 
-				address_number: "123",
-				address_street: "Test Avenue",
-				name: "Example SP",
-				neighborhood:"Neighborhood Example"
+        address_number: "123",
+        address_street: "Test Avenue",
+        name: "Example SP",
+        neighborhood:"Neighborhood Example"
       )
       @service_place.city_hall = @city_hall
       @service_place.save!
@@ -125,7 +125,7 @@ class Api::V1::SchedulesControllerTest < ActionDispatch::IntegrationTest
     describe "Succesful request to create schedule" do
       before do
 
-	      @number_of_schedules = Schedule.count
+        @number_of_schedules = Schedule.count
 
         post '/v1/schedules/', params: { schedule: {
               shift_id: @shift.id,
@@ -165,9 +165,9 @@ class Api::V1::SchedulesControllerTest < ActionDispatch::IntegrationTest
         before do
 
           @schedule = Schedule.where(situation_id: @situation.id).first
-	
+  
           get '/v1/schedules/' + @schedule.id.to_s, params: {},
-						    headers: @auth_headers
+                headers: @auth_headers
           @body = JSON.parse(response.body)
           @resp_token = response.headers['access-token']
           @resp_client_id = response.headers['client']
@@ -184,7 +184,7 @@ class Api::V1::SchedulesControllerTest < ActionDispatch::IntegrationTest
         before do
 
           get '/v1/schedules/', params: {},
-			        headers: @auth_headers
+              headers: @auth_headers
           @body = JSON.parse(response.body)
           @resp_token = response.headers['access-token']
           @resp_client_id = response.headers['client']

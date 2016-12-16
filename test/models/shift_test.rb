@@ -93,16 +93,16 @@ class ShiftTest < ActiveSupport::TestCase
     describe "Missing service place" do
       it "should return an error" do
         @shift.service_type = @service_type
-	      assert_not @shift.save
-	      assert_not_empty @shift.errors.messages[:service_place]
+        assert_not @shift.save
+        assert_not_empty @shift.errors.messages[:service_place]
       end
     end
 
     describe "Missing service type" do
       it "should return an error" do
         @shift.service_place = @service_place
-	      assert_not @shift.save
-	      assert_not_empty @shift.errors.messages[:service_type]
+        assert_not @shift.save
+        assert_not_empty @shift.errors.messages[:service_type]
       end
     end
 

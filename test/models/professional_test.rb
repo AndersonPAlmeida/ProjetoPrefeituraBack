@@ -58,9 +58,9 @@ class ShiftTest < ActiveSupport::TestCase
 
     describe "Missing relations" do
       it "should return an error" do
-	      assert_not @professional.save
-	      assert_not_empty @professional.errors.messages[:occupation]
-	      assert_not_empty @professional.errors.messages[:account]
+        assert_not @professional.save
+        assert_not_empty @professional.errors.messages[:occupation]
+        assert_not_empty @professional.errors.messages[:account]
       end
     end
 

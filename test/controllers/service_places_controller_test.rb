@@ -90,8 +90,8 @@ class Api::V1::ServicePlacesControllerTest < ActionDispatch::IntegrationTest
 
         @role = ProfessionalsServicePlace.new(active: true, 
                                               role: "adm_c3sl", 
-				                                      professional_id: @professional.id,
-				                                      service_place_id: @body['id'])
+                                              professional_id: @professional.id,
+                                              service_place_id: @body['id'])
         @role.save!
 
         @resp_token = response.headers['access-token']

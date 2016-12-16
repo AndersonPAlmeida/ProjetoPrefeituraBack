@@ -46,7 +46,7 @@ class Address < ApplicationRecord
   end
 
   # @return [Integer] city id corresponding to cep
-	def self.get_city_id(cep)
+  def self.get_city_id(cep)
     cep = cep.gsub(/\D/, '')
     if not CepValidator.valid_format?(cep)
       return nil
@@ -66,7 +66,7 @@ class Address < ApplicationRecord
   end
 
   # @return [Integer] state id corresponding to cep
-	def self.get_state_id(cep)
+  def self.get_state_id(cep)
     cep = cep.gsub(/\D/, '')
     if not CepValidator.valid_format?(cep) 
       return nil
@@ -81,7 +81,7 @@ class Address < ApplicationRecord
     if state.nil?
       return nil
     end
-		
-		return state.id
+    
+    return state.id
   end
 end

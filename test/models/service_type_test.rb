@@ -43,8 +43,8 @@ class ServiceTypeTest < ActiveSupport::TestCase
     describe "Missing sector" do
       it "should return an error" do
         @service_type.save
-	      assert_not @service_type.save
-	      assert_not_empty @service_type.errors.messages[:sector]
+        assert_not @service_type.save
+        assert_not_empty @service_type.errors.messages[:sector]
       end
     end
 

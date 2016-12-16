@@ -35,8 +35,8 @@ class ServicePlaceTest < ActiveSupport::TestCase
     describe "Missing city hall" do
       it "should return an error" do
         @service_place.save
-	      assert_not @service_place.save
-	      assert_not_empty @service_place.errors.messages[:city_hall]
+        assert_not @service_place.save
+        assert_not_empty @service_place.errors.messages[:city_hall]
       end
     end
 

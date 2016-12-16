@@ -168,9 +168,9 @@ class Api::V1::ShiftsControllerTest < ActionDispatch::IntegrationTest
         before do
 
           @shift = Shift.where(service_place_id: @service_place.id).first
-	
+  
           get '/v1/shifts/' + @shift.id.to_s, params: {},
-						  headers: @auth_headers
+              headers: @auth_headers
           @body = JSON.parse(response.body)
           @resp_token = response.headers['access-token']
           @resp_client_id = response.headers['client']
@@ -186,7 +186,7 @@ class Api::V1::ShiftsControllerTest < ActionDispatch::IntegrationTest
         before do
 
           get '/v1/shifts/', params: {},
-			     headers: @auth_headers
+           headers: @auth_headers
           @body = JSON.parse(response.body)
           @resp_token = response.headers['access-token']
           @resp_client_id = response.headers['client']

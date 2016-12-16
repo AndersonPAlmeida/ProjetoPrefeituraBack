@@ -106,10 +106,10 @@ class ScheduleTest < ActiveSupport::TestCase
 
     describe "Missing relations" do
       it "should return an error" do
-	      assert_not @schedule.save
-	      assert_not_empty @schedule.errors.messages[:service_place]
-	      assert_not_empty @schedule.errors.messages[:shift]
-	      assert_not_empty @schedule.errors.messages[:situation]
+        assert_not @schedule.save
+        assert_not_empty @schedule.errors.messages[:service_place]
+        assert_not_empty @schedule.errors.messages[:shift]
+        assert_not_empty @schedule.errors.messages[:situation]
       end
     end
 
