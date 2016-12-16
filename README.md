@@ -57,9 +57,10 @@ Bundler:
 3. Criar teste para a atividade
 4. Rodar o teste criado sobre a atividade desenvolvida
   1. Se estiver errado:
-     Voltar para o passo 2
+     Voltar para o passo 2 
   2. Se estiver certo:  
+     bin/retab  
      git commit -sm “Explain (the first word must be an infinitive verb) what this commit does”  
      git push origin nome\_da\_branch  
      Criar merge request para develop  
-  3. Registra o resultado da atividade no redmine. (i.e #Issue 1234: Create\_DB\_Schema
+  3. Registra o resultado da atividade no projeto AGILE.
