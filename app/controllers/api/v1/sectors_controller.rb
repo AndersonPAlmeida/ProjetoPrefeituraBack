@@ -43,9 +43,7 @@ module Api::V1
         if @sector.update(sector_params)
           render json: @sector
         else
-          render json: {
-            errors: [@sector.errors, status: :unprocessable_entity]
-          }, status: 422
+          render json: @sector.errors, status: :unprocessable_entity
         end
       end
     end

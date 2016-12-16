@@ -18,6 +18,7 @@ module Api::V1
           errors: ["Invalid CEP."]
         }, status: 422
       else
+        # City may not exists due to tests without setting up cities
         if address[:city_id].nil?
           render json: {
             errors: ["City not registered."]

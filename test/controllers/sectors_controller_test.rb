@@ -163,7 +163,7 @@ class SectorsControllerTest < ActionDispatch::IntegrationTest
           end
 
           it "should return an error message" do
-            assert_not_empty @body['errors']
+            assert_not_empty @body["city_hall"]
           end
         end
 
@@ -253,7 +253,7 @@ class SectorsControllerTest < ActionDispatch::IntegrationTest
           end
 
           it "should return an error message" do
-            assert_not_empty @body['errors']
+            assert_not_empty @body["city_hall"]
           end
         end
 
