@@ -30,8 +30,17 @@ class Account < ApplicationRecord
   # @return [Json] account information as json for token validation 
   # response on sign in
   def token_validation_response
+    city = City.find(self.citizen.city_id)
+    state = State.find(city.state_id)
+    address = Address.get_address(self.citizen.cep)
+
     self.as_json(except: [
       :tokens, :created_at, :updated_at
-    ]).merge({citizen: self.citizen.as_json})
+    ]).merge({
+      citizen: self.citizen.as_json(except: [:city_id])
+        .merge({city: city.as_json(except: [:created_at, :updated_at])})
+        .merge({state: state.as_json(except: [:created_at, :updated_at])})
+        .merge({address: address.as_json(except: [:created_at, :updated_at, :state_id, :city_id])})
+    })
   end
 end
