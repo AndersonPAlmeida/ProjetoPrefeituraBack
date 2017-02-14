@@ -37,7 +37,11 @@ module Api::V1
               errors: ["City not registered."]
             }, status: 404
           else
-            render json: address
+            city = City.find(address.city_id).name
+            state = State.find(address.state_id).abbreviation
+            render json: address.as_json(except: [:city_id, :state_id, :created_at, :updated_at])
+              .merge({city_name: city})
+              .merge({state_name: state})
           end
         else
           render json: {
