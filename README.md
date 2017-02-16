@@ -19,6 +19,18 @@ PostgreSQL:
   $ sudo apt-get install postgresql postgresql-contrib
 ```
 
+Configuração PostgreSQL: (O usuário criado serve apenas para "development" e "test", em "production" é utilizado $AGENDADOR\_API\_DB\_USER com senha $AGENDADOR\_API\_DB\_PASSWORD)
+```bash
+  $ sudo su - postgres
+  $ psql
+  # \password postgres
+  # create role agendador with password '123mudar';
+  # alter role agendador with createdb;
+  # alter role agendador with login;
+  # alter role agendador with createrole;
+  # \q
+```
+
 Git:
 ```bash
   $ sudo apt-get install git

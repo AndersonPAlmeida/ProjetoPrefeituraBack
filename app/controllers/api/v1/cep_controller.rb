@@ -27,6 +27,7 @@ module Api::V1
         end
 
         city = City.find(address[:city_id])
+        state = State.find(city.state_id)
 
         if not city.nil?
           city_hall = CityHall.where(city_id: city.id)
@@ -34,7 +35,9 @@ module Api::V1
           # Verify if the city obtained from cep is registered
           if city_hall.empty?
             render json: {
-              errors: ["City not registered."]
+              errors: ["City not registered."],
+              city_name: city.name,
+              state_name: state.abbreviation
             }, status: 404
           else
             city = City.find(address.city_id).name
