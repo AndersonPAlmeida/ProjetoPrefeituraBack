@@ -111,8 +111,7 @@ module Api::V1
     def render_create_success
       #render json: @resource
       render json: {
-        status: 'success',
-        data:   @resource
+        data:   @resource.token_validation_response
       }, status: 201
     end
 
