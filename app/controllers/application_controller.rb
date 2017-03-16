@@ -11,33 +11,35 @@ class ApplicationController < ActionController::API
 
   # permit parameters for devise functions
   def configure_permitted_parameters
+    citizen_keys = [
+      :birth_date,
+      :name,
+      :rg,
+      :address_complement,
+      :address_number,
+      :address_street,
+      :cep,
+      :city_id,
+      :cpf,
+      :email,
+      :neighborhood,
+      :note,
+      :pcd,
+      :phone1,
+      :phone2,
+      :photo_content_type,
+      :photo_file_name,
+      :photo_file_size,
+      :photo_update_at
+    ]
+
     # set sign_up hash to keys from citizen's registration form
     devise_parameter_sanitizer.permit(
-      :sign_up, keys: [
-        :password,
-        :password_confirmation,
-        :confirm_success_url,
-        :confirm_error_url,
-        :birth_date,
-        :name,
-        :rg,
-        :address_complement,
-        :address_number,
-        :address_street,
-        :cep,
-        :city_id,
-        :cpf,
-        :email,
-        :neighborhood,
-        :note,
-        :pcd,
-        :phone1,
-        :phone2,
-        :photo_content_type,
-        :photo_file_name,
-        :photo_file_size,
-        :photo_update_at
-      ]
+      :sign_up, keys: 
+        citizen_keys + [
+          :password, 
+          :password_confirmation
+        ]
     )
 
     # set sign_in hash to keys from citizen's login form
@@ -51,7 +53,7 @@ class ApplicationController < ActionController::API
     # set account_update hash to keys required to update citizen's account
     devise_parameter_sanitizer.permit(
       :account_update, keys: [
-        :cpf
+        citizen: citizen_keys
       ]
     )
   end

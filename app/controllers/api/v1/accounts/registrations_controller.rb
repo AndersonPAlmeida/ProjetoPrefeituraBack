@@ -4,9 +4,8 @@ module Api::V1
     # Overrides DeviseTokenAuth's RegistrationsController's create method.
     # It's necessary due to the fact that a citizen and an account have to
     # be created on registration with the proper params, while the default
-    # devisetokenauth creates only a user with email
+    # devise_token_auth creates only a user with email
     def create
-
       # permit all parameters for creating citizen_params
       ActionController::Parameters.permit_all_parameters = true
 
@@ -103,16 +102,60 @@ module Api::V1
       end
     end
 
+    # Overrides DeviseTokenAuth's RegistrationsController's update method.
+    # It's necessary due to the fact that a citizen and an account have to
+    # be updated on registration with the proper params, while the default
+    # devise_token_auth can update only the account information
+    def update
+      if @resource
+        if @resource.send(resource_update_method, account_update_params.except(:citizen))
+          yield @resource if block_given?
+
+          if not account_update_params[:citizen].nil?
+            if @resource.citizen.update(account_update_params[:citizen])
+              if not account_update_params[:citizen][:cep].nil?
+                city_id = Address.get_city_id(account_update_params[:citizen][:cep])
+
+                if @resource.citizen.update_attribute(:city_id, city_id)
+                  render_update_success
+                end
+              else
+                render_update_success
+              end
+            else
+              render json: @resource.citizen.errors, status: :unprocessable_entity
+            end 
+          else
+            render_update_success
+          end
+        else
+          render_update_error
+        end
+      else
+        render_update_error_user_not_found
+      end
+    end
+
     protected
 
     # Overrides DeviseTokenAuth's RegistrationsController's
     # render_create_success method in order to render account
-    # informations with serializer
+    # informations with token_validation_response method
     def render_create_success
       #render json: @resource
       render json: {
         data:   @resource.token_validation_response
       }, status: 201
+    end
+
+    # Overrides DeviseTokenAuth's RegistrationsController's
+    # render_update_success method in order to render account
+    # informations with token_validation_response method
+    def render_update_success
+      #render json: @resource
+      render json: {
+        data:   @resource.token_validation_response
+      }, status: 200
     end
 
     # Overrides DeviseTokenAuth's RegistrationsController's 
