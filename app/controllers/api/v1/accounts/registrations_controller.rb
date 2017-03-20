@@ -108,14 +108,19 @@ module Api::V1
     # devise_token_auth can update only the account information
     def update
       if @resource
+        # Update account with params except citizen's
         if @resource.send(resource_update_method, account_update_params.except(:citizen))
           yield @resource if block_given?
 
+          # Check if citizen's params are not empty
           if not account_update_params[:citizen].nil?
+
+            # Update citizen with account_update_params[:citizen]
             if @resource.citizen.update(account_update_params[:citizen])
+
+              # The city id has to be updated in case the cep needs change
               if not account_update_params[:citizen][:cep].nil?
                 city_id = Address.get_city_id(account_update_params[:citizen][:cep])
-
                 if @resource.citizen.update_attribute(:city_id, city_id)
                   render_update_success
                 end
