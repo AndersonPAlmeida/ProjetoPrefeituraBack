@@ -11,27 +11,8 @@ class ApplicationController < ActionController::API
 
   # permit parameters for devise functions
   def configure_permitted_parameters
-    citizen_keys = [
-      :birth_date,
-      :name,
-      :rg,
-      :address_complement,
-      :address_number,
-      :address_street,
-      :cep,
-      :city_id,
-      :cpf,
-      :email,
-      :neighborhood,
-      :note,
-      :pcd,
-      :phone1,
-      :phone2,
-      :photo_content_type,
-      :photo_file_name,
-      :photo_file_size,
-      :photo_update_at
-    ]
+    citizen_keys = Citizen.keys
+
 
     # set sign_up hash to keys from citizen's registration form
     devise_parameter_sanitizer.permit(

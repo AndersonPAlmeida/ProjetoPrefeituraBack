@@ -98,10 +98,10 @@ module Api::V1
         :pcd,
         :phone1,
         :phone2,
-        :photo_content_type,
-        :photo_file_name,
-        :photo_file_size,
-        :photo_update_at,
+    #    :photo_content_type,
+    #    :photo_file_name,
+    #    :photo_file_size,
+    #    :photo_update_at,
         :rg
       )
     end

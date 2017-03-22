@@ -90,10 +90,6 @@ ActiveRecord::Schema.define(version: 20161208133948) do
     t.string   "pcd"
     t.string   "phone1"
     t.string   "phone2"
-    t.string   "photo_content_type"
-    t.string   "photo_file_name"
-    t.integer  "photo_file_size"
-    t.datetime "photo_update_at"
     t.datetime "created_at",         null: false
     t.datetime "updated_at",         null: false
     t.integer  "account_id"
