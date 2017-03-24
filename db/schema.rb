@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161208133948) do
+ActiveRecord::Schema.define(version: 20170322134221) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -76,9 +76,9 @@ ActiveRecord::Schema.define(version: 20161208133948) do
   end
 
   create_table "citizens", force: :cascade do |t|
-    t.date     "birth_date",         null: false
-    t.string   "name",               null: false
-    t.string   "rg",                 null: false
+    t.date     "birth_date",          null: false
+    t.string   "name",                null: false
+    t.string   "rg",                  null: false
     t.string   "address_complement"
     t.string   "address_number"
     t.string   "address_street"
@@ -90,12 +90,16 @@ ActiveRecord::Schema.define(version: 20161208133948) do
     t.string   "pcd"
     t.string   "phone1"
     t.string   "phone2"
-    t.datetime "created_at",         null: false
-    t.datetime "updated_at",         null: false
+    t.datetime "created_at",          null: false
+    t.datetime "updated_at",          null: false
     t.integer  "account_id"
-    t.boolean  "active",             null: false
+    t.boolean  "active",              null: false
     t.integer  "city_id"
     t.integer  "responsible_id"
+    t.string   "avatar_file_name"
+    t.string   "avatar_content_type"
+    t.integer  "avatar_file_size"
+    t.datetime "avatar_updated_at"
     t.index ["account_id"], name: "index_citizens_on_account_id", using: :btree
     t.index ["city_id"], name: "index_citizens_on_city_id", using: :btree
   end

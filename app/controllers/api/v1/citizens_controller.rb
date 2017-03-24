@@ -2,13 +2,36 @@ module Api::V1
   class CitizensController < ApplicationController 
     include Authenticable
 
-    before_action :set_citizen, only: [:show, :update, :destroy]
+    before_action :set_citizen, only: [:show_picture, :show, :update, :destroy]
 
     # GET /citizens
     def index
       @citizens = Citizen.all_active
 
       render json: @citizens
+    end
+
+    def show_picture
+      if @citizen.nil?
+        render json: {
+          errors: ["User #{params[:id]} does not exist."]
+        }, status: 404
+      else
+        path = @citizen.avatar.url.partition('?').first
+        if not params[:size].nil?
+          path.sub!('original', params[:size])
+        end
+
+        image = Base64.encode64(open("public" + path) { |io| io.read})
+        image.delete!("\n")
+
+        render json: {
+          file_name: @citizen.avatar_file_name,
+          file_size: @citizen.avatar_file_size,
+          content_type: @citizen.avatar_content_type,
+          content: image
+        }, status: 200
+      end
     end
 
     # GET /citizens/1
@@ -98,10 +121,6 @@ module Api::V1
         :pcd,
         :phone1,
         :phone2,
-    #    :photo_content_type,
-    #    :photo_file_name,
-    #    :photo_file_size,
-    #    :photo_update_at,
         :rg
       )
     end

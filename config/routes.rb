@@ -18,6 +18,7 @@ Rails.application.routes.draw do
       resources :shifts
       resources :solicitations
       post "validate_cep" => "cep#validate"
+      get "/citizens/:id/picture", to: "citizens#show_picture"
     end
   end
 end

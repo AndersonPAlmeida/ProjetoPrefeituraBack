@@ -35,6 +35,12 @@ class Citizen < ApplicationRecord
 
   validates_inclusion_of    :active, in: [true, false]
 
+  has_attached_file :avatar,
+    :styles => { :large => '500x500#', :medium => '300x300#', :thumb => '100x100#' }
+
+  validates_attachment_content_type :avatar,
+    :content_type => ["image/jpg", "image/jpeg", "image/png", "image/gif"]
+
   # @return list of citizen's columns
   def self.keys
     return [
@@ -53,10 +59,7 @@ class Citizen < ApplicationRecord
       :pcd,
       :phone1,
       :phone2,
-    #  :photo_content_type,
-    #  :photo_file_name,
-    #  :photo_file_size,
-    #  :photo_update_at,
+      :avatar,
       :rg
     ]
   end

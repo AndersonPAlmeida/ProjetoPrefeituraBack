@@ -13,7 +13,6 @@ class ApplicationController < ActionController::API
   def configure_permitted_parameters
     citizen_keys = Citizen.keys
 
-
     # set sign_up hash to keys from citizen's registration form
     devise_parameter_sanitizer.permit(
       :sign_up, keys: 
