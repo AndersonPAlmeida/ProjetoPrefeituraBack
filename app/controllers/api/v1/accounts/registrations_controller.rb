@@ -144,26 +144,26 @@ module Api::V1
     end
 
     def parse_image_data(image_data)
-			@tempfile = Tempfile.new('item_image')
-			@tempfile.binmode
-			@tempfile.write Base64.decode64(image_data[:content])
-			@tempfile.rewind
+      @tempfile = Tempfile.new('item_image')
+      @tempfile.binmode
+      @tempfile.write Base64.decode64(image_data[:content])
+      @tempfile.rewind
 
-			uploaded_file = ActionDispatch::Http::UploadedFile.new(
-				tempfile: @tempfile,
-				filename: image_data[:filename]
-			)
+      uploaded_file = ActionDispatch::Http::UploadedFile.new(
+        tempfile: @tempfile,
+        filename: image_data[:filename]
+      )
 
-		 uploaded_file.content_type = image_data[:content_type]
-			uploaded_file
-		end
+      uploaded_file.content_type = image_data[:content_type]
+      uploaded_file
+    end
 
-		def clean_tempfile
-			if @tempfile
-				@tempfile.close
-				@tempfile.unlink
-			end
-		end
+    def clean_tempfile
+      if @tempfile
+        @tempfile.close
+        @tempfile.unlink
+      end
+    end
 
     protected
 
