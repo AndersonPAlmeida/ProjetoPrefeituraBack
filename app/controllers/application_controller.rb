@@ -4,7 +4,7 @@ class ApplicationController < ActionController::API
   include ActionController::RequestForgeryProtection
   include Pundit
 
-  protect_from_forgery
+  protect_from_forgery with: :null_session, if: Proc.new { |c| c.request.format.json? }
   before_action :configure_permitted_parameters, if: :devise_controller?
 
   protected
