@@ -143,28 +143,6 @@ module Api::V1
       end
     end
 
-    def parse_image_data(image_data)
-      @tempfile = Tempfile.new('item_image')
-      @tempfile.binmode
-      @tempfile.write Base64.decode64(image_data[:content])
-      @tempfile.rewind
-
-      uploaded_file = ActionDispatch::Http::UploadedFile.new(
-        tempfile: @tempfile,
-        filename: image_data[:filename]
-      )
-
-      uploaded_file.content_type = image_data[:content_type]
-      uploaded_file
-    end
-
-    def clean_tempfile
-      if @tempfile
-        @tempfile.close
-        @tempfile.unlink
-      end
-    end
-
     protected
 
     # Overrides DeviseTokenAuth's RegistrationsController's
@@ -207,6 +185,48 @@ module Api::V1
         data: @citizen,
         errors: @citizen.errors
       }, status: 422
+    end
+
+    # Overrides DeviseTokenAuth's RegistrationsController's 
+    # render_update_error method in order to display
+    # only the necessary information
+		def render_update_error
+      render json: {
+        errors: resource_errors[:full_messages]
+      }, status: 422
+    end
+
+    # Overrides DeviseTokenAuth's RegistrationsController's 
+    # render_update_error_user_not_found method in order to display
+    # only the necessary information
+    def render_update_error_user_not_found
+      render json: {
+        errors: [I18n.t("devise_token_auth.registrations.user_not_found")]
+      }, status: 404
+    end
+
+    private
+
+    def parse_image_data(image_data)
+      @tempfile = Tempfile.new('item_image')
+      @tempfile.binmode
+      @tempfile.write Base64.decode64(image_data[:content])
+      @tempfile.rewind
+
+      uploaded_file = ActionDispatch::Http::UploadedFile.new(
+        tempfile: @tempfile,
+        filename: image_data[:filename]
+      )
+
+      uploaded_file.content_type = image_data[:content_type]
+      uploaded_file
+    end
+
+    def clean_tempfile
+      if @tempfile
+        @tempfile.close
+        @tempfile.unlink
+      end
     end
   end
 end
