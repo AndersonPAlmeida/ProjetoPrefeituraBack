@@ -36,7 +36,8 @@ class Citizen < ApplicationRecord
   validates_inclusion_of    :active, in: [true, false]
 
   has_attached_file :avatar,
-    :styles => { :large => '500x500#', :medium => '300x300#', :thumb => '100x100#' }
+    path: "images/citizens/:id/avatar_:style.:extension",
+    styles: { large: '500x500#', medium: '300x300#', thumb: '100x100#' }
 
   validates_attachment_content_type :avatar,
     :content_type => ["image/jpg", "image/jpeg", "image/png", "image/gif"]
