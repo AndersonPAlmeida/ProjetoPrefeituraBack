@@ -30,8 +30,8 @@ class Account < ApplicationRecord
   # @return [Json] account information as json for token validation 
   # response on sign in
   def token_validation_response
-    city = City.find(self.citizen.city_id)
-    state = State.find(city.state_id)
+    city = citizen.city
+    state = city.state
     address = Address.get_address(self.citizen.cep)
 
     self.as_json(except: [

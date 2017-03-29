@@ -190,7 +190,7 @@ module Api::V1
     # Overrides DeviseTokenAuth's RegistrationsController's 
     # render_update_error method in order to display
     # only the necessary information
-		def render_update_error
+    def render_update_error
       render json: {
         errors: resource_errors[:full_messages]
       }, status: 422
