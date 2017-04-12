@@ -117,8 +117,10 @@ module Api::V1
 
             # Update citizen with account_update_params[:citizen]
             if @resource.citizen.update(account_update_params[:citizen])
-              params[:citizen][:image] = parse_image_data(params[:citizen][:image]) if params[:citizen][:image]
-              @resource.citizen.update_attribute(:avatar, params[:citizen][:image])
+              if params[:citizen][:image]
+                params[:citizen][:image] = parse_image_data(params[:citizen][:image])
+                @resource.citizen.update_attribute(:avatar, params[:citizen][:image])
+              end
 
               # The city id has to be updated in case the cep needs change
               if not account_update_params[:citizen][:cep].nil?
