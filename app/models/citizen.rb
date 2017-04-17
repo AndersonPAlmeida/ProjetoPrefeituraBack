@@ -36,49 +36,49 @@ class Citizen < ApplicationRecord
   validates_inclusion_of    :active, in: [true, false]
 
   has_attached_file :avatar,
-    path: "images/citizens/:id/avatar_:style.:extension"
-  #styles: { 
-  #  large: '500x500', 
-  #  medium: '300x300', 
-  #  thumb: '100x100' 
-  #}, content_type: {content_type: "image/jpg",
+    path: "images/citizens/:id/avatar_:style.:extension",
+    styles: { 
+      large: '500x500', 
+      medium: '300x300', 
+      thumb: '100x100' 
+    }
 
-  validates_attachment :avatar,
-    styles: {
-    large: '500x500', 
-    medium: '300x300', 
-    thumb: '100x100' 
-  }
+    #validates_attachment :avatar,
+    #  styles: {
+    #    large: '500x500', 
+    #    medium: '300x300', 
+    #    thumb: '100x100' 
+    #  }
 
-  validates_attachment_content_type :avatar,
-    :content_type => ["image/jpg", "image/jpeg", "image/png", "image/gif"]
+    validates_attachment_content_type :avatar,
+      :content_type => ["image/jpg", "image/jpeg", "image/png", "image/gif"]
 
-  # @return list of citizen's columns
-  def self.keys
-    return [
-      :active,
-      :address_complement,
-      :address_number,
-      :address_street,
-      :birth_date,
-      :cep,
-      :city_id,
-      :cpf,
-      :email,
-      :name,
-      :neighborhood,
-      :note,
-      :pcd,
-      :phone1,
-      :phone2,
-      #:image,
-      :avatar,
-      :rg
-    ]
-  end
+    # @return list of citizen's columns
+    def self.keys
+      return [
+        :active,
+        :address_complement,
+        :address_number,
+        :address_street,
+        :birth_date,
+        :cep,
+        :city_id,
+        :cpf,
+        :email,
+        :name,
+        :neighborhood,
+        :note,
+        :pcd,
+        :phone1,
+        :phone2,
+        #:image,
+        :avatar,
+        :rg
+      ]
+    end
 
-  # @return all active citizens
-  def self.all_active
-    Citizen.where(active: true)
-  end
+    # @return all active citizens
+    def self.all_active
+      Citizen.where(active: true)
+    end
 end

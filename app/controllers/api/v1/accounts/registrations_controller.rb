@@ -117,6 +117,8 @@ module Api::V1
 
             # Update citizen with account_update_params[:citizen]
             if @resource.citizen.update(account_update_params[:citizen])
+
+              # Update image if provided
               if params[:citizen][:image]
                 params[:citizen][:image] = parse_image_data(params[:citizen][:image])
                 @resource.citizen.update_attribute(:avatar, params[:citizen][:image])
