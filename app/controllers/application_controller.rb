@@ -4,11 +4,18 @@ class ApplicationController < ActionController::API
   include ActionController::RequestForgeryProtection
   include Pundit
 
-  protect_from_forgery with: :null_session, if: Proc.new { |c| c.request.format.json? }
-  before_action :configure_permitted_parameters, if: :devise_controller?
+  rescue_from Pundit::NotAuthorizedError, 
+    with: :user_not_authorized
+
+  before_action :configure_permitted_parameters,
+    if: :devise_controller?
+  protect_from_forgery with: :null_session, 
+    if: Proc.new { |c| c.request.format.json? }
 
   def current_user
-    @resource.citizen
+    if @resource
+      @resource.citizen
+    end
   end
 
   protected
@@ -40,5 +47,13 @@ class ApplicationController < ActionController::API
         citizen: citizen_keys
       ]
     )
+  end
+
+  private
+
+  def user_not_authorized(exception)
+   render json: {
+     errors: ["User not authorized"]
+   }, status: 500
   end
 end

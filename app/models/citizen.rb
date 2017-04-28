@@ -46,7 +46,7 @@ class Citizen < ApplicationRecord
   validates_attachment_content_type :avatar,
     :content_type => ["image/jpg", "image/jpeg", "image/png", "image/gif"]
 
-    # @return list of citizen's columns
+  # @return list of citizen's columns
   def self.keys
     return [
       :active,
@@ -68,6 +68,14 @@ class Citizen < ApplicationRecord
       :avatar,
       :rg
     ]
+  end
+
+  def professional
+    if self.account
+      self.account.professional
+    else
+      nil
+    end
   end
 
   # @return all active citizens
