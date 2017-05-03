@@ -8,7 +8,9 @@ class ApplicationController < ActionController::API
   before_action :configure_permitted_parameters, if: :devise_controller?
 
   def current_user
-    @resource.citizen
+    if not @resource.nil?
+      @resource.citizen
+    end
   end
 
   protected

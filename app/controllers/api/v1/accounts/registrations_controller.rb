@@ -120,8 +120,12 @@ module Api::V1
 
               # Update image if provided
               if params[:citizen][:image]
-                params[:citizen][:image] = parse_image_data(params[:citizen][:image])
-                @resource.citizen.update_attribute(:avatar, params[:citizen][:image])
+                if params[:citizen][:image][:content_type] == "delete"
+                  @resource.citizen.avatar.destroy
+                else
+                  params[:citizen][:image] = parse_image_data(params[:citizen][:image])
+                  @resource.citizen.update_attribute(:avatar, params[:citizen][:image])
+                end
               end
 
               # The city id has to be updated in case the cep needs change
