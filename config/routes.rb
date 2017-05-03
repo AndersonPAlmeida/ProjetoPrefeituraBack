@@ -6,6 +6,7 @@ Rails.application.routes.draw do
         registrations: 'api/v1/accounts/registrations',
         sessions:      'api/v1/accounts/sessions'
       }
+
       resources :citizens
       resources :city_halls
       resources :dependants
@@ -17,6 +18,7 @@ Rails.application.routes.draw do
       resources :service_types
       resources :shifts
       resources :solicitations
+
       post "validate_cep" => "cep#validate"
       get "/citizens/:id/picture", to: "citizens#show_picture"
     end
