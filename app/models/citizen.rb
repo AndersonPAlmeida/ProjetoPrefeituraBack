@@ -43,43 +43,43 @@ class Citizen < ApplicationRecord
       thumb: '100x100' 
     }
 
-  validates_attachment_content_type :avatar,
-    :content_type => ["image/jpg", "image/jpeg", "image/png", "image/gif"]
+    validates_attachment_content_type :avatar,
+      :content_type => ["image/jpg", "image/jpeg", "image/png", "image/gif"]
 
-  # @return list of citizen's columns
-  def self.keys
-    return [
-      :active,
-      :address_complement,
-      :address_number,
-      :address_street,
-      :birth_date,
-      :cep,
-      :city_id,
-      :cpf,
-      :email,
-      :name,
-      :neighborhood,
-      :note,
-      :pcd,
-      :phone1,
-      :phone2,
-      #:image,
-      :avatar,
-      :rg
-    ]
-  end
-
-  def professional
-    if self.account
-      self.account.professional
-    else
-      nil
+    # @return list of citizen's columns
+    def self.keys
+      return [
+        :active,
+        :address_complement,
+        :address_number,
+        :address_street,
+        :birth_date,
+        :cep,
+        :city_id,
+        :cpf,
+        :email,
+        :name,
+        :neighborhood,
+        :note,
+        :pcd,
+        :phone1,
+        :phone2,
+        #:image,
+        :avatar,
+        :rg
+      ]
     end
-  end
 
-  # @return all active citizens
-  def self.all_active
-    Citizen.where(active: true)
-  end
+    def professional
+      if self.account
+        self.account.professional
+      else
+        nil
+      end
+    end
+
+    # @return all active citizens
+    def self.all_active
+      Citizen.where(active: true, responsible_id: nil)
+    end
 end

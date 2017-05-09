@@ -7,7 +7,6 @@ module Api::V1
     # GET /citizens
     def index
       @citizens = policy_scope(Citizen)
-      authorize @citizens, :index?
 
       render json: @citizens
     end

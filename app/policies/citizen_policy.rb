@@ -9,15 +9,16 @@ class CitizenPolicy < ApplicationPolicy
         else
           scope.where(id: user.id)
         end
+      else
+        scope.where(id: user.id)
       end
-      scope.where(id: user.id)
     end
   end
 
   def index?
     if not user.professional.nil?
       if user.professional.adm_c3sl? or
-         user.professional.adm_prefeitura?
+          user.professional.adm_prefeitura?
         return true
       end
     end
