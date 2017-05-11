@@ -10,7 +10,7 @@ class CitizenPolicy < ApplicationPolicy
           scope.where(id: user.id)
         end
       else
-        scope.where(id: user.id)
+        scope.all_dependants(user.id)
       end
     end
   end

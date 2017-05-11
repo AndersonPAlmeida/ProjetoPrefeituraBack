@@ -62,11 +62,11 @@ class Api::V1::CitizensControllerTest < ActionDispatch::IntegrationTest
       end
 
       it "should correspond to the current account" do
-        assert_equal @controller.current_account.citizen.id, @body["id"]
+        assert_equal @controller.current_account.citizen.id, @body[0]["id"]
       end
 
       it "should correspond to the citizen in the database" do
-        assert_equal Citizen.find(@citizen.id).cpf, @body["cpf"]
+        assert_equal Citizen.find(@citizen.id).cpf, @body[0]["cpf"]
       end
     end
 
@@ -102,8 +102,8 @@ class Api::V1::CitizensControllerTest < ActionDispatch::IntegrationTest
         @resp_uid = response.headers['uid']
       end
 
-      it "should be unsuccessful" do
-        assert_equal 500, response.status
+      it "should be successful" do
+        assert_equal 200, response.status
       end
 
       # TODO: change to return only the citizens that SHOULD be displayed

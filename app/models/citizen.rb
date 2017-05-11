@@ -82,4 +82,8 @@ class Citizen < ApplicationRecord
     def self.all_active
       Citizen.where(active: true, responsible_id: nil)
     end
+
+    def self.all_dependants(id)
+      Citizen.where('id = ? OR responsible_id = ?', id, id)
+    end
 end

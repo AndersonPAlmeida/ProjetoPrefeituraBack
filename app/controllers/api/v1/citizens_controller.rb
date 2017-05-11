@@ -2,7 +2,7 @@ module Api::V1
   class CitizensController < ApplicationController 
     include Authenticable
 
-    before_action :set_citizen, only: [:show_picture, :show, :update, :destroy]
+    before_action :set_citizen, only: [:show_picture, :update, :destroy]
 
     # GET /citizens
     def index
@@ -30,12 +30,14 @@ module Api::V1
 
     # GET /citizens/1
     def show
-      if @citizen.nil?
+      @citizens = Citizen.all_dependants(params[:id])
+
+      if @citizens.empty?
         render json: {
           errors: ["User #{params[:id]} does not exist."]
         }, status: 404
       else
-        render json: @citizen
+        render json: @citizens
       end
     end
 
