@@ -18,13 +18,19 @@ module Api::V1
         }, status: 404
       else
         path = @citizen.avatar.path
-        if not params[:size].nil?
-          path.sub!('original', params[:size])
-        end
+        if path.nil?
+          render json: {
+            errors: ["User does not have a picture."]
+          }, status: 404
+        else
+          if not params[:size].nil?
+            path.sub!('original', params[:size])
+          end
 
-        send_file path, 
-          type: @citizen.avatar_content_type, 
-          disposition: 'inline'
+          send_file path, 
+            type: @citizen.avatar_content_type, 
+            disposition: 'inline'
+        end
       end
     end
 
