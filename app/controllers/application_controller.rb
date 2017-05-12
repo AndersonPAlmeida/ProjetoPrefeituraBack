@@ -26,11 +26,31 @@ class ApplicationController < ActionController::API
 
     # set sign_up hash to keys from citizen's registration form
     devise_parameter_sanitizer.permit(
-      :sign_up, keys: 
-      citizen_keys + [
-        :password, 
+      :sign_up, keys: [
+        :active,
+        :address_complement,
+        :address_number,
+        :address_street,
+        :birth_date,
+        :cep,
+        :city_id,
+        :cpf,
+        :email,
+        :name,
+        :neighborhood,
+        :note,
+        :pcd,
+        :phone1,
+        :phone2,
+        :rg,
+				:password,
         :password_confirmation
       ]
+
+      #citizen_keys + [
+      #  :password, 
+      #  :password_confirmation
+      #]
     )
 
     # set sign_in hash to keys from citizen's login form
