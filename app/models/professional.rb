@@ -20,9 +20,28 @@ class Professional < ApplicationRecord
     self.professionals_service_places.pluck(:role)
   end
 
-  # @param role [String] role to be verified
-  # @return [Boolean] professional has "role"
-  def has_role? role
-    self.roles.include?(role)
+  # @return [Boolean] professional is adm_c3sl
+  def adm_c3sl?
+    self.roles.include?("adm_c3sl")
+  end
+
+  # @return [Boolean] professional is adm_prefeitura
+  def adm_prefeitura?
+    self.roles.include?("adm_prefeitura")
+  end
+
+  # @return [Boolean] professional is adm_local
+  def adm_local?
+    self.roles.include?("adm_local")
+  end
+
+  # @return [Boolean] professional is atendente
+  def atendente?
+    self.roles.include?("atendente_local")
+  end
+
+  # @return [Boolean] professional is tecnico
+  def tecnico?
+    self.roles.include?("responsavel_atendimento")
   end
 end
