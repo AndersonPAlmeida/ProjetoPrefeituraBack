@@ -21,6 +21,7 @@ Rails.application.routes.draw do
 
       post "validate_cep" => "cep#validate"
       get "/citizens/:id/picture", to: "citizens#show_picture"
+      get "/accounts/self", to: "accounts#index"
     end
   end
 end

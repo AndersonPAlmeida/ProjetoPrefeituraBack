@@ -14,7 +14,13 @@ class ApplicationController < ActionController::API
 
   def current_user
     if not @resource.nil?
-      @resource.citizen
+      return @resource.citizen
+    end
+  end
+
+  def current_account
+    if not @resource.nil?
+      return @resource
     end
   end
 
