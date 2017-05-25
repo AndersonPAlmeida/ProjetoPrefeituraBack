@@ -100,10 +100,6 @@ class Api::V1::Accounts::RegistrationsControllerTest < ActionDispatch::Integrati
         assert_not_empty @data['errors']
       end
 
-      it "should return an error status" do
-        assert_equal 'error', @data['status']
-      end
-
       it "should not increase number of citizens" do
         assert_equal @number_of_citizens, Citizen.count
       end
@@ -178,14 +174,6 @@ class Api::V1::Accounts::RegistrationsControllerTest < ActionDispatch::Integrati
         assert_not_empty @data['errors']
       end
 
-      it "should return an error status" do
-        assert_equal 'error', @data['status']
-      end
-
-      it "should not increase number of citizens" do
-        assert_equal @number_of_citizens, Citizen.count
-      end
-
       it "should not increase number of accounts" do
         assert_equal @number_of_accounts, Account.count
       end
@@ -217,10 +205,6 @@ class Api::V1::Accounts::RegistrationsControllerTest < ActionDispatch::Integrati
 
       it "should return an error message" do
         assert_not_empty @data['errors']
-      end
-
-      it "should return the error status" do
-        assert_equal 'error', @data['status']
       end
 
       it "should not increase number of citizens" do
