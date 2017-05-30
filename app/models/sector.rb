@@ -18,4 +18,10 @@ class Sector < ApplicationRecord
   def self.all_active
     Sector.where(active: true)
   end
+
+  # @return all active sectors which city_hall belongs to city_id
+  def self.all_active_local(city_id)
+    city_hall = CityHall.find_by(city_id: city_id)
+    Sector.all_active.where(city_hall_id: city_hall.id)
+  end
 end

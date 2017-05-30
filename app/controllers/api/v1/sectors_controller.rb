@@ -6,7 +6,7 @@ module Api::V1
 
     # GET /sectors
     def index
-      @sectors = Sector.all
+      @sectors = policy_scope(Sector)
 
       render json: @sectors
     end

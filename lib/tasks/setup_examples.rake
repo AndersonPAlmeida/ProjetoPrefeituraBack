@@ -70,8 +70,7 @@ namespace :agendador do
     printf "Inserindo Setores..."
     sectors[0] = Sector.create({ # Sector Ambiental
       name: "Setor Ambiental",
-      description: "Responsável por resolver assuntos relacionados ao meio
-        ambiente",
+      description: "Responsável por resolver assuntos relacionados ao meio ambiente",
       schedules_by_sector: 2,
       city_hall: city_halls[0],
       cancel_limit: 3,
@@ -91,9 +90,7 @@ namespace :agendador do
     })
     sectors[2] = Sector.create({ # Sector Saude
       name: "Setor da Saúde",
-      description: "Relacionados a atividades de produção, distribuição e
-        consumo de bens e serviços, cujos objetivos principais ou exclusivos
-        são promover a saúde de indivíduos ou grupos de população",
+      description: "Relacionados a atividades de produção, distribuição e consumo de bens e serviços, cujos objetivos principais ou exclusivos são promover a saúde de indivíduos ou grupos de população",
       schedules_by_sector: 3,
       city_hall: city_halls[0],
       cancel_limit: 3,
