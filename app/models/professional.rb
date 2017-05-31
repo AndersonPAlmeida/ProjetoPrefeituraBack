@@ -10,6 +10,7 @@ class Professional < ApplicationRecord
   # Validations #
   validates_presence_of :occupation_id, :account_id
 
+
   # @return all active professionals
   def self.all_active
     Professional.where(active: true)
@@ -17,7 +18,23 @@ class Professional < ApplicationRecord
 
   # @return [Array] list of roles
   def roles
-    self.professionals_service_places.pluck(:role)
+    # Array containing every role that the current professional has
+    array = self.professionals_service_places.pluck(:role)
+    # Ordered array of roles
+    ordered = ["responsavel_atendimento", "atendente_local", "adm_local",
+               "adm_prefeitura", "adm_c3sl"]
+
+    lookup = {}
+    ordered.each_with_index do |item, index|
+      lookup[item] = index
+    end
+
+    # Sort array using order defined by @ordered_roles
+    array.sort_by! do |item|
+      lookup.fetch(item)
+    end
+
+    return array
   end
 
   # @return [Boolean] professional is adm_c3sl

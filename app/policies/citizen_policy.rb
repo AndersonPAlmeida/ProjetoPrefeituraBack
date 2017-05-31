@@ -15,6 +15,8 @@ class CitizenPolicy < ApplicationPolicy
 
       if permission == "citizen"
         return scope.all_dependants(citizen.id)
+      elsif permission.nil?
+        permission = citizen.professional.roles[-1]
       end
 
       @is_professional = citizen.professional.nil? == false

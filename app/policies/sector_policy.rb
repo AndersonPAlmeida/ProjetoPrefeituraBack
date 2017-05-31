@@ -24,5 +24,6 @@ class SectorPolicy < ApplicationPolicy
         citizen.professional.adm_c3sl?
       )
     end
+
   end
 end
