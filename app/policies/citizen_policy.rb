@@ -5,37 +5,37 @@ class CitizenPolicy < ApplicationPolicy
       if @is_professional and condition
         return result
       else
-        return scope.where(id: citizen.id)
+        return scope.where(id: @citizen.id)
       end
     end
 
     def resolve
-      citizen = user[0]
-      permission = user[1]
+      @citizen = user[0]
+      @permission = user[1]
 
-      if permission == "citizen"
-        return scope.all_dependants(citizen.id)
-      elsif permission.nil?
-        permission = citizen.professional.roles[-1]
+      if @permission == "citizen"
+        return scope.all_dependants(@citizen.id)
+      elsif @permission.nil?
+        @permission = @citizen.professional.roles[-1]
       end
 
-      @is_professional = citizen.professional.nil? == false
+      @is_professional = @citizen.professional.nil? == false
 
       case permission
         when "adm_c3sl"
           return verify_professional(
             scope.all_active, 
-            citizen.professional.adm_c3sl?
+            @citizen.professional.adm_c3sl?
           )
 
         when "adm_prefeitura"
           return verify_professional(
-            scope.all_active.where(city_id: citizen.city_id), 
-            citizen.professional.adm_prefeitura?
+            scope.all_active.where(city_id: @citizen.city_id), 
+            @citizen.professional.adm_prefeitura?
           )
 
         else
-          return scope.where(id: citizen.id)
+          return scope.where(id: @citizen.id)
       end
     end
 

@@ -20,6 +20,7 @@ class Professional < ApplicationRecord
   def roles
     # Array containing every role that the current professional has
     array = self.professionals_service_places.pluck(:role)
+
     # Ordered array of roles
     ordered = ["responsavel_atendimento", "atendente_local", "adm_local",
                "adm_prefeitura", "adm_c3sl"]
