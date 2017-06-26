@@ -15,13 +15,13 @@ class CitizenPolicy < ApplicationPolicy
 
       if @permission == "citizen"
         return scope.all_dependants(@citizen.id)
-      elsif @permission.nil?
+      elsif @permission.nil? and not @citizen.professional.nil?
         @permission = @citizen.professional.roles[-1]
       end
 
       @is_professional = @citizen.professional.nil? == false
 
-      case permission
+      case @permission
         when "adm_c3sl"
           return verify_professional(
             scope.all_active, 

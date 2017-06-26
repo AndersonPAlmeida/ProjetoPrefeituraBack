@@ -21,7 +21,7 @@ class SectorPolicy < ApplicationPolicy
 
       return verify_professional(
         scope.all_active,
-        @citizen.professional.adm_c3sl?
+        (@is_professional and @citizen.professional.adm_c3sl?)
       )
     end
 
