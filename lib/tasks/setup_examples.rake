@@ -677,10 +677,9 @@ namespace :agendador do
 
 
     puts "Inserindo escala 3 e seus agendamentos"
-
     shifts[2] = Shift.create({ # Create shift 1
-      execution_start_time: DateTime.now.beginning_of_hour+1.hours,
-      execution_end_time: DateTime.now.beginning_of_hour+5.hours,
+      execution_start_time: DateTime.now.beginning_of_day + 1.day + 72.hours,
+      execution_end_time: DateTime.now.beginning_of_day + 1.day + 80.hours,
       service_amount: 4,
       service_place: service_places[2], # SMS - Curitiba
       service_type: service_types[2],   # Clareamento
@@ -701,10 +700,9 @@ namespace :agendador do
     #end
 
     puts "Inserindo escala 4 e seus agendamentos"
-
     shifts[3] = Shift.create({ # Create shift 1
-      execution_start_time: DateTime.now.beginning_of_hour+3.hours+3.days,
-      execution_end_time: DateTime.now.beginning_of_hour+5.hours+3.days,
+      execution_start_time: DateTime.now.beginning_of_day + 1.day + 120.hours,
+      execution_end_time: DateTime.now.beginning_of_day + 1.day + 128.hours,
       service_amount: 4,
       service_place: service_places[2], # SMS - Curitiba
       service_type: service_types[2],   # Clareamento

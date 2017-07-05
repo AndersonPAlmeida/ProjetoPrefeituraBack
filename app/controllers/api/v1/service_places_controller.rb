@@ -6,7 +6,6 @@ module Api::V1
 
     # GET /service_places
     def index
-      @service_places = ServicePlace.all
       if params[:service_type_id].nil?
         @service_places = ServicePlace.all
       else
@@ -22,7 +21,9 @@ module Api::V1
           service_places_response = service_places.as_json(only: [:id, :name])
 
           for i in service_places_response
-            i["schedules"] = Schedule.where(service_place_id: i["id"])
+            i["schedules"] = Schedule.where(shifts: {service_type_id: params[:service_type_id]})
+                                     .includes(:shift)
+                                     .where(service_place_id: i["id"])
                                      .where(situation_id: Situation.disponivel)
                                      .as_json(only: [
                                        :id, 
