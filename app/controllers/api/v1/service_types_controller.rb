@@ -6,10 +6,10 @@ module Api::V1
 
     # GET /service_types
     def index
-      if not params[:sector_id].nil?
-        @service_types = ServiceType.where(sector_id: params[:sector_id], active: true)
-      else
+      if params[:sector_id].nil?
         @service_types = ServiceType.all
+      else
+        @service_types = ServiceType.where(sector_id: params[:sector_id], active: true)
       end
 
       render json: @service_types

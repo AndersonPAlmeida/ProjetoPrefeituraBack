@@ -7,6 +7,31 @@ module Api::V1
     # GET /service_places
     def index
       @service_places = ServicePlace.all
+      if params[:service_type_id].nil?
+        @service_places = ServicePlace.all
+      else
+        service_type = ServiceType.find(params[:service_type_id])
+
+        if params[:schedule].nil?
+          @service_places = ServicePlace.where(active: true)
+                                        .find(service_type.service_place_ids)
+        elsif params[:schedule] == 'true'
+          service_places = ServicePlace.where(active: true)
+                                       .find(service_type.service_place_ids)
+          service_places_response = service_places.as_json(only: [:id, :name])
+          for i in service_places_response
+            i["schedules"] = Schedule.where(service_place_id: i["id"])
+                                     .where(situation_id: Situation.disponivel)
+                                     .as_json(only: [
+                                       :id, 
+                                       :service_start_time, 
+                                       :service_end_time
+                                     ])
+          end
+
+          @service_places = service_places_response
+        end
+      end
 
       render json: @service_places
     end

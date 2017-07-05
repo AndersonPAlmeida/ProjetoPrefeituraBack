@@ -54,6 +54,7 @@ module Api::V1
           start_t = end_t  
           schedule.save!
         end
+        binding.pry
 
         render json: @shift, status: :created
       else

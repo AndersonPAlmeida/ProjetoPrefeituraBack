@@ -32,6 +32,9 @@ module BackEndServer
     # Skip views, helpers and assets when generating a new resource.
     config.api_only = true
 
+    # Set time zone
+    config.time_zone = 'Brasilia'
+
     # Configure path for custom validators
     config.autoload_paths += %W["#{config.root}/app/validators/"]
 
