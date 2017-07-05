@@ -18,7 +18,9 @@ module Api::V1
         elsif params[:schedule] == 'true'
           service_places = ServicePlace.where(active: true)
                                        .find(service_type.service_place_ids)
+
           service_places_response = service_places.as_json(only: [:id, :name])
+
           for i in service_places_response
             i["schedules"] = Schedule.where(service_place_id: i["id"])
                                      .where(situation_id: Situation.disponivel)
