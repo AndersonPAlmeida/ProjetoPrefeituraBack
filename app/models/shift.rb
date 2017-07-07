@@ -46,20 +46,21 @@ class Shift < ApplicationRecord
       self.service_amount.times do |i|
         end_t = start_t + (schedule_t * 60)
 
-        schedule = Schedule.new(
-          shift_id: self.id,
-          situation_id: Situation.disponivel.id,
-          service_place_id: self.service_place_id,
-          citizen_ajax_read: 1,
-          professional_ajax_read: 1,
-          reminder_read: 1,
-          service_start_time: start_t,
-          service_end_time: end_t
-        )
+        schedule_row = ["#{self.id}", "#{Situation.disponivel.id}", 
+                        "#{self.service_place_id}", "1", "1", "1", 
+                        "#{start_t}", "#{end_t}"]
 
-        schedules.append(schedule)
+        schedules.append(schedule_row)
         start_t = end_t  
-        schedule.save!
       end
+
+     Schedule.transaction do
+       columns = [:shift_id, :situation_id, :service_place_id, 
+                  :citizen_ajax_read, :professional_ajax_read,
+                  :reminder_read, :service_start_time,
+                  :service_end_time]
+       Schedule.import columns, schedules, validate: true
+     end
+
     end
 end
