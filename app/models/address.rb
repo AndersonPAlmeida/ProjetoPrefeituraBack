@@ -3,6 +3,7 @@ class Address < ApplicationRecord
 
   # Search for zipcode in database, if not registered, get address from correios
   # api and insert in database to be used as cache
+  #
   # @return [Address] address corresponding to zipcode
   def self.get_address(zipcode)
     zipcode = zipcode.gsub(/\D/, '')

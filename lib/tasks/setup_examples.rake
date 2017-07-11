@@ -408,7 +408,7 @@ namespace :agendador do
       city: city_halls[0].city
     })
     Dependant.create({
-      citizen: citizens[:dependenteb]
+      citizen_id: citizens[:dependenteb].id
     })
 
     puts "Inserindo Dependente C..."
@@ -425,7 +425,7 @@ namespace :agendador do
       city: city_halls[0].city
     })
     Dependant.create({
-      citizen: citizens[:dependentec]
+      citizen_id: citizens[:dependentec].id
     })
 
     puts "Inserindo Dependente D..."
@@ -442,7 +442,7 @@ namespace :agendador do
       city: city_halls[1].city
     })
     Dependant.create({
-      citizen: citizens[:dependented]
+      citizen_id: citizens[:dependented].id
     })
 
     puts "Inserindo Dependente E..."
@@ -459,7 +459,7 @@ namespace :agendador do
       city: city_halls[1].city
     })
     Dependant.create({
-      citizen: citizens[:dependentee]
+      citizen_id: citizens[:dependentee].id
     })
 
     puts "Inserindo Dependente F..."
@@ -476,7 +476,7 @@ namespace :agendador do
       city: city_halls[0].city
     })
     Dependant.create({
-      citizen: citizens[:dependentef]
+      citizen_id: citizens[:dependentef].id
     })
 
     puts "Inserindo Dependente G..."
@@ -493,7 +493,7 @@ namespace :agendador do
       city: city_halls[0].city
     })
     Dependant.create({
-      citizen: citizens[:dependenteg]
+      citizen_id: citizens[:dependenteg].id
     })
 
     puts "Inserindo Dependente H..."
@@ -510,7 +510,7 @@ namespace :agendador do
       city: city_halls[0].city
     })
     Dependant.create({
-      citizen: citizens[:dependenteh]
+      citizen_id: citizens[:dependenteh].id
     })
 
     puts "Inserindo Dependente I..."
@@ -527,7 +527,7 @@ namespace :agendador do
       city: city_halls[1].city
     })
     Dependant.create({
-      citizen: citizens[:dependentei]
+      citizen_id: citizens[:dependentei].id
     })
 
     puts "Inserindo Dependente J..."
@@ -544,7 +544,7 @@ namespace :agendador do
       city: city_halls[1].city
     })
     Dependant.create({
-      citizen: citizens[:dependentej]
+      citizen_id: citizens[:dependentej].id
     })
 
     printf "Criando relações de permissão..."

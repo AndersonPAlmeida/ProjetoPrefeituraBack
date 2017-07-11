@@ -35,6 +35,7 @@ class CityHall < ApplicationRecord
     :address_complement, maximum: 255
   validates_length_of       :address_number, maximum: 10, allow_blank: true
 
+  # @return every active city hall
   def self.all_active
     CityHall.where(active: true)
   end
