@@ -18,7 +18,8 @@ module Api::V1
           errors: ["Invalid CEP."]
         }, status: 422
       else
-        # City may not exists due to tests without setting up cities
+
+        # City may not exist due to tests without setting up cities
         if address[:city_id].nil?
           render json: {
             errors: ["City not registered."]
@@ -42,7 +43,9 @@ module Api::V1
           else
             city = City.find(address.city_id).name
             state = State.find(address.state_id).abbreviation
-            render json: address.as_json(except: [:city_id, :state_id, :created_at, :updated_at])
+
+            render json: address.as_json(except: 
+              [:city_id, :state_id, :created_at, :updated_at])
               .merge({city_name: city})
               .merge({state_name: state})
           end

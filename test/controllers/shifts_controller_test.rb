@@ -96,6 +96,18 @@ class Api::V1::ShiftsControllerTest < ActionDispatch::IntegrationTest
       @service_place.save!
       @service_type.save!
 
+      
+
+      @situation = Situation.new(
+        description: "Waiting"
+      )
+      @situation.save!
+
+      @disponivel = Situation.new(
+        description: "Disponível"
+      )
+      @disponivel.save!
+
       @shift = Shift.new(
         execution_start_time: DateTime.now,
         execution_end_time: DateTime.now+3,
@@ -104,15 +116,6 @@ class Api::V1::ShiftsControllerTest < ActionDispatch::IntegrationTest
         service_place_id: @service_place.id
       )
       @shift.save!
-
-      @situation = Situation.new(
-        description: "Waiting"
-      )
-      @situation.save!
-      @situation = Situation.new(
-        description: "Disponível"
-      )
-      @situation.save!
 
       @auth_headers = @account.create_new_auth_token 
       @token     = @auth_headers['access-token'] 

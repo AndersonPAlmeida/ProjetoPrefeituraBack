@@ -28,8 +28,8 @@ ActiveRecord::Schema.define(version: 20170322134221) do
     t.string   "provider",               default: "cpf", null: false
     t.string   "uid",                    default: "",    null: false
     t.json     "tokens"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",                             null: false
+    t.datetime "updated_at",                             null: false
     t.index ["reset_password_token"], name: "index_accounts_on_reset_password_token", unique: true, using: :btree
     t.index ["uid"], name: "index_accounts_on_uid", unique: true, using: :btree
   end
