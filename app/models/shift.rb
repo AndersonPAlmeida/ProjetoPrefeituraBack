@@ -22,9 +22,9 @@ class Shift < ApplicationRecord
   has_many    :schedules
 
   # Validations #
-  validates_presence_of :execution_start_time
-  :execution_end_time
-  :service_amount
+  validates_presence_of :execution_start_time,
+    :execution_end_time,
+    :service_amount
 
   around_create :create_schedules
 

@@ -14,7 +14,8 @@ class ServicePlace < ApplicationRecord
   validates_presence_of :neighborhood
 
   validates_length_of   :name, maximum: 255
-  validates_length_of   :address_number, within: 0..10,
+  validates_length_of   :address_number, 
+    within: 0..10,
     allow_blank: true
 
   validates_numericality_of :address_number,
