@@ -3,6 +3,7 @@ class Address < ApplicationRecord
 
   # Search for zipcode in database, if not registered, get address from correios
   # api and insert in database to be used as cache
+  #
   # @return [Address] address corresponding to zipcode
   def self.get_address(zipcode)
     zipcode = zipcode.gsub(/\D/, '')
@@ -17,7 +18,7 @@ class Address < ApplicationRecord
         return nil
       end
 
-      # if address is nil then it means that it is older than 180 days
+      # if address is not nil then it means that it is older than 180 days
       if address.nil?
         address = Address.new(
           zipcode:      result[:zipcode],

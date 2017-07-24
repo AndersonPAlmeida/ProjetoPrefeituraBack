@@ -22,44 +22,51 @@ class Shift < ApplicationRecord
   has_many    :schedules
 
   # Validations #
-  validates_presence_of :execution_start_time
-  :execution_end_time
-  :service_amount
+  validates_presence_of :execution_start_time,
+    :execution_end_time,
+    :service_amount
 
   around_create :create_schedules
 
   private
 
-    def create_schedules
-      yield
+  # Creates schedules when a shift is created, the amount of schedules is 
+  # specified by self.service_amount and are defined between 
+  # self.execution_start_time and self.execution_end_time
+  def create_schedules
 
-      schedules = Array.new
-      start_t = self.execution_start_time
-      end_t = self.execution_end_time 
+    # Execute shift's create method
+    yield
 
-      # Split shift execution time to fit service_amounts schedules
-      # each with (schedule_t * 60) minutes
-      range_t = (end_t.hour * 60 + end_t.min) - (start_t.hour * 60 + start_t.min)
-      schedule_t = range_t / self.service_amount 
+    schedules = Array.new
+    start_t = self.execution_start_time
+    end_t = self.execution_end_time 
 
-      # Creates service_amount schedules
-      self.service_amount.times do |i|
-        end_t = start_t + (schedule_t * 60)
+    # Split shift execution time to fit service_amounts schedules
+    # each with (schedule_t * 60) minutes
+    range_t = (end_t.hour * 60 + end_t.min) - (start_t.hour * 60 + start_t.min)
+    schedule_t = range_t / self.service_amount 
 
-        schedule = Schedule.new(
-          shift_id: self.id,
-          situation_id: Situation.disponivel.id,
-          service_place_id: self.service_place_id,
-          citizen_ajax_read: 1,
-          professional_ajax_read: 1,
-          reminder_read: 1,
-          service_start_time: start_t,
-          service_end_time: end_t
-        )
+    # Creates service_amount schedules
+    self.service_amount.times do |i|
+      end_t = start_t + (schedule_t * 60)
 
-        schedules.append(schedule)
-        start_t = end_t  
-        schedule.save!
-      end
+      schedule_row = ["#{self.id}", "#{Situation.disponivel.id}", 
+                      "#{self.service_place_id}", "1", "1", "1", 
+                      "#{start_t}", "#{end_t}"]
+
+      schedules.append(schedule_row)
+      start_t = end_t  
     end
+
+    # Bulk insert for schedules
+    Schedule.transaction do
+      columns = [:shift_id, :situation_id, :service_place_id, 
+                 :citizen_ajax_read, :professional_ajax_read,
+                 :reminder_read, :service_start_time,
+                 :service_end_time]
+
+      Schedule.import columns, schedules, validate: true
+    end
+  end
 end

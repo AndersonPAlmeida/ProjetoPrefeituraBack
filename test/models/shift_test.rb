@@ -69,6 +69,16 @@ class ShiftTest < ActiveSupport::TestCase
       @sector.city_hall = @city_hall
       @sector.save!
 
+      @situation = Situation.new(
+        description: "Waiting"
+      )
+      @situation.save!
+
+      @disponivel = Situation.new(
+        description: "Disponível"
+      )
+      @disponivel.save!
+
       @service_type = ServiceType.new(active: true,
                                       description: "type one")
 

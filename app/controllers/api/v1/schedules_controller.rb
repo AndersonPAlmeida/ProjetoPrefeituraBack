@@ -18,7 +18,11 @@ module Api::V1
           errors: [" Schedule #{params[:id]} does not exist."]
         }, status: 404
       else
-        render json: @schedule
+        if (not params[:confirmation].nil?) and params[:confirmation] == "true"
+          render json: @schedule.confirmation_data
+        else
+          render json: @schedule
+        end
       end
     end
 

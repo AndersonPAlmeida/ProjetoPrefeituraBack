@@ -3,7 +3,6 @@ require 'test_helper'
 class Api::V1::SchedulesControllerTest < ActionDispatch::IntegrationTest
   describe "Token access" do
     before do
-
       @santa_catarina = State.new(
         abbreviation: "SC",
         ibge_code: "42",
@@ -97,6 +96,22 @@ class Api::V1::SchedulesControllerTest < ActionDispatch::IntegrationTest
       @service_place.save!
       @service_type.save!
 
+      @situation = Situation.new(
+        description: 'Aguardando'
+      )
+      @situation.save!
+
+      @available = Situation.new(
+        description: 'Disponível'
+      )
+      @available.save!
+
+      @deleted = Situation.new(
+        description: 'Cancelado'
+      )
+      @deleted.save!
+
+
       @shift = Shift.new(
         execution_start_time: DateTime.now,
         execution_end_time: DateTime.now+3,
@@ -106,15 +121,6 @@ class Api::V1::SchedulesControllerTest < ActionDispatch::IntegrationTest
       )
       @shift.save!
 
-      @situation = Situation.new(
-        description: 'Aguardando'
-      )
-      @situation.save!
-
-      @deleted = Situation.new(
-        description: 'Cancelado'
-      )
-      @deleted.save!
 
       @auth_headers = @account.create_new_auth_token 
       @token     = @auth_headers['access-token'] 

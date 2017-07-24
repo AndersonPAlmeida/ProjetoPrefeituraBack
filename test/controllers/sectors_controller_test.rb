@@ -71,6 +71,7 @@ class SectorsControllerTest < ActionDispatch::IntegrationTest
           description: "the number one",
           schedules_by_sector: 3
         }}, headers: @auth_headers
+
         @body = JSON.parse(response.body)
         @resp_token = response.headers['access-token']
         @resp_client_id = response.headers['client']
@@ -110,8 +111,8 @@ class SectorsControllerTest < ActionDispatch::IntegrationTest
           assert_equal 200, response.status
         end
 
-        it "should return every city hall" do
-          assert_equal Sector.count, @body.size
+        it "should return every sector" do
+          assert_equal Sector.where(city_hall_id: @city_hall.id).count, @body.size
         end
       end
 
