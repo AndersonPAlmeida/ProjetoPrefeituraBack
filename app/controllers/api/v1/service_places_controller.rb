@@ -8,23 +8,41 @@ module Api::V1
     def index
       if params[:service_type_id].nil?
         @service_places = ServicePlace.all
-      else
+      else 
+        # if service_type is specified, then request should return 
+        #service_places from the given service_type
         service_type = ServiceType.find(params[:service_type_id])
 
+        # show only service_place info
         if params[:schedule].nil?
           @service_places = ServicePlace.where(active: true)
                                         .find(service_type.service_place_ids)
+
+        # show schedules from every service_place from the given service_type
+        # (used in schedule action)
         elsif params[:schedule] == 'true'
           service_places = ServicePlace.where(active: true)
                                        .find(service_type.service_place_ids)
 
-          service_places_response = service_places.as_json(only: [:id, :name],
-                                                          include: {city_hall: {only: :schedule_period}})
+          # show only id and name on Json response, but city_hall must be
+          # included for retrieving schedule_period
+          service_places_response = service_places.as_json(only: 
+                                      [:id, :name], include: {
+                                        city_hall: {only: :schedule_period}
+                                      }
+                                    )
+
 
           for i in service_places_response
+            # add schedule_period to service_place json (instead of city_hall)
             i["schedule_period"] = i["city_hall"]["schedule_period"]
             i.delete("city_hall")
-            i["schedules"] = Schedule.where(shifts: {service_type_id: params[:service_type_id]})
+
+            # the bridge between a schedule and a [service_place + service_type] 
+            # is the shift responsible for creating the schedule
+            i["schedules"] = Schedule.where(shifts: {
+                                        service_type_id: params[:service_type_id]
+                                      })
                                      .includes(:shift)
                                      .where(service_place_id: i["id"])
                                      .where(situation_id: Situation.disponivel)
