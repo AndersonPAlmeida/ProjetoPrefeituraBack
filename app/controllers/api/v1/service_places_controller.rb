@@ -18,9 +18,12 @@ module Api::V1
           service_places = ServicePlace.where(active: true)
                                        .find(service_type.service_place_ids)
 
-          service_places_response = service_places.as_json(only: [:id, :name])
+          service_places_response = service_places.as_json(only: [:id, :name],
+                                                          include: {city_hall: {only: :schedule_period}})
 
           for i in service_places_response
+            i["schedule_period"] = i["city_hall"]["schedule_period"]
+            i.delete("city_hall")
             i["schedules"] = Schedule.where(shifts: {service_type_id: params[:service_type_id]})
                                      .includes(:shift)
                                      .where(service_place_id: i["id"])

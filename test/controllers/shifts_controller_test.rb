@@ -96,7 +96,6 @@ class Api::V1::ShiftsControllerTest < ActionDispatch::IntegrationTest
       @service_place.save!
       @service_type.save!
 
-      
 
       @situation = Situation.new(
         description: "Waiting"
