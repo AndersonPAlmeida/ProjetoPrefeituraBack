@@ -46,9 +46,12 @@ module BackEndServer
     # Allows GET, POST or OPTIONS requests from specified origins on any resource.
     config.middleware.insert_before 0, Rack::Cors do
       allow do
+
         # Specify which origins should be allowed to make requests (e.g. agendador.c3sl.ufpr.br)
         origins '*'
-        resource '*', :headers => :any, :methods => [:get, :post, :options]
+        resource '*', :headers => :any, 
+          :methods => [:get, :post, :options], 
+          :expose => ['access-token', 'expiry', 'token-type', 'uid', 'client']
       end
     end
 
