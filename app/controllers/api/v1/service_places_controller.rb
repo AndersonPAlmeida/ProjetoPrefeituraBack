@@ -22,8 +22,9 @@ module Api::V1
         elsif params[:schedule] == 'true'
 
           # show schedules from every service_place from the given service_type
-          # (used in schedule action)
-          @service_places = ServicePlace.get_schedule_response(service_type).to_json
+          # (used in scheduling process)
+          @service_places = ServicePlace.get_schedule_response(service_type)
+            .to_json
         end
       end
 

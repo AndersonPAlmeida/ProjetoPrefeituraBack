@@ -1,6 +1,5 @@
 class SectorPolicy < ApplicationPolicy
   class Scope < Scope
-
     def verify_professional(result, condition)
       if @is_professional and condition
         return result
@@ -24,6 +23,5 @@ class SectorPolicy < ApplicationPolicy
         (@is_professional and @citizen.professional.adm_c3sl?)
       )
     end
-
   end
 end

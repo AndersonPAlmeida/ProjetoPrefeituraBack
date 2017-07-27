@@ -7,7 +7,9 @@ module Api::V1
     # GET /service_types
     def index
       if params[:sector_id].nil?
-        @service_types = ServiceType.all
+        @service_types = ServiceType.where(active: true)
+      elsif params[:schedule].nil? or params[:schedule] != 'true'
+        @service_types = ServiceType.where(sector_id: sector_id, active: true)
       else
         @service_types = ServiceType.schedule_response(params[:sector_id]).to_json
       end
