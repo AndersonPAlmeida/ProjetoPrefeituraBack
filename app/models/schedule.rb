@@ -13,6 +13,10 @@ class Schedule < ApplicationRecord
     :service_start_time,
     :service_end_time
 
+  # Workaround for Pundit's lack of parameter passing
+  attr_accessor :target_citizen_id
+
+
   def confirmation_data
     self.as_json(only: [
       :id, :service_start_time, :service_end_time, :note

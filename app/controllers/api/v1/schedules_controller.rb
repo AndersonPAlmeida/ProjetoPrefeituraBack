@@ -2,7 +2,9 @@ module Api::V1
   class SchedulesController < ApplicationController
     include Authenticable
 
-    before_action :set_schedule, only: [:show, :update, :destroy]
+    before_action :set_schedule, only: [:show, :update, :destroy, :confirm]
+
+    rescue_from Pundit::NotAuthorizedError, with: :schedule_error_description
 
     # GET /schedules
     def index
@@ -18,11 +20,42 @@ module Api::V1
           errors: [" Schedule #{params[:id]} does not exist."]
         }, status: 404
       else
-        if (not params[:confirmation].nil?) and params[:confirmation] == "true"
-          render json: @schedule.confirmation_data
+        render json: @schedule
+      end
+    end
+
+    # PUT /schedules/1/confirm
+    def confirm
+      if @schedule.nil?
+        render json: {
+          errors: [" Schedule #{params[:id]} does not exist."]
+        }, status: 404
+      else
+
+        # Workaround for Pundit's lack of parameter passing
+        # May be nil, that case is handled in SchedulePolicy
+        @schedule.target_citizen_id = params[:citizen_id]
+
+        # Check if the current citizen can schedule for the given citizen
+        authorize @schedule, :permitted?
+
+        # Check if there's no conflict concerning the given citizen's schedules
+        authorize @schedule, :no_conflict?
+
+        # Update the schedule's situation
+        @schedule.situation_id = Situation.agendado.id
+
+        # Update the schedule's account_id
+        if params[:citizen_id].nil?
+          @schedule.account_id = current_account.id
         else
-          render json: @schedule
+          citizen = Citizen.find(params[:citizen_id])
+          @schedule.account_id = citizen.account.id
         end
+
+        @schedule.save!
+
+        render json: @schedule.confirmation_data
       end
     end
 
@@ -65,6 +98,21 @@ module Api::V1
     end
 
     private
+
+    def schedule_error_description(exception)
+      policy_name = exception.message.split(' ')[3]
+
+      case policy_name
+      when "permitted?"
+        render json: {
+          errors: ["You're not allowed to schedule for this citizen."]
+        }, status: 422
+      when "no_conflict?"
+        render json: {
+          errors: ["This citizen is already scheduled in the given time."]
+        }, status: 422
+      end
+    end
 
     # Use callbacks to share common setup or constraints between actions.
     def set_schedule

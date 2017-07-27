@@ -38,13 +38,11 @@ class CitizenPolicy < ApplicationPolicy
           return scope.where(id: @citizen.id)
       end
     end
-
   end
 
   def index?
     if not user.professional.nil?
-      if user.professional.adm_c3sl? or
-          user.professional.adm_prefeitura?
+      if user.professional.adm_c3sl? or user.professional.adm_prefeitura?
         return true
       end
     end
