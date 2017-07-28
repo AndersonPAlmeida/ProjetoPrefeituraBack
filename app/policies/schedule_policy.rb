@@ -32,8 +32,7 @@ class SchedulePolicy < ApplicationPolicy
     when "adm_c3sl"
       return @citizen.professional.adm_c3sl?
     when "adm_prefeitura"
-      return @citizen.professional.adm_prefeitura? and 
-        citizen.city_id == @citizen.city_id 
+      return (@citizen.professional.adm_prefeitura? and (citizen.city_id == @citizen.city_id))
     end
 
     return false
