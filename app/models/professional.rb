@@ -22,15 +22,15 @@ class Professional < ApplicationRecord
     array = self.professionals_service_places.pluck(:role)
 
     # Ordered array of roles
-    ordered = ["responsavel_atendimento", "atendente_local", "adm_local",
-               "adm_prefeitura", "adm_c3sl"]
+    ordered = ["responsavel_atendimento", "atendente_local", 
+               "adm_local", "adm_prefeitura", "adm_c3sl"]
 
     lookup = {}
     ordered.each_with_index do |item, index|
       lookup[item] = index
     end
 
-    # Sort array using order defined by @ordered_roles
+    # Sort array using order defined by ordered
     array.sort_by! do |item|
       lookup.fetch(item)
     end

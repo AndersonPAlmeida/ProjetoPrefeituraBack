@@ -22,20 +22,20 @@ class CitizenPolicy < ApplicationPolicy
       @is_professional = @citizen.professional.nil? == false
 
       case @permission
-        when "adm_c3sl"
-          return verify_professional(
-            scope.all_active, 
-            @citizen.professional.adm_c3sl?
-          )
+      when "adm_c3sl"
+        return verify_professional(
+          scope.all_active, 
+          @citizen.professional.adm_c3sl?
+        )
 
-        when "adm_prefeitura"
-          return verify_professional(
-            scope.all_active.where(city_id: @citizen.city_id), 
-            @citizen.professional.adm_prefeitura?
-          )
+      when "adm_prefeitura"
+        return verify_professional(
+          scope.all_active.where(city_id: @citizen.city_id), 
+          @citizen.professional.adm_prefeitura?
+        )
 
-        else
-          return scope.where(id: @citizen.id)
+      else
+        return scope.where(id: @citizen.id)
       end
     end
   end

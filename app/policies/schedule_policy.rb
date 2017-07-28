@@ -15,16 +15,25 @@ class SchedulePolicy < ApplicationPolicy
       record.target_citizen_id = @citizen.id
     end
 
-    if @permission == "citizen"
+    citizen = Citizen.find(record.target_citizen_id)
+
+    if @permission == "citizen" or @citizen.professional.nil?
       dependants_ids = Citizen.where(responsible_id: @citizen.id).pluck(:id)
 
       # Return false if the target is neither the current citizen nor one 
       # of his dependants
-      return (record.target_citizen_id == @citizen.id or 
-              dependants_ids.include? record.target_citizen_id)
-
+      return (citizen.id == @citizen.id or (dependants_ids.include? citizen.id))
     elsif @permission.nil? and not @citizen.professional.nil?
       @permission = @citizen.professional.roles[-1]
+    end
+
+
+    case @permission
+    when "adm_c3sl"
+      return @citizen.professional.adm_c3sl?
+    when "adm_prefeitura"
+      return @citizen.professional.adm_prefeitura? and 
+        citizen.city_id == @citizen.city_id 
     end
 
     return false
