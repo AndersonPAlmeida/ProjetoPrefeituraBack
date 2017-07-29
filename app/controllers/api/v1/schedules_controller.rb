@@ -2,7 +2,7 @@ module Api::V1
   class SchedulesController < ApplicationController
     include Authenticable
 
-    before_action :set_schedule, only: [:show, :update, :destroy, :confirm]
+    before_action :set_schedule, only: [:show, :update, :destroy, :confirm, :confirmation]
 
     rescue_from Pundit::NotAuthorizedError, with: :schedule_error_description
 
@@ -24,14 +24,13 @@ module Api::V1
       end
     end
 
-    # PUT /schedules/1/confirm
-    def confirm
+    # GET /schedules/1/confirmation
+    def confirmation
       if @schedule.nil?
         render json: {
           errors: [" Schedule #{params[:id]} does not exist."]
         }, status: 404
       else
-
         # Workaround for Pundit's lack of parameter passing
         # May be nil, that case is handled in SchedulePolicy
         @schedule.target_citizen_id = params[:citizen_id]
@@ -42,20 +41,36 @@ module Api::V1
         # Check if there's no conflict concerning the given citizen's schedules
         authorize @schedule, :no_conflict?
 
+        # Return Json containing the necessary information for displaying the
+        # schedule confirmation to the user
+        render json: @schedule.confirmation_data
+      end
+    end
+
+    # PUT /schedules/1/confirm
+    def confirm
+      if @schedule.nil?
+        render json: {
+          errors: [" Schedule #{params[:id]} does not exist."]
+        }, status: 404
+      else
         # Update the schedule's situation
         @schedule.situation_id = Situation.agendado.id
 
         # Update the schedule's account_id
         if params[:citizen_id].nil?
-          @schedule.account_id = current_account.id
+          @schedule.citizen_id = current_user.id
         else
-          citizen = Citizen.find(params[:citizen_id])
-          @schedule.account_id = citizen.account.id
+          @schedule.citizen_id = params[:citizen_id]
         end
 
-        @schedule.save!
-
-        render json: @schedule.confirmation_data
+        if @schedule.save
+          render json: @schedule
+        else
+          render json: {
+            errors: ["The schedule could not be confirmed."]
+          }, status: 400
+        end
       end
     end
 
@@ -127,7 +142,7 @@ module Api::V1
     def schedule_params
       params.require(:schedule).permit(
         :id,
-        :account_id,
+        :citizen_id,
         :citizen_ajax_read,
         :note,
         :professional_ajax_read,

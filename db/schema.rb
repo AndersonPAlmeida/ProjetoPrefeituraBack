@@ -177,7 +177,7 @@ ActiveRecord::Schema.define(version: 20170322134221) do
     t.integer  "shift_id",               null: false
     t.integer  "situation_id",           null: false
     t.integer  "service_place_id",       null: false
-    t.integer  "account_id"
+    t.integer  "citizen_id"
     t.integer  "citizen_ajax_read",      null: false
     t.integer  "professional_ajax_read", null: false
     t.integer  "reminder_read",          null: false
@@ -188,7 +188,7 @@ ActiveRecord::Schema.define(version: 20170322134221) do
     t.integer  "remainder_time"
     t.datetime "created_at",             null: false
     t.datetime "updated_at",             null: false
-    t.index ["account_id"], name: "index_schedules_on_account_id", using: :btree
+    t.index ["citizen_id"], name: "index_schedules_on_citizen_id", using: :btree
     t.index ["service_place_id"], name: "index_schedules_on_service_place_id", using: :btree
     t.index ["shift_id"], name: "index_schedules_on_shift_id", using: :btree
     t.index ["situation_id"], name: "index_schedules_on_situation_id", using: :btree
@@ -299,7 +299,7 @@ ActiveRecord::Schema.define(version: 20170322134221) do
   add_foreign_key "occupations", "city_halls"
   add_foreign_key "professionals", "accounts"
   add_foreign_key "professionals", "occupations"
-  add_foreign_key "schedules", "accounts"
+  add_foreign_key "schedules", "citizens"
   add_foreign_key "schedules", "service_places"
   add_foreign_key "schedules", "shifts"
   add_foreign_key "schedules", "situations"

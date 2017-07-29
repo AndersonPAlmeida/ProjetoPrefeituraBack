@@ -4,7 +4,7 @@ class CreateSchedules < ActiveRecord::Migration[5.0]
       t.references :shift, foreign_key: true, index: true, null: false
       t.references :situation, foreign_key: true, index: true, null: false
       t.references :service_place, foreign_key: true, index: true, null: false
-      t.references :account, foreign_key: true, index: true
+      t.references :citizen, foreign_key: true, index: true
       t.integer :citizen_ajax_read, null: false
       t.integer :professional_ajax_read, null: false
       t.integer :reminder_read, null: false

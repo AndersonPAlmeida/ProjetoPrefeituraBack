@@ -22,6 +22,7 @@ Rails.application.routes.draw do
       post "validate_cep" => "cep#validate"
       get "/citizens/:id/picture", to: "citizens#show_picture"
       put "/schedules/:id/confirm", to: "schedules#confirm"
+      get "/schedules/:id/confirmation", to: "schedules#confirmation"
     end
   end
 end
