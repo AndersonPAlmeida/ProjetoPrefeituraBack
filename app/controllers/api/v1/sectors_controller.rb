@@ -6,10 +6,13 @@ module Api::V1
 
     # GET /sectors
     def index
-      if (not params[:schedule].nil?) and (params[:schedule] == 'true') and
-        (not params[:citizen_id].nil?)
+      if (not params[:schedule].nil?) and (params[:schedule] == 'true')
+        if params[:citizen_id].nil?
+          citizen = current_user[0]
+        else
+          citizen = Citizen.find(params[:citizen_id])
+        end
 
-        citizen = Citizen.find(params[:citizen_id])
         @sectors = Sector.schedule_response(citizen)
       else
         @sectors = policy_scope(Sector)

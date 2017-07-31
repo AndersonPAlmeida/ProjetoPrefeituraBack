@@ -55,7 +55,8 @@ class ServicePlace < ApplicationRecord
   # Get every service_place and its schedules given a service_type
   #
   # @param service_type [ServiceType] specified ServiceType
-  # @return [Json] array containing the reponses from get_schedules for every service_place
+  # @return [Json] array containing the reponses from get_schedules for every 
+  # service_place
   def self.get_schedule_response(service_type)
     service_places = ServicePlace.where(active: true)
       .find(service_type.service_place_ids)
@@ -72,6 +73,8 @@ class ServicePlace < ApplicationRecord
 
   private
 
+  # Method surrounding create method for ServicePlace. It had to be done
+  # for associating a City given the CityHall
   def create_service_place
     self.city = self.city_hall.city
     yield

@@ -59,7 +59,8 @@ module Api::V1
 
         # Update the schedule's account_id
         if params[:citizen_id].nil?
-          @schedule.citizen_id = current_user.id
+          binding.pry
+          @schedule.citizen_id = current_user[0].id
         else
           @schedule.citizen_id = params[:citizen_id]
         end
