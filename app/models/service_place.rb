@@ -1,6 +1,7 @@
 class ServicePlace < ApplicationRecord
 
   # Associations #
+  belongs_to :city
   belongs_to :city_hall
   has_many :professionals_service_places
   has_many :professionals, through: :professionals_service_places
@@ -21,6 +22,8 @@ class ServicePlace < ApplicationRecord
   validates_numericality_of :address_number,
     only_integer: true,
     allow_blank: true
+
+  around_create :create_service_place
 
   # @return all active service places
   def self.all_active
@@ -65,5 +68,12 @@ class ServicePlace < ApplicationRecord
     end
 
     return response
+  end
+
+  private
+
+  def create_service_place
+    self.city = self.city_hall.city
+    yield
   end
 end

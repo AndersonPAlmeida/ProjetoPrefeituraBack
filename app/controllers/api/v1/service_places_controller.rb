@@ -101,6 +101,7 @@ module Api::V1
         :address_street,
         :cep,
         :city_hall_id,
+        :city_id,
         :email,
         :name,
         :neighborhood,
