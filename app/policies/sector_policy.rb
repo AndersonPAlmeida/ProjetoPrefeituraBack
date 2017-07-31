@@ -1,13 +1,5 @@
 class SectorPolicy < ApplicationPolicy
   class Scope < Scope
-    def verify_professional(result, condition)
-      if @is_professional and condition
-        return result
-      else
-        return scope.all_active_local(@citizen.city_id)
-      end
-    end
-
     def resolve
       @citizen = user[0]
       @permission = user[1]
@@ -16,12 +8,11 @@ class SectorPolicy < ApplicationPolicy
         return scope.all_active_local(@citizen.city_id)
       end
 
-      @is_professional = @citizen.professional.nil? == false
-
-      return verify_professional(
-        scope.all_active,
-        (@is_professional and @citizen.professional.adm_c3sl?)
-      )
+      if (not @citizen.professional.nil?) and @citizen.professional.adm_c3sl?
+        return scope.all_active
+      else
+        return scope.all_active_local(@citizen.city_id)
+      end
     end
   end
 end

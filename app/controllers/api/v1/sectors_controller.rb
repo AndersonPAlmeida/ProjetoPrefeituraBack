@@ -6,7 +6,14 @@ module Api::V1
 
     # GET /sectors
     def index
-      @sectors = policy_scope(Sector)
+      if (not params[:schedule].nil?) and (params[:schedule] == 'true') and
+        (not params[:citizen_id].nil?)
+
+        citizen = Citizen.find(params[:citizen_id])
+        @sectors = Sector.schedule_response(citizen)
+      else
+        @sectors = policy_scope(Sector)
+      end
 
       render json: @sectors
     end
