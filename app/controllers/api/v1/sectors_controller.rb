@@ -10,7 +10,14 @@ module Api::V1
         if params[:citizen_id].nil?
           citizen = current_user[0]
         else
+          begin
           citizen = Citizen.find(params[:citizen_id])
+          rescue
+            render json: {
+              errors: ["Citizen #{params[:citizen_id]} does not exist."]
+            }, status: 404
+            return
+          end
         end
 
         @sectors = Sector.schedule_response(citizen)

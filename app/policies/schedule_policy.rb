@@ -60,6 +60,7 @@ class SchedulePolicy < ApplicationPolicy
 
     citizen = Citizen.find(record.target_citizen_id)
     citizen_s_schedules = Schedule.where(citizen_id: citizen.id)
+      .where(situation_id: Situation.disponivel.id)
 
     for i in citizen_s_schedules
 

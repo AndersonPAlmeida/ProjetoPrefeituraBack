@@ -46,7 +46,7 @@ class ServicePlace < ApplicationRecord
       .where(shifts: { service_type_id: service_type_id })
       .includes(:shift)
       .where(service_place_id: response["id"])
-      .where(situation_id: Situation.disponivel)
+      .where(situation_id: Situation.disponivel.id)
       .as_json(only: [:id, :service_start_time, :service_end_time])
 
     return response
