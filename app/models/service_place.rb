@@ -1,7 +1,7 @@
 class ServicePlace < ApplicationRecord
 
   # Associations #
-  belongs_to :city
+  #belongs_to :city
   belongs_to :city_hall
   has_many :professionals_service_places
   has_many :professionals, through: :professionals_service_places
@@ -23,7 +23,7 @@ class ServicePlace < ApplicationRecord
     only_integer: true,
     allow_blank: true
 
-  around_create :create_service_place
+  around_save :create_service_place
 
   # @return all active service places
   def self.all_active
@@ -76,7 +76,8 @@ class ServicePlace < ApplicationRecord
   # Method surrounding create method for ServicePlace. It had to be done
   # for associating a City given the CityHall
   def create_service_place
-    self.city = self.city_hall.city
+#    binding.pry
+    self.city_id = self.city_hall.city_id
     yield
   end
 end

@@ -71,5 +71,6 @@ class Account < ApplicationRecord
       })
     end
 
+    return response
   end
 end
