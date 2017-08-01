@@ -115,7 +115,10 @@ module Api::V1
 
     private
 
+    # Rescue Pundit exception for providing more details in reponse
     def schedule_error_description(exception)
+
+      # Get SchedulePolicy method's name responsible for raising exception 
       policy_name = exception.message.split(' ')[3]
 
       case policy_name
@@ -126,7 +129,7 @@ module Api::V1
       when "no_conflict?"
         render json: {
           errors: ["This citizen is already scheduled in the given time."]
-        }, status: 422
+        }, status: 409
       end
     end
 
