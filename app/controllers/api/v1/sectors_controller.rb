@@ -20,7 +20,7 @@ module Api::V1
           end
         end
 
-        @sectors = Sector.schedule_response(citizen)
+        @sectors = Sector.schedule_response(citizen).to_json
       else
         @sectors = policy_scope(Sector)
       end
