@@ -59,7 +59,6 @@ module Api::V1
 
         # Update the schedule's account_id
         if params[:citizen_id].nil?
-          binding.pry
           @schedule.citizen_id = current_user[0].id
         else
           @schedule.citizen_id = params[:citizen_id]
@@ -68,9 +67,7 @@ module Api::V1
         if @schedule.save
           render json: @schedule
         else
-          render json: {
-            errors: ["The schedule could not be confirmed."]
-          }, status: 400
+          render json: @schedule.errors, status: :unprocessable_entity
         end
       end
     end
