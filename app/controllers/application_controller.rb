@@ -13,9 +13,43 @@ class ApplicationController < ActionController::API
   protect_from_forgery with: :null_session, 
     if: Proc.new { |c| c.request.format.json? }
 
+  # This method is useful in the rest of the application for checking permissions
+  #
+  # @return [Citizen, String] the current logged citizen and the permission 
+  # he wants to use for his request
   def current_user
     if not @resource.nil?
       return @resource.citizen, params[:permission]
+    end
+  end
+
+  # It is executed in every request that requires authorization (called in 
+  # authenticable concern as a before_action). It checks if the current_user
+  # has the permission he claims in the parameters, an errors gets returned if
+  # he doesn't
+  def verify_permission
+    if not current_user.nil? and not params[:permission].nil?
+
+      professional = current_user[0].professional
+      permission = params[:permission]
+
+      # Check if the given permission exists
+      if not ["responsavel_atendimento", "atendente_local", 
+        "adm_local", "adm_prefeitura", "adm_c3sl"].include? permission
+
+        render json: {
+          errors: ["The permission #{permission} does not exist."]
+        }, status: 404
+
+      # Check if the current_user possesses the given permission
+      elsif (professional.nil? and permission != 'citizen') or 
+        (not professional.nil? and not professional.roles.include? permission)
+
+        render json: {
+          errors: ["You don't have the #{permission} permission."]
+        }, status: 401
+
+      end
     end
   end
 
@@ -47,11 +81,6 @@ class ApplicationController < ActionController::API
 				:password,
         :password_confirmation
       ]
-
-      #citizen_keys + [
-      #  :password, 
-      #  :password_confirmation
-      #]
     )
 
     # set sign_in hash to keys from citizen's login form
