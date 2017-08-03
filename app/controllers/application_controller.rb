@@ -34,7 +34,7 @@ class ApplicationController < ActionController::API
       permission = params[:permission]
 
       # Check if the given permission exists
-      if not ["responsavel_atendimento", "atendente_local", 
+      if not ["citizen", "responsavel_atendimento", "atendente_local", 
         "adm_local", "adm_prefeitura", "adm_c3sl"].include? permission
 
         render json: {
@@ -43,7 +43,8 @@ class ApplicationController < ActionController::API
 
       # Check if the current_user possesses the given permission
       elsif (professional.nil? and permission != 'citizen') or 
-        (not professional.nil? and not professional.roles.include? permission)
+        (not professional.nil? and not professional.roles.include? permission and
+        permission != "citizen" )
 
         render json: {
           errors: ["You don't have the #{permission} permission."]
