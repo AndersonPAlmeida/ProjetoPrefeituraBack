@@ -59,8 +59,10 @@ class SchedulePolicy < ApplicationPolicy
     end
 
     citizen = Citizen.find(record.target_citizen_id)
+
+    # Schedules that the citizen already has
     citizen_s_schedules = Schedule.where(citizen_id: citizen.id)
-      .where(situation_id: Situation.disponivel.id)
+      .where(situation_id: Situation.agendado.id)
 
     for i in citizen_s_schedules
 
