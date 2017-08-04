@@ -57,5 +57,7 @@ module BackEndServer
 
     # Protect the API from DDoS, brute force attacks, hammering...
     config.middleware.use Rack::Attack
+
+    config.middleware.use ActionDispatch::Flash
   end
 end
