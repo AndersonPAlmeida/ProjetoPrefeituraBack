@@ -189,7 +189,8 @@ module Api::V1
       render json: {
         status: 'error',
         data:   @citizen,
-        errors: [I18n.t("devise_token_auth.registrations.email_already_exists", email: @citizen.cpf)]
+        errors: [I18n.t("devise_token_auth.registrations.email_already_exists",
+                        email: @citizen.cpf)]
       }, status: 422
     end
 

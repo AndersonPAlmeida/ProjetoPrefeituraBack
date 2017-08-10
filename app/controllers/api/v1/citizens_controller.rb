@@ -2,42 +2,71 @@ module Api::V1
   class CitizensController < ApplicationController 
     include Authenticable
 
-    before_action :set_citizen, only: [:show_picture, :update, :destroy]
+    before_action :set_citizen, only: [:picture, :show, :update, :destroy,
+                                       :schedule_options]
+
+    rescue_from Pundit::NotAuthorizedError, with: :policy_error_description
 
     # GET /citizens
     def index
       @citizens = policy_scope(Citizen)
 
-      render json: @citizens
+      if @citizens.nil?
+        render json: {
+          errors: ["You don't have the permission to view citizens."]
+        }, status: 403
+      else
+        render json: @citizens
+      end
     end
 
-    def show_picture
+    # GET /citizens/1/picture
+    def picture
       if @citizen.nil?
         render json: {
           errors: ["User #{params[:id]} does not exist."]
         }, status: 404
       else
         path = @citizen.avatar.path
-        if not params[:size].nil?
-          path.sub!('original', params[:size])
-        end
 
-        send_file path, 
-          type: @citizen.avatar_content_type, 
-          disposition: 'inline'
+        if path.nil?
+          render json: {
+            errors: ["User #{params[:id]} does have a picture."]
+          }, status: 404
+        else
+          if not params[:size].nil?
+            path.sub!('original', params[:size])
+          end
+
+          send_file path, 
+            type: @citizen.avatar_content_type, 
+            disposition: 'inline'
+        end
+      end
+    end
+
+    # GET /citizen/1/schedule_options
+    def schedule_options
+      if @citizen.nil?
+        render json: {
+          errors: ["User #{params[:id]} does not exist."]
+        }, status: 404
+      else
+        authorize @citizen, :schedule?
+        schedule_response = @citizen.schedule_response
+
+        render json: schedule_response.to_json
       end
     end
 
     # GET /citizens/1
     def show
-      @citizens = Citizen.all_dependants(params[:id])
-
-      if @citizens.empty?
+      if @citizen.nil?
         render json: {
           errors: ["User #{params[:id]} does not exist."]
         }, status: 404
       else
-        render json: @citizens
+        render json: @citizen
       end
     end
 
@@ -94,6 +123,20 @@ module Api::V1
         @citizen = Citizen.find(params[:id])
       rescue
         @citizen = nil
+      end
+    end
+
+    # Rescue Pundit exception for providing more details in reponse
+    def policy_error_description(exception)
+
+      # Get SchedulePolicy method's name responsible for raising exception 
+      policy_name = exception.message.split(' ')[3]
+
+      case policy_name
+      when "schedule?"
+        render json: {
+          errors: ["You're not allowed to schedule for this citizen."]
+        }, status: 403
       end
     end
 

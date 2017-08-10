@@ -3,15 +3,24 @@ module Api::V1
     include Authenticable
 
     before_action :set_dependant, only: [:show, :update, :destroy]
+    before_action :set_citizen, only: [:index]
 
-    # GET /dependants
+    # GET citizens/1/dependants
     def index
-      @dependants = Dependant.all
+      if @citizen.nil?
+        render json: {
+          errors: ["Citizen #{params[:id]} does not exist."]
+        }, status: 404
+      else
+        #authorize @citizen, :display?
 
-      render json: @dependants
+        @dependants = Citizen.where('id = ? OR responsible_id = ?', 
+                                    @citizen.id, @citizen.id)
+        render json: @dependants
+      end
     end
 
-    # GET /dependants/1
+    # GET citizens/1/dependants/2
     def show
       if @dependant.nil?
         render json: {
@@ -22,7 +31,7 @@ module Api::V1
       end
     end
 
-    # POST /dependants
+    # POST citizens/1/dependants
     def create
       @dependant = Dependant.new(dependant_params)
 
@@ -33,7 +42,7 @@ module Api::V1
       end
     end
 
-    # PATCH/PUT /dependants/1
+    # PATCH/PUT citizens/1/dependants/2
     def update
       if @dependant.nil?
         render json: {
@@ -48,7 +57,7 @@ module Api::V1
       end
     end
 
-    # DELETE /dependants/1
+    # DELETE citizens/1/dependants/2
     def destroy
       if @dependant.nil?
         render json: {
@@ -66,6 +75,15 @@ module Api::V1
     # Use callbacks to share common setup or constraints between actions.
     def set_dependant
       @dependant = Dependant.find(params[:id])
+    end
+
+    # Use callbacks to share common setup or constraints between actions.
+    def set_citizen
+      begin
+        @citizen = Citizen.find(params[:citizen_id])
+      rescue
+        @citizen = nil
+      end
     end
 
     # Only allow a trusted parameter "white list" through.

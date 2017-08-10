@@ -40,9 +40,15 @@ class Account < ApplicationRecord
       :tokens, :created_at, :updated_at
     ]).merge({
       citizen: self.citizen.as_json(except: [:city_id, :created_at, :updated_at])
-        .merge({city: city.as_json(except: [:ibge_code, :state_id, :created_at, :updated_at])})
-        .merge({state: state.as_json(except: [:ibge_code, :created_at, :updated_at])})
-        .merge({address: address.as_json(except: [:created_at, :updated_at, :state_id, :city_id])})
+        .merge({city: city.as_json(except: [
+          :ibge_code, :state_id, :created_at, :updated_at
+        ])})
+        .merge({state: state.as_json(except: [
+          :ibge_code, :created_at, :updated_at
+        ])})
+        .merge({address: address.as_json(except: [
+          :created_at, :updated_at, :state_id, :city_id
+        ])})
     })
 
     if not professional.nil?

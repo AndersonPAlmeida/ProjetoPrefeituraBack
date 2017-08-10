@@ -4,7 +4,7 @@ module Api::V1
 
     before_action :set_schedule, only: [:show, :update, :destroy, :confirm, :confirmation]
 
-    rescue_from Pundit::NotAuthorizedError, with: :schedule_error_description
+    rescue_from Pundit::NotAuthorizedError, with: :policy_error_description
 
     # GET /schedules
     def index
@@ -113,7 +113,7 @@ module Api::V1
     private
 
     # Rescue Pundit exception for providing more details in reponse
-    def schedule_error_description(exception)
+    def policy_error_description(exception)
 
       # Get SchedulePolicy method's name responsible for raising exception 
       policy_name = exception.message.split(' ')[3]

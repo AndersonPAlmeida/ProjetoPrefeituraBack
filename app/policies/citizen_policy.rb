@@ -1,52 +1,62 @@
 class CitizenPolicy < ApplicationPolicy
   class Scope < Scope
-
-    def verify_professional(result, condition)
-      if @is_professional and condition
-        return result
-      else
-        return scope.where(id: @citizen.id)
-      end
-    end
-
     def resolve
       @citizen = user[0]
       @permission = user[1]
 
-      if @permission == "citizen"
-        return scope.all_dependants(@citizen.id)
+      if @permission == "citizen" or @citizen.professional.nil?
+        return nil
       elsif @permission.nil? and not @citizen.professional.nil?
         @permission = @citizen.professional.roles[-1]
+        @professional = @citizen.professional
       end
 
-      @is_professional = @citizen.professional.nil? == false
+      return case
+      when @permission == "adm_c3sl" && @professional.adm_c3sl?
+        scope.all_active.where.not(id: @citizen.id)
 
-      case @permission
-      when "adm_c3sl"
-        return verify_professional(
-          scope.all_active, 
-          @citizen.professional.adm_c3sl?
-        )
+      when @permission == "adm_prefeitura" && @professional.adm_prefeitura?
+        @citizen.local_active.where.not(id: @citizen.id)
 
-      when "adm_prefeitura"
-        return verify_professional(
-          scope.all_active.where(city_id: @citizen.city_id), 
-          @citizen.professional.adm_prefeitura?
-        )
+      when @permission == "adm_local" && @professional.adm_local?
+        @citizen.local_active.where.not(id: @citizen.id)
+
+      when @permission == "atendente_local" && @professional.atendente?
+        @citizen.local_active.where.not(id: @citizen.id)
 
       else
-        return scope.where(id: @citizen.id)
+        nil
       end
     end
   end
 
-  def index?
-    if not user.professional.nil?
-      if user.professional.adm_c3sl? or user.professional.adm_prefeitura?
-        return true
-      end
+  def schedule?
+    @citizen = user[0]
+    @permission = user[1]
+
+    if @permission == "citizen" or @citizen.professional.nil?
+      return (@citizen.id == record.id)
+    elsif @permission.nil? and not @citizen.professional.nil?
+      @permission = @citizen.professional.roles[-1]
     end
 
-    return false
+    @professional = @citizen.professional
+
+    return case
+    when @permission == "adm_c3sl" && @professional.adm_c3sl?
+      return (@citizen.id != record.id)
+
+    when @permission == "adm_prefeitura" && @professional.adm_prefeitura?
+      return (@citizen.id != record.id) && (@citizen.city_id == record.city_id)
+
+    when @permission == "adm_local" && @professional.adm_local?
+      return (@citizen.id != record.id) && (@citizen.city_id == record.city_id)
+
+    when @permission == "atendente_local" && @professional.atendente?
+      return (@citizen.id != record.id) && (@citizen.city_id == record.city_id)
+
+    else
+      false
+    end
   end
 end

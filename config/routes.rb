@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
   devise_for :accounts
+
   scope module: 'api' do
     namespace :v1 do
       mount_devise_token_auth_for 'Account', at: 'auth', controllers: {
@@ -7,12 +8,24 @@ Rails.application.routes.draw do
         sessions:      'api/v1/accounts/sessions'
       }
 
-      resources :citizens
+      resources :citizens do
+        resources :dependants
+        member do
+          get 'picture'
+          get 'schedule_options'
+        end
+      end
+
+      resources :schedules do
+        member do
+          put 'confirm'
+          get 'confirmation'
+        end
+      end
+
       resources :city_halls
-      resources :dependants
       resources :occupations
       resources :professionals
-      resources :schedules
       resources :sectors
       resources :service_places
       resources :service_types
@@ -20,9 +33,6 @@ Rails.application.routes.draw do
       resources :solicitations
 
       post "validate_cep" => "cep#validate"
-      get "/citizens/:id/picture", to: "citizens#show_picture"
-      put "/schedules/:id/confirm", to: "schedules#confirm"
-      get "/schedules/:id/confirmation", to: "schedules#confirmation"
     end
   end
 end
