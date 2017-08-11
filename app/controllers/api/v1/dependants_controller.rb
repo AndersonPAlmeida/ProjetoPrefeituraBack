@@ -12,11 +12,19 @@ module Api::V1
           errors: ["Citizen #{params[:id]} does not exist."]
         }, status: 404
       else
-        #authorize @citizen, :display?
+        @dependants = Dependant.where(citizens: {
+          responsible_id: @citizen.id
+        }).includes(:citizen)
 
-        @dependants = Citizen.where('id = ? OR responsible_id = ?', 
-                                    @citizen.id, @citizen.id)
-        render json: @dependants
+        dependants_response = []
+        @dependants.each do |item|
+          dependants_response.append(item.citizen.as_json(only: [
+            :id, :name, :rg, :cpf, :birth_date
+          ]))
+          dependants_response[-1]["id"] = item.id
+        end
+
+        render json: dependants_response.to_json
       end
     end
 
