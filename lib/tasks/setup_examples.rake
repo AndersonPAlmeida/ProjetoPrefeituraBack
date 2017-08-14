@@ -70,8 +70,7 @@ namespace :agendador do
     printf "Inserindo Setores..."
     sectors[0] = Sector.create({ # Sector Ambiental
       name: "Setor Ambiental",
-      description: "Responsável por resolver assuntos relacionados ao meio
-        ambiente",
+      description: "Responsável por resolver assuntos relacionados ao meio ambiente",
       schedules_by_sector: 2,
       city_hall: city_halls[0],
       cancel_limit: 3,
@@ -91,9 +90,7 @@ namespace :agendador do
     })
     sectors[2] = Sector.create({ # Sector Saude
       name: "Setor da Saúde",
-      description: "Relacionados a atividades de produção, distribuição e
-        consumo de bens e serviços, cujos objetivos principais ou exclusivos
-        são promover a saúde de indivíduos ou grupos de população",
+      description: "Relacionados a atividades de produção, distribuição e consumo de bens e serviços, cujos objetivos principais ou exclusivos são promover a saúde de indivíduos ou grupos de população",
       schedules_by_sector: 3,
       city_hall: city_halls[0],
       cancel_limit: 3,
@@ -152,7 +149,7 @@ namespace :agendador do
       city_hall: city_halls[1]
     })
     service_places[3].service_types << service_types[0] # Serv_type ambulat.
-    service_places[3].service_types << service_types[2] # Serv_type Claream.
+    service_places[3].service_types << service_types[1] # Serv_type Claream.
 
     service_places << ServicePlace.create({ # ServicePlace Centro in Curitiba
       name: "Centro de apoio ao empreendimento",
@@ -411,7 +408,7 @@ namespace :agendador do
       city: city_halls[0].city
     })
     Dependant.create({
-      citizen: citizens[:dependenteb]
+      citizen_id: citizens[:dependenteb].id
     })
 
     puts "Inserindo Dependente C..."
@@ -428,7 +425,7 @@ namespace :agendador do
       city: city_halls[0].city
     })
     Dependant.create({
-      citizen: citizens[:dependentec]
+      citizen_id: citizens[:dependentec].id
     })
 
     puts "Inserindo Dependente D..."
@@ -445,7 +442,7 @@ namespace :agendador do
       city: city_halls[1].city
     })
     Dependant.create({
-      citizen: citizens[:dependented]
+      citizen_id: citizens[:dependented].id
     })
 
     puts "Inserindo Dependente E..."
@@ -462,7 +459,7 @@ namespace :agendador do
       city: city_halls[1].city
     })
     Dependant.create({
-      citizen: citizens[:dependentee]
+      citizen_id: citizens[:dependentee].id
     })
 
     puts "Inserindo Dependente F..."
@@ -479,7 +476,7 @@ namespace :agendador do
       city: city_halls[0].city
     })
     Dependant.create({
-      citizen: citizens[:dependentef]
+      citizen_id: citizens[:dependentef].id
     })
 
     puts "Inserindo Dependente G..."
@@ -496,7 +493,7 @@ namespace :agendador do
       city: city_halls[0].city
     })
     Dependant.create({
-      citizen: citizens[:dependenteg]
+      citizen_id: citizens[:dependenteg].id
     })
 
     puts "Inserindo Dependente H..."
@@ -513,7 +510,7 @@ namespace :agendador do
       city: city_halls[0].city
     })
     Dependant.create({
-      citizen: citizens[:dependenteh]
+      citizen_id: citizens[:dependenteh].id
     })
 
     puts "Inserindo Dependente I..."
@@ -530,7 +527,7 @@ namespace :agendador do
       city: city_halls[1].city
     })
     Dependant.create({
-      citizen: citizens[:dependentei]
+      citizen_id: citizens[:dependentei].id
     })
 
     puts "Inserindo Dependente J..."
@@ -547,7 +544,7 @@ namespace :agendador do
       city: city_halls[1].city
     })
     Dependant.create({
-      citizen: citizens[:dependentej]
+      citizen_id: citizens[:dependentej].id
     })
 
     printf "Criando relações de permissão..."
@@ -629,44 +626,44 @@ namespace :agendador do
     })
     puts "OK!"
 
-    #puts "Inserindo escala 1 e seus agendamentos"
-    #
-    #shifts[0] = Shift.create({ # Create shift 1
-    #  execution_start_time: (DateTime.now.beginning_of_hour)-(5.hours),
-    #  execution_end_time: (DateTime.now.beginning_of_hour)-(1.hours),
-    #  service_amount: 8,
-    #  service_place: service_places[2], # SMS - Curitiba
-    #  service_type: service_types[0],   # Consulta ambulatorial
-    #  professional_responsible_id: professionals[:bruno].id,
-    #  professional_performer_id: professionals[:alan].id
-    #})
+    puts "Inserindo escala 1 e seus agendamentos"
+    
+    shifts[0] = Shift.create({ # Create shift 1
+      execution_start_time: DateTime.now.beginning_of_day + 1.day + 12.hours,
+      execution_end_time: DateTime.now.beginning_of_day + 1.day + 20.hours,
+      service_amount: 8,
+      service_place: service_places[2], # SMS - Curitiba
+      service_type: service_types[0],   # Consulta ambulatorial
+      professional_responsible_id: professionals[:bruno].id,
+      professional_performer_id: professionals[:alan].id
+    })
 
-    #situations = Situation.compareceu
+    #situations = [Situation.disponivel]
 
     #shifts[0].service_amount.times do |i|
     #  schedules[i] = Schedule.create({
     #    shift_id: shifts[0].id,
-    #    situation_id: situations[i%situations.count].id,
+    #    situation_id: situations[i % situations.count].id,
     #    service_place_id: shifts[0].service_place.id,
     #    service_start_time: (DateTime.now.beginning_of_hour)-(((5-i)/2).hours),
     #    service_end_time: (DateTime.now.beginning_of_hour)-(((4-i)/2).hours),
-    #    citizen_id: citizens[:paulo].id
+    #    account_id: accounts[:paulo].id
     #  });
     #end
 
-    #puts "Inserindo escala 2 e seus agendamentos"
-    #shifts[1] = Shift.create({ # Create shift 1
-    #  execution_start_time: (DateTime.now.beginning_of_hour)-(5.hours),
-    #  execution_end_time: (DateTime.now.beginning_of_hour)-(1.hours),
-    #  service_amount: 4,
-    #  service_place: service_places[0], # SMS - Curitiba
-    #  service_type: service_types[1],   # Consulta ambulatorial
-    #  professional_responsible_id: professionals[:bruno].id,
-    #  professional_performer_id: professionals[:alan].id
-    #})
+    puts "Inserindo escala 2 e seus agendamentos"
+    shifts[1] = Shift.create({ # Create shift 1
+      execution_start_time: DateTime.now.beginning_of_day + 1.day + 24.hours,
+      execution_end_time: DateTime.now.beginning_of_day + 1.day + 30.hours,
+      service_amount: 8,
+      service_place: service_places[2], # SMS - Curitiba
+      service_type: service_types[0],   # Consulta ambulatorial
+      professional_responsible_id: professionals[:bruno].id,
+      professional_performer_id: professionals[:alan].id
+    })
 
-    #situations = Situation.compareceu
-
+    #situations = [Situation.disponivel]
+    
     #shifts[1].service_amount.times do |i|
     #  schedules[i] = Schedule.create({
     #    shift_id: shifts[1].id,
@@ -674,22 +671,21 @@ namespace :agendador do
     #    service_place_id: shifts[1].service_place.id,
     #    service_start_time: (DateTime.now.beginning_of_hour)-(((5-i)/2).hours),
     #    service_end_time: (DateTime.now.beginning_of_hour)-(((4-i)/2).hours),
-    #    citizen_id: citizens[:mateus].id
+    #    account_id: accounts[:mateus].id
     #  });
     #end
 
 
-    #puts "Inserindo escala 3 e seus agendamentos"
-
-    #shifts[2] = Shift.create({ # Create shift 1
-    #  execution_start_time: DateTime.now.beginning_of_hour+1.hours,
-    #  execution_end_time: DateTime.now.beginning_of_hour+5.hours,
-    #  service_amount: 4,
-    #  service_place: service_places[2], # SMS - Curitiba
-    #  service_type: service_types[2],   # Clareamento
-    #  professional_responsible_id: professionals[:alan].id,
-    #  professional_performer_id: professionals[:pedro].id
-    #})
+    puts "Inserindo escala 3 e seus agendamentos"
+    shifts[2] = Shift.create({ # Create shift 1
+      execution_start_time: DateTime.now.beginning_of_day + 1.day + 72.hours,
+      execution_end_time: DateTime.now.beginning_of_day + 1.day + 80.hours,
+      service_amount: 4,
+      service_place: service_places[2], # SMS - Curitiba
+      service_type: service_types[2],   # Clareamento
+      professional_responsible_id: professionals[:alan].id,
+      professional_performer_id: professionals[:pedro].id
+    })
 
     #situations = [Situation.disponivel]
 
@@ -703,17 +699,16 @@ namespace :agendador do
     #  });
     #end
 
-    #puts "Inserindo escala 4 e seus agendamentos"
-
-    #shifts[3] = Shift.create({ # Create shift 1
-    #  execution_start_time: DateTime.now.beginning_of_hour+3.hours+3.days,
-    #  execution_end_time: DateTime.now.beginning_of_hour+5.hours+3.days,
-    #  service_amount: 4,
-    #  service_place: service_places[2], # SMS - Curitiba
-    #  service_type: service_types[2],   # Clareamento
-    #  professional_responsible_id: professionals[:alan].id,
-    #  professional_performer_id: professionals[:pedro].id
-    #})
+    puts "Inserindo escala 4 e seus agendamentos"
+    shifts[3] = Shift.create({ # Create shift 1
+      execution_start_time: DateTime.now.beginning_of_day + 1.day + 120.hours,
+      execution_end_time: DateTime.now.beginning_of_day + 1.day + 128.hours,
+      service_amount: 4,
+      service_place: service_places[2], # SMS - Curitiba
+      service_type: service_types[2],   # Clareamento
+      professional_responsible_id: professionals[:alan].id,
+      professional_performer_id: professionals[:pedro].id
+    })
 
     #situations = [Situation.disponivel]
 
@@ -727,6 +722,6 @@ namespace :agendador do
     #  });
     #end
 
-    # generate_schedules_for(shifts[0])
+     #generate_schedules_for(shifts[0])
   end
 end

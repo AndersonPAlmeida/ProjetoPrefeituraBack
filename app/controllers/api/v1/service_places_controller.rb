@@ -6,7 +6,27 @@ module Api::V1
 
     # GET /service_places
     def index
-      @service_places = ServicePlace.all
+      if params[:service_type_id].nil?
+        @service_places = ServicePlace.all
+      else 
+        # if service_type is specified, then request should return 
+        # service_places from the given service_type
+        service_type = ServiceType.find(params[:service_type_id])
+
+        # show only service_place info
+        if params[:schedule].nil? or params[:schedule] != 'true'
+
+          @service_places = ServicePlace.where(active: true)
+            .find(service_type.service_place_ids)
+
+        elsif params[:schedule] == 'true'
+
+          # show schedules from every service_place from the given service_type
+          # (used in scheduling process)
+          @service_places = ServicePlace.get_schedule_response(service_type)
+            .to_json
+        end
+      end
 
       render json: @service_places
     end
@@ -81,6 +101,7 @@ module Api::V1
         :address_street,
         :cep,
         :city_hall_id,
+        :city_id,
         :email,
         :name,
         :neighborhood,

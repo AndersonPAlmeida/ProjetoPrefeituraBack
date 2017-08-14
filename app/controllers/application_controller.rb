@@ -9,18 +9,48 @@ class ApplicationController < ActionController::API
 
   before_action :configure_permitted_parameters,
     if: :devise_controller?
+
   protect_from_forgery with: :null_session, 
     if: Proc.new { |c| c.request.format.json? }
 
+  # This method is useful in the rest of the application for checking permissions
+  #
+  # @return [Citizen, String] the current logged citizen and the permission 
+  # he wants to use for his request
   def current_user
     if not @resource.nil?
-      return @resource.citizen
+      return @resource.citizen, params[:permission]
     end
   end
 
-  def current_account
-    if not @resource.nil?
-      return @resource
+  # It is executed in every request that requires authorization (called in 
+  # authenticable concern as a before_action). It checks if the current_user
+  # has the permission he claims in the parameters, an errors gets returned if
+  # he doesn't
+  def verify_permission
+    if not current_user.nil? and not params[:permission].nil?
+
+      professional = current_user[0].professional
+      permission = params[:permission]
+
+      # Check if the given permission exists
+      if not ["citizen", "responsavel_atendimento", "atendente_local", 
+        "adm_local", "adm_prefeitura", "adm_c3sl"].include? permission
+
+        render json: {
+          errors: ["The permission #{permission} does not exist."]
+        }, status: 404
+
+      # Check if the current_user possesses the given permission
+      elsif (professional.nil? and permission != 'citizen') or 
+        (not professional.nil? and not professional.roles.include? permission and
+        permission != "citizen" )
+
+        render json: {
+          errors: ["You don't have the #{permission} permission."]
+        }, status: 401
+
+      end
     end
   end
 
@@ -32,9 +62,24 @@ class ApplicationController < ActionController::API
 
     # set sign_up hash to keys from citizen's registration form
     devise_parameter_sanitizer.permit(
-      :sign_up, keys: 
-      citizen_keys + [
-        :password, 
+      :sign_up, keys: [
+        :active,
+        :address_complement,
+        :address_number,
+        :address_street,
+        :birth_date,
+        :cep,
+        :city_id,
+        :cpf,
+        :email,
+        :name,
+        :neighborhood,
+        :note,
+        :pcd,
+        :phone1,
+        :phone2,
+        :rg,
+				:password,
         :password_confirmation
       ]
     )
@@ -58,8 +103,8 @@ class ApplicationController < ActionController::API
   private
 
   def user_not_authorized(exception)
-   render json: {
-     errors: ["User not authorized"]
-   }, status: 500
+    render json: {
+      errors: ["User not authorized"]
+    }, status: 500
   end
 end

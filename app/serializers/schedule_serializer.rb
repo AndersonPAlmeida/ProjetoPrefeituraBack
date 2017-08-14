@@ -1,6 +1,6 @@
 class ScheduleSerializer < ActiveModel::Serializer
   attributes :id, 
-    :account_id,
+    :citizen_id,
     :citizen_ajax_read, 
     :note, 
     :professional_ajax_read, 

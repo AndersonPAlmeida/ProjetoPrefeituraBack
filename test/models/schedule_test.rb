@@ -40,6 +40,15 @@ class ScheduleTest < ActiveSupport::TestCase
       @occupation = Occupation.new(description: "Cargo",
                                    name: "Teste",
                                    active: true)
+      @situation = Situation.new(
+        description: "Waiting"
+      )
+      @situation.save!
+
+      @disponivel = Situation.new(
+        description: "Disponível"
+      )
+      @disponivel.save!
 
       @sector = Sector.new(active: true,
                            name: "Setor 1",
@@ -87,14 +96,13 @@ class ScheduleTest < ActiveSupport::TestCase
       @shift = Shift.new(execution_start_time: DateTime.now,
                          execution_end_time: DateTime.now+3,
                          professional_performer_id: @professional.id,
+                         service_type_id: @service_type.id,
+                         service_place_id: @service_place.id,
                          service_amount: 3)
 
       @shift.service_place = @service_place
       @shift.service_type = @service_type
       @shift.save!
-
-      @situation = Situation.new(description: "Aguardando")
-      @situation.save!
 
       @schedule = Schedule.new(citizen_ajax_read: 0,
                                professional_ajax_read: 0,

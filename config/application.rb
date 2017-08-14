@@ -32,6 +32,9 @@ module BackEndServer
     # Skip views, helpers and assets when generating a new resource.
     config.api_only = true
 
+    # Set time zone
+    config.time_zone = 'Brasilia'
+
     # Configure path for custom validators
     config.autoload_paths += %W["#{config.root}/app/validators/"]
 
@@ -43,13 +46,18 @@ module BackEndServer
     # Allows GET, POST or OPTIONS requests from specified origins on any resource.
     config.middleware.insert_before 0, Rack::Cors do
       allow do
+
         # Specify which origins should be allowed to make requests (e.g. agendador.c3sl.ufpr.br)
         origins '*'
-        resource '*', :headers => :any, :methods => [:get, :post, :options]
+        resource '*', :headers => :any, 
+          :methods => [:get, :post, :options], 
+          :expose => ['access-token', 'expiry', 'token-type', 'uid', 'client']
       end
     end
 
     # Protect the API from DDoS, brute force attacks, hammering...
     config.middleware.use Rack::Attack
+
+    config.middleware.use ActionDispatch::Flash
   end
 end

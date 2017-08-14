@@ -11,6 +11,4 @@ class ServicePlaceSerializer < ActiveModel::Serializer
     :phone1, 
     :phone2, 
     :url
-
-  belongs_to :city_hall
 end

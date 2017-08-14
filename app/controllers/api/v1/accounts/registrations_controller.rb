@@ -23,7 +23,10 @@ module Api::V1
       @resource.provider = "cpf"
 
       # create new citizen
-      citizen_params[:city_id] = Address.get_city_id(citizen_params[:cep])
+      if citizen_params[:cep]
+        citizen_params[:city_id] = Address.get_city_id(citizen_params[:cep])
+      end
+
       @citizen = Citizen.new(citizen_params)
 
       # honor devise configuration for case_insensitive_keys
@@ -54,8 +57,10 @@ module Api::V1
 
       begin
         # override email confirmation, must be sent manually from ctrl
-        resource_class.set_callback("create", :after, :send_on_create_confirmation_instructions)
-        resource_class.skip_callback("create", :after, :send_on_create_confirmation_instructions)
+        resource_class.set_callback("create", :after, 
+                                    :send_on_create_confirmation_instructions)
+        resource_class.skip_callback("create", :after, 
+                                     :send_on_create_confirmation_instructions)
 
         if @resource.save
           yield @resource if block_given?
@@ -107,47 +112,51 @@ module Api::V1
     # be updated on registration with the proper params, while the default
     # devise_token_auth can update only the account information
     def update
-      if @resource
-        # Update account with params except citizen's
-        if @resource.send(resource_update_method, account_update_params.except(:citizen))
-          yield @resource if block_given?
+      if not @resource
+        render_update_error_user_not_found
+        return
+      end
 
-          # Check if citizen's params are not empty
-          if not account_update_params[:citizen].nil?
 
-            # Update citizen with account_update_params[:citizen]
-            if @resource.citizen.update(account_update_params[:citizen])
+      # Update account with params except citizen's
+      if @resource.send(resource_update_method, account_update_params.except(:citizen))
+        yield @resource if block_given?
 
-              # Update image if provided
-              if params[:citizen][:image]
-                if params[:citizen][:image][:content_type] == "delete"
-                  @resource.citizen.avatar.destroy
-                else
-                  params[:citizen][:image] = parse_image_data(params[:citizen][:image])
-                  @resource.citizen.update_attribute(:avatar, params[:citizen][:image])
-                end
-              end
+        # Check if citizen's params are not empty
+        if account_update_params[:citizen].nil?
+          render_update_success
+          return
+        end
 
-              # The city id has to be updated in case the cep needs change
-              if not account_update_params[:citizen][:cep].nil?
-                city_id = Address.get_city_id(account_update_params[:citizen][:cep])
-                if @resource.citizen.update_attribute(:city_id, city_id)
-                  render_update_success
-                end
-              else
-                render_update_success
-              end
+        # Update citizen with account_update_params[:citizen]
+        if @resource.citizen.update(account_update_params[:citizen])
+
+          # Update image if provided
+          if params[:citizen][:image]
+            if params[:citizen][:image][:content_type] == "delete"
+              @resource.citizen.avatar.destroy
             else
-              render json: @resource.citizen.errors, status: :unprocessable_entity
-            end 
+              params[:citizen][:image] = parse_image_data(params[:citizen][:image])
+              @resource.citizen.update_attribute(:avatar, params[:citizen][:image])
+            end
+          end
+
+          # The city id has to be updated in case the cep needs change
+          if not account_update_params[:citizen][:cep].nil?
+            city_id = Address.get_city_id(account_update_params[:citizen][:cep])
+            if @resource.citizen.update_attribute(:city_id, city_id)
+              render_update_success
+            end
           else
             render_update_success
           end
+
         else
-          render_update_error
-        end
+          render json: @resource.citizen.errors, status: :unprocessable_entity
+        end 
+
       else
-        render_update_error_user_not_found
+        render_update_error
       end
     end
 
@@ -180,7 +189,8 @@ module Api::V1
       render json: {
         status: 'error',
         data:   @citizen,
-        errors: [I18n.t("devise_token_auth.registrations.email_already_exists", email: @citizen.cpf)]
+        errors: [I18n.t("devise_token_auth.registrations.email_already_exists",
+                        email: @citizen.cpf)]
       }, status: 422
     end
 
@@ -189,8 +199,6 @@ module Api::V1
     # method to show @citizen.cpf
     def render_create_citizen_error
       render json: {
-        status: 'error',
-        data: @citizen,
         errors: @citizen.errors
       }, status: 422
     end

@@ -49,7 +49,7 @@ class Api::V1::DependantsControllerTest < ActionDispatch::IntegrationTest
       before do 
         @number_of_dependants = Dependant.count
 
-        post '/v1/dependants', params: {dependant: {
+        post '/v1/citizens/' + @citizen.id.to_s + '/dependants', params: {dependant: {
           citizen_id: @citizen.id,
           active: true
         }}, headers: @auth_headers
@@ -77,7 +77,7 @@ class Api::V1::DependantsControllerTest < ActionDispatch::IntegrationTest
         before do 
           @dependant = Dependant.where(citizen_id: @citizen.id).first
 
-          get '/v1/dependants/' + @dependant.id.to_s, params: {}, 
+          get '/v1/citizens/' + @citizen.id.to_s + '/dependants/' + @dependant.id.to_s, params: {}, 
             headers: @auth_headers
 
           @body = JSON.parse(response.body)
@@ -104,7 +104,7 @@ class Api::V1::DependantsControllerTest < ActionDispatch::IntegrationTest
         before do
           @dependant = Dependant.where(citizen_id: @citizen.id).first
 
-          delete '/v1/dependants/' + @dependant.id.to_s, params: {}, 
+          delete '/v1/citizens/' + @citizen.id.to_s + '/dependants/' + @dependant.id.to_s, params: {}, 
             headers: @auth_headers
 
           @resp_token = response.headers['access-token']
@@ -127,7 +127,7 @@ class Api::V1::DependantsControllerTest < ActionDispatch::IntegrationTest
 
           @dependant = Dependant.where(citizen_id: @citizen.id).first
 
-          put '/v1/dependants/' + @dependant.id.to_s,
+          put '/v1/citizens/' + @citizen.id.to_s + '/dependants/' + @dependant.id.to_s,
             params: {dependant: { active: false  }},
             headers: @auth_headers
           @resp_token = response.headers['access-token']

@@ -102,8 +102,8 @@ class Api::V1::CitizensControllerTest < ActionDispatch::IntegrationTest
         @resp_uid = response.headers['uid']
       end
 
-      it "should be unsuccessful" do
-        assert_equal 500, response.status
+      it "should be successful" do
+        assert_equal 403, response.status
       end
 
       # TODO: change to return only the citizens that SHOULD be displayed

@@ -2,7 +2,9 @@ module Api::V1
   class SchedulesController < ApplicationController
     include Authenticable
 
-    before_action :set_schedule, only: [:show, :update, :destroy]
+    before_action :set_schedule, only: [:show, :update, :destroy, :confirm, :confirmation]
+
+    rescue_from Pundit::NotAuthorizedError, with: :policy_error_description
 
     # GET /schedules
     def index
@@ -19,6 +21,54 @@ module Api::V1
         }, status: 404
       else
         render json: @schedule
+      end
+    end
+
+    # GET /schedules/1/confirmation
+    def confirmation
+      if @schedule.nil?
+        render json: {
+          errors: [" Schedule #{params[:id]} does not exist."]
+        }, status: 404
+      else
+        # Workaround for Pundit's lack of parameter passing
+        # May be nil, that case is handled in SchedulePolicy
+        @schedule.target_citizen_id = params[:citizen_id]
+
+        # Check if the current citizen can schedule for the given citizen
+        authorize @schedule, :permitted?
+
+        # Check if there's no conflict concerning the given citizen's schedules
+        authorize @schedule, :no_conflict?
+
+        # Return Json containing the necessary information for displaying the
+        # schedule confirmation to the user
+        render json: @schedule.confirmation_data
+      end
+    end
+
+    # PUT /schedules/1/confirm
+    def confirm
+      if @schedule.nil?
+        render json: {
+          errors: [" Schedule #{params[:id]} does not exist."]
+        }, status: 404
+      else
+        # Update the schedule's situation
+        @schedule.situation_id = Situation.agendado.id
+
+        # Update the schedule's account_id
+        if params[:citizen_id].nil?
+          @schedule.citizen_id = current_user[0].id
+        else
+          @schedule.citizen_id = params[:citizen_id]
+        end
+
+        if @schedule.save
+          render json: @schedule
+        else
+          render json: @schedule.errors, status: :unprocessable_entity
+        end
       end
     end
 
@@ -62,6 +112,24 @@ module Api::V1
 
     private
 
+    # Rescue Pundit exception for providing more details in reponse
+    def policy_error_description(exception)
+
+      # Get SchedulePolicy method's name responsible for raising exception 
+      policy_name = exception.message.split(' ')[3]
+
+      case policy_name
+      when "permitted?"
+        render json: {
+          errors: ["You're not allowed to schedule for this citizen."]
+        }, status: 422
+      when "no_conflict?"
+        render json: {
+          errors: ["This citizen is already scheduled in the given time."]
+        }, status: 409
+      end
+    end
+
     # Use callbacks to share common setup or constraints between actions.
     def set_schedule
       begin
@@ -75,7 +143,7 @@ module Api::V1
     def schedule_params
       params.require(:schedule).permit(
         :id,
-        :account_id,
+        :citizen_id,
         :citizen_ajax_read,
         :note,
         :professional_ajax_read,

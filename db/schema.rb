@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170322134221) do
+ActiveRecord::Schema.define(version: 20170731125057) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -28,8 +28,8 @@ ActiveRecord::Schema.define(version: 20170322134221) do
     t.string   "provider",               default: "cpf", null: false
     t.string   "uid",                    default: "",    null: false
     t.json     "tokens"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",                             null: false
+    t.datetime "updated_at",                             null: false
     t.index ["reset_password_token"], name: "index_accounts_on_reset_password_token", unique: true, using: :btree
     t.index ["uid"], name: "index_accounts_on_uid", unique: true, using: :btree
   end
@@ -56,12 +56,12 @@ ActiveRecord::Schema.define(version: 20170322134221) do
   end
 
   create_table "blocks", force: :cascade do |t|
-    t.integer "account_id",   null: false
+    t.integer "citizen_id",   null: false
     t.integer "dependant_id"
     t.date    "block_begin"
     t.date    "block_end"
     t.integer "sector_id",    null: false
-    t.index ["account_id"], name: "index_blocks_on_account_id", using: :btree
+    t.index ["citizen_id"], name: "index_blocks_on_citizen_id", using: :btree
     t.index ["dependant_id"], name: "index_blocks_on_dependant_id", using: :btree
     t.index ["sector_id"], name: "index_blocks_on_sector_id", using: :btree
   end
@@ -177,7 +177,7 @@ ActiveRecord::Schema.define(version: 20170322134221) do
     t.integer  "shift_id",               null: false
     t.integer  "situation_id",           null: false
     t.integer  "service_place_id",       null: false
-    t.integer  "account_id"
+    t.integer  "citizen_id"
     t.integer  "citizen_ajax_read",      null: false
     t.integer  "professional_ajax_read", null: false
     t.integer  "reminder_read",          null: false
@@ -188,7 +188,7 @@ ActiveRecord::Schema.define(version: 20170322134221) do
     t.integer  "remainder_time"
     t.datetime "created_at",             null: false
     t.datetime "updated_at",             null: false
-    t.index ["account_id"], name: "index_schedules_on_account_id", using: :btree
+    t.index ["citizen_id"], name: "index_schedules_on_citizen_id", using: :btree
     t.index ["service_place_id"], name: "index_schedules_on_service_place_id", using: :btree
     t.index ["shift_id"], name: "index_schedules_on_shift_id", using: :btree
     t.index ["situation_id"], name: "index_schedules_on_situation_id", using: :btree
@@ -223,7 +223,9 @@ ActiveRecord::Schema.define(version: 20170322134221) do
     t.datetime "created_at",                                   null: false
     t.datetime "updated_at",                                   null: false
     t.integer  "city_hall_id",                                 null: false
+    t.integer  "city_id"
     t.index ["city_hall_id"], name: "index_service_places_on_city_hall_id", using: :btree
+    t.index ["city_id"], name: "index_service_places_on_city_id", using: :btree
   end
 
   create_table "service_places_types", id: false, force: :cascade do |t|
@@ -288,7 +290,7 @@ ActiveRecord::Schema.define(version: 20170322134221) do
 
   add_foreign_key "addresses", "cities"
   add_foreign_key "addresses", "states"
-  add_foreign_key "blocks", "accounts"
+  add_foreign_key "blocks", "citizens"
   add_foreign_key "blocks", "dependants"
   add_foreign_key "blocks", "sectors"
   add_foreign_key "cities", "states"
@@ -299,11 +301,12 @@ ActiveRecord::Schema.define(version: 20170322134221) do
   add_foreign_key "occupations", "city_halls"
   add_foreign_key "professionals", "accounts"
   add_foreign_key "professionals", "occupations"
-  add_foreign_key "schedules", "accounts"
+  add_foreign_key "schedules", "citizens"
   add_foreign_key "schedules", "service_places"
   add_foreign_key "schedules", "shifts"
   add_foreign_key "schedules", "situations"
   add_foreign_key "sectors", "city_halls"
+  add_foreign_key "service_places", "cities"
   add_foreign_key "service_places", "city_halls"
   add_foreign_key "service_types", "sectors"
   add_foreign_key "shifts", "service_places"

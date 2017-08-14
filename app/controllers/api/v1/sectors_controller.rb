@@ -6,7 +6,26 @@ module Api::V1
 
     # GET /sectors
     def index
-      @sectors = Sector.all
+      if (not params[:schedule].nil?) and (params[:schedule] == 'true')
+        if params[:citizen_id].nil?
+          @citizen = current_user[0]
+        else
+          begin
+            @citizen = Citizen.find(params[:citizen_id])
+          rescue
+            render json: {
+              errors: ["Citizen #{params[:citizen_id]} does not exist."]
+            }, status: 404
+            return
+          end
+        end
+
+        authorize @citizen, :schedule?
+
+        @sectors = Sector.schedule_response(citizen).to_json
+      else
+        @sectors = policy_scope(Sector)
+      end
 
       render json: @sectors
     end

@@ -21,8 +21,11 @@ module Api::V1
       end
 
       # create token and sign in
-      if @resource and valid_params?(field, q_value) and @resource.valid_password?(resource_params[:password]) and 
-          (!@resource.respond_to?(:active_for_authentication?) or @resource.active_for_authentication?)
+      if @resource and valid_params?(field, q_value) and 
+         @resource.valid_password?(resource_params[:password]) and 
+         (!@resource.respond_to?(:active_for_authentication?) or 
+         @resource.active_for_authentication?)
+
         # create client id
         @client_id = SecureRandom.urlsafe_base64(nil, false)
         @token     = SecureRandom.urlsafe_base64(nil, false)
@@ -38,7 +41,10 @@ module Api::V1
         yield @resource if block_given?
 
         render_create_success
-      elsif @resource and not (!@resource.respond_to?(:active_for_authentication?) or @resource.active_for_authentication?)
+      elsif @resource and 
+        not (!@resource.respond_to?(:active_for_authentication?) or
+        @resource.active_for_authentication?)
+
         render_create_error_not_confirmed
       else
         render_create_error_bad_credentials

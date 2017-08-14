@@ -10,21 +10,21 @@ gem 'pg', '~> 0.18'
 gem 'puma', '~> 3.0'
 
 # Provides authentication methods
-gem 'devise', '~> 4.3.0'
-gem 'devise_token_auth', '~> 0.1.42'
+gem 'devise'
+gem 'devise_token_auth'
 
 # Provides authorization methods
-gem 'pundit', '~> 1.1.0'
+gem 'pundit'
 
 # Provides a clean layer between the model and the controller that
 # lets us to call to_json or as_json on the ActiveRecord object or
 # collection as normal, while outputing our desired API format.
-gem 'active_model_serializers', '~> 0.10.0'
+gem 'active_model_serializers'
 
 # Rack::Attack is a rack middleware to protect your web app from bad
 # clients. It allows safelisting, blocklisting, throttling, and tracking
 # based on arbitrary properties of the request.
-gem 'rack-attack', '~> 5.0.1'
+gem 'rack-attack'
 
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 # gem 'jbuilder', '~> 2.5'
@@ -37,30 +37,30 @@ gem 'rack-attack', '~> 5.0.1'
 # gem 'capistrano-rails', group: :development
 
 # Use Rack CORS for handling Cross-Origin Resource Sharing (CORS), making cross-origin AJAX possible
-gem 'rack-cors', '~> 0.4.1'
+gem 'rack-cors'
 
 # Get Brazilian address by zipcode, directly from Correios database.
-gem 'correios-cep', '~> 0.6.4'
+gem 'correios-cep'
 
 # Curl for ruby
-gem 'curb', '~> 0.9.3'
+gem 'curb'
 
-gem 'activerecord-import', '~> 0.18.3'
+gem 'activerecord-import'
 
-gem 'paperclip', '~> 5.0.0'
+gem "paperclip", "~> 5.0.0"
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
-  gem 'byebug', '~> 9.0.6', platform: :mri
-  gem 'rails-controller-testing', '~> 1.0.2'
-  gem 'minitest-rails', '~> 3.0.0'
-  gem 'pry-rails', '~> 0.3.6'
+  gem 'byebug', platform: :mri
+  gem 'rails-controller-testing'
+  gem 'minitest-rails'
+  gem 'pry-rails'
 end
 
 group :development do
   gem 'listen', '~> 3.0.5'
   # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
-  gem 'spring', '~> 2.0.2'
+  gem 'spring'
   gem 'spring-watcher-listen', '~> 2.0.0'
 end
 

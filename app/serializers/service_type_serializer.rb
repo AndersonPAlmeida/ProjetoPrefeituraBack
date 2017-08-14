@@ -3,5 +3,5 @@ class ServiceTypeSerializer < ActiveModel::Serializer
     :active, 
     :description
 
-  belongs_to :sector
+  #belongs_to :sector
 end

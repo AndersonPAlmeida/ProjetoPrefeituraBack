@@ -8,5 +8,5 @@ class SectorSerializer < ActiveModel::Serializer
     :name,
     :schedules_by_sector
 
-  belongs_to :city_hall
+  #belongs_to :city_hall
 end
