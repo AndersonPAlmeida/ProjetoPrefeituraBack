@@ -74,13 +74,15 @@ class Citizen < ApplicationRecord
     end
   end
 
-  # @return [ActiveRecord_Relation] all active citizens
+  # @return [ActiveRecord_Relation] every active citizen
   def self.all_active
     Citizen.where(active: true, responsible_id: nil)
   end
 
-  def local_active
-    Citizen.all_active.where(city_id: self.city_id)
+  # @param city_id [Integer] the id of the city for querying local citizens
+  # @return [ActiveRecord_Relation] every citizen registered with the city_id
+  def self.local_active(city_id)
+    Citizen.all_active.where(city_id: city_id)
   end
 
   # Used in menu to choose citizen to schedule for in the scheduling process
