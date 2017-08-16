@@ -30,6 +30,21 @@ class ApplicationController < ActionController::API
   def verify_permission
     if not current_user.nil? and not params[:permission].nil?
 
+      # The given permission might be a positive integer, in that case, it
+      # represents the id of the join table "ProfessionalsServicePlace", which
+      # contains the desired permission (role) name.
+      if /\A\d+\z/.match(params[:permission])
+        begin
+          psp = ProfessionalsServicePlace.find(params[:permission])
+          params[:permission] = psp.role
+        rescue
+
+          # If the given id doesn't exist, than it must be treated as if it was
+          # never provided.
+          params[:permission] = nil
+        end
+      end
+
       professional = current_user[0].professional
       permission = params[:permission]
 
