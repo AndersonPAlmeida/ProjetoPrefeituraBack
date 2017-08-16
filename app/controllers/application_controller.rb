@@ -30,36 +30,46 @@ class ApplicationController < ActionController::API
   def verify_permission
     if not current_user.nil? and not params[:permission].nil?
 
+      professional = current_user[0].professional
+
       # The given permission might be a positive integer, in that case, it
       # represents the id of the join table "ProfessionalsServicePlace", which
       # contains the desired permission (role) name.
       if /\A\d+\z/.match(params[:permission])
         begin
           psp = ProfessionalsServicePlace.find(params[:permission])
+
+          if not professional.nil? and (psp.professional.id != professional.id)
+            render json: {
+              errors: ["You don't have a permission_id: #{params[:permission]}."]
+            }, status: 401
+            return
+          end
+
           params[:permission] = psp.role
         rescue
 
           # If the given id doesn't exist, than it must be treated as if it was
           # never provided.
           params[:permission] = nil
+          return
         end
       end
 
-      professional = current_user[0].professional
       permission = params[:permission]
 
       # Check if the given permission exists
       if not ["citizen", "responsavel_atendimento", "atendente_local", 
-        "adm_local", "adm_prefeitura", "adm_c3sl"].include? permission
+              "adm_local", "adm_prefeitura", "adm_c3sl"].include? permission
 
         render json: {
           errors: ["The permission #{permission} does not exist."]
         }, status: 404
 
-      # Check if the current_user possesses the given permission
+        # Check if the current_user possesses the given permission
       elsif (professional.nil? and permission != 'citizen') or 
         (not professional.nil? and not professional.roles.include? permission and
-        permission != "citizen" )
+         permission != "citizen" )
 
         render json: {
           errors: ["You don't have the #{permission} permission."]
@@ -94,7 +104,7 @@ class ApplicationController < ActionController::API
         :phone1,
         :phone2,
         :rg,
-				:password,
+        :password,
         :password_confirmation
       ]
     )
