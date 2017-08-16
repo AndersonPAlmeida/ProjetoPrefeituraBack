@@ -53,22 +53,23 @@ class Account < ApplicationRecord
 
     if not professional.nil?
       roles = professional.professionals_service_places
-        .pluck(:role, :service_place_id)
+        .pluck(:id, :role, :service_place_id)
       
+      roles.each_with_index do |val, index|
+        service_place = ServicePlace.find(val[2])
+        val[3] = service_place.city_id
+        val[4] = service_place.name
+      end
+
       roles_response = [].as_json
 
       roles.each_with_index do |val, index|
-        service_place = ServicePlace.find(val[1])
-        val[2] = service_place.city_id
-        val[3] = service_place.name
-      end
-
-      roles.each_with_index do |val, index|
         roles_response[index] = {
-          'role' => val[0],
-          'city_id' => val[2],
-          'city_name' => City.find(val[2]).name,
-          'service_place' => val[3]
+          'id' => val[0],
+          'role' => val[1],
+          'city_id' => val[3],
+          'city_name' => City.find(val[3]).name,
+          'service_place' => val[4]
         }.as_json
       end
 
