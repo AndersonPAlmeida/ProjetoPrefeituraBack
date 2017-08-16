@@ -22,7 +22,7 @@ module Api::V1
 
         authorize @citizen, :schedule?
 
-        @sectors = Sector.schedule_response(citizen).to_json
+        @sectors = Sector.schedule_response(@citizen).to_json
       else
         @sectors = policy_scope(Sector)
       end
