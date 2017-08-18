@@ -3,13 +3,13 @@ module Api::V1
     include Authenticable
 
     before_action :set_dependant, only: [:show, :update, :destroy]
-    before_action :set_citizen, only: [:index]
+    before_action :set_citizen, only: [:index, :show]
 
     # GET citizens/1/dependants
     def index
       if @citizen.nil?
         render json: {
-          errors: ["Citizen #{params[:id]} does not exist."]
+          errors: ["Citizen #{params[:citizen_id]} does not exist."]
         }, status: 404
       else
         @dependants = Dependant.where(citizens: {
@@ -17,10 +17,12 @@ module Api::V1
         }).includes(:citizen)
 
         dependants_response = []
+
         @dependants.each do |item|
           dependants_response.append(item.citizen.as_json(only: [
             :id, :name, :rg, :cpf, :birth_date
           ]))
+
           dependants_response[-1]["id"] = item.id
         end
 
@@ -30,12 +32,22 @@ module Api::V1
 
     # GET citizens/1/dependants/2
     def show
-      if @dependant.nil?
+      if @citizen.nil?
         render json: {
-          errors: ["Dependant #{params[:id]} does not exist."]
+          errors: ["Citizen #{params[:citizen_id]} does not exist."]
         }, status: 404
       else
-        render json: @dependant
+        if @dependant.nil?
+          render json: {
+            errors: ["Dependant #{params[:id]} does not exist."]
+          }, status: 404
+        elsif @dependant.citizen.responsible_id != @citizen.id
+          render json: {
+            errors: ["Dependant #{params[:id]} does not belong to citizen #{params[:citizen_id]}."]
+          }, status: 422
+        else
+          render json: @dependant.complete_info_response
+        end
       end
     end
 
@@ -82,7 +94,11 @@ module Api::V1
 
     # Use callbacks to share common setup or constraints between actions.
     def set_dependant
-      @dependant = Dependant.find(params[:id])
+      begin
+        @dependant = Dependant.find(params[:id])
+      rescue
+        @dependant = nil
+      end
     end
 
     # Use callbacks to share common setup or constraints between actions.

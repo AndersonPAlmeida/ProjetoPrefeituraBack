@@ -76,7 +76,6 @@ class ServicePlace < ApplicationRecord
   # Method surrounding create method for ServicePlace. It had to be done
   # for associating a City given the CityHall
   def create_service_place
-#    binding.pry
     self.city_id = self.city_hall.city_id
     yield
   end

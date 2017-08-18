@@ -65,14 +65,7 @@ class Citizen < ApplicationRecord
     ]
   end
 
-  # @return citizen's professional data
-  def professional
-    if self.account
-      self.account.professional
-    else
-      nil
-    end
-  end
+  
 
   # @return [ActiveRecord_Relation] every active citizen
   def self.all_active
@@ -85,15 +78,46 @@ class Citizen < ApplicationRecord
     Citizen.all_active.where(city_id: city_id)
   end
 
+  # @return [ActiveRecord_Relation] citizen's dependants
+  def dependants
+    Citizen.where(responsible_id: self.id)
+  end
+
+  # @return citizen's professional data
+  def professional
+    if self.account
+      self.account.professional
+    else
+      nil
+    end
+  end
+
+  # Used when the city, state and address are necessary (sign_in, show,
+  # dependant show...)
+  #
+  # @return [Json] detailed citizen's data
+  def complete_info_response
+    city = self.city
+    state = city.state
+
+    address = Address.get_address(self.cep)
+
+    return self.as_json(except: [:city_id, :created_at, :updated_at])
+      .merge({city: city.as_json(except: [
+        :ibge_code, :state_id, :created_at, :updated_at
+      ])})
+      .merge({state: state.as_json(except: [
+        :ibge_code, :created_at, :updated_at
+      ])})
+      .merge({address: address.as_json(except: [
+        :created_at, :updated_at, :state_id, :city_id
+      ])})
+  end
+
   # Used in menu to choose citizen to schedule for in the scheduling process
   # @return [ActiveRecord_Relation] citizen's dependants and himself
   def schedule_response
     Citizen.where('id = ? OR responsible_id = ?', self.id, self.id)
       .as_json(only: [:id, :name, :birth_date, :cpf, :rg])
-  end
-
-  # @return [ActiveRecord_Relation] citizen's dependants
-  def dependants
-    Citizen.where(responsible_id: self.id)
   end
 end
