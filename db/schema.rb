@@ -78,7 +78,7 @@ ActiveRecord::Schema.define(version: 20170731125057) do
   create_table "citizens", force: :cascade do |t|
     t.date     "birth_date",          null: false
     t.string   "name",                null: false
-    t.string   "rg",                  null: false
+    t.string   "rg"
     t.string   "address_complement"
     t.string   "address_number"
     t.string   "address_street"
@@ -135,11 +135,10 @@ ActiveRecord::Schema.define(version: 20170731125057) do
   end
 
   create_table "dependants", force: :cascade do |t|
-    t.boolean  "active",      default: true
     t.datetime "deactivated"
-    t.integer  "citizen_id",                 null: false
-    t.datetime "created_at",                 null: false
-    t.datetime "updated_at",                 null: false
+    t.integer  "citizen_id",  null: false
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
     t.index ["citizen_id"], name: "index_dependants_on_citizen_id", using: :btree
   end
 

@@ -3,14 +3,14 @@ module Api::V1
     include Authenticable
 
     before_action :set_dependant, only: [:show, :update, :destroy]
-    before_action :set_citizen, only: [:index, :show]
+    before_action :set_citizen, only: [:index, :show, :update, :create]
 
     # GET citizens/1/dependants
     def index
       if @citizen.nil?
         render json: {
           errors: ["Citizen #{params[:citizen_id]} does not exist."]
-        }, status: 404
+        }, status: :not_found
       else
         @dependants = Dependant.where(citizens: {
           responsible_id: @citizen.id
@@ -26,7 +26,7 @@ module Api::V1
           dependants_response[-1]["id"] = item.id
         end
 
-        render json: dependants_response.to_json
+        render json: dependants_response.to_json, status: :ok
       end
     end
 
@@ -35,44 +35,74 @@ module Api::V1
       if @citizen.nil?
         render json: {
           errors: ["Citizen #{params[:citizen_id]} does not exist."]
-        }, status: 404
+        }, status: :not_found
       else
         if @dependant.nil?
           render json: {
             errors: ["Dependant #{params[:id]} does not exist."]
-          }, status: 404
+          }, status: :not_found
         elsif @dependant.citizen.responsible_id != @citizen.id
           render json: {
             errors: ["Dependant #{params[:id]} does not belong to citizen #{params[:citizen_id]}."]
-          }, status: 422
+          }, status: :forbidden
         else
-          render json: @dependant.complete_info_response
+          render json: @dependant.complete_info_response, status: :ok
         end
       end
     end
 
     # POST citizens/1/dependants
     def create
-      @dependant = Dependant.new(dependant_params)
-
-      if @dependant.save
-        render json: @dependant, status: :created
+      if @citizen.nil?
+        render json: {
+          errors: ["Citizen #{params[:citizen_id]} does not exist."]
+        }, status: :not_found
       else
-        render json: @dependant.errors, status: :unprocessable_entity
+        new_params = dependant_params
+        new_params[:responsible_id] = @citizen.id
+        if new_params[:cep].nil?
+          new_params[:cep] = @citizen.cep
+        end
+        
+        citizen = Citizen.new(new_params)
+        citizen.active = true
+        citizen.city_id = Address.get_city_id(new_params[:cep])
+
+        if not citizen.save
+          render json: citizen.errors, status: :unprocessable_entity
+        else 
+          @dependant = Dependant.new(citizen_id: citizen.id)
+
+          if @dependant.save
+            render json: @dependant.complete_info_response, status: :created
+          else
+            render json: @dependant.errors, status: :unprocessable_entity
+          end
+        end
       end
     end
 
     # PATCH/PUT citizens/1/dependants/2
     def update
-      if @dependant.nil?
+      if @citizen.nil?
         render json: {
-          errors: ["Dependant #{params[:id]} does not exist."]
-        }, status: 404
+          errors: ["Citizen #{params[:citizen_id]} does not exist."]
+        }, status: :not_found
       else
-        if @dependant.update(dependant_params)
-          render json: @dependant
+        if @dependant.nil?
+          render json: {
+            errors: ["Dependant #{params[:id]} does not exist."]
+          }, status: :not_found
+        elsif @dependant.citizen.responsible_id != @citizen.id
+          render json: {
+            errors: ["Dependant #{params[:id]} does not belong to citizen #{params[:id]}."]
+          }, status: :forbidden
         else
-          render json: @dependant.errors, status: :unprocessable_entity
+          if @dependant.citizen.update(dependant_params)
+            render json: @dependant
+          else
+            render json: @dependant.citizen.errors, status: :unprocessable_entity
+          end
         end
       end
     end
@@ -82,11 +112,13 @@ module Api::V1
       if @dependant.nil?
         render json: {
           errors: ["Dependant #{params[:id]} does not exist."]
-        }, status: 404
+        }, status: :not_found
       else
-        @dependant.active = false
+        @dependant.citizen.active = false
         @dependant.deactivated = DateTime.now
+
         @dependant.save
+        @dependant.citizen.save
       end
     end
 
@@ -115,8 +147,21 @@ module Api::V1
       params.require(:dependant).permit(
         :id,
         :active,
-        :citizen_id,
-        :deactivation
+        :address_complement,
+        :address_number,
+        :address_street,
+        :birth_date,
+        :cep,
+        :city_id,
+        :cpf,
+        :email,
+        :name,
+        :neighborhood,
+        :note,
+        :pcd,
+        :phone1,
+        :phone2,
+        :rg
       )
     end
   end

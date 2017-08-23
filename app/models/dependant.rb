@@ -6,14 +6,14 @@ class Dependant < ApplicationRecord
 
   # @return all active dependants
   def self.all_active
-    Dependant.where(active: true)
+    Dependant.where(citizens: { active: true }).includes(:citizen)
   end
 
   # Used when the city, state and address are necessary (show)
   #
   # @return [Json] detailed dependant's data
   def complete_info_response
-    return self.as_json(only: [:id, :active, :deactivated])
+    return self.as_json(only: [:id, :deactivated])
       .merge({
         citizen: self.citizen.complete_info_response
       })
