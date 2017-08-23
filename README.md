@@ -63,6 +63,9 @@ Bundler:
   $ rails s
 ```
 
+## Requests (Postman)
+https://www.getpostman.com/collections/0f51e86e6e65c15baf9d
+
 ## Workflow de cada atividade
 1. Criar branch da atividade: Issue\_x, onde x corresponde ao ID da issue no projeto AGILE
 2. Desenvolver a atividade
