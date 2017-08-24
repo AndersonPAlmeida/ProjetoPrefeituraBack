@@ -4,7 +4,7 @@ class Schedule < ApplicationRecord
   belongs_to :situation
   belongs_to :shift
   belongs_to :service_place
-  belongs_to :account, optional: true
+  belongs_to :citizen, optional: true
 
   # Validations #
   validates_presence_of :citizen_ajax_read,
@@ -17,6 +17,8 @@ class Schedule < ApplicationRecord
   attr_accessor :target_citizen_id
 
 
+  # @return [Json] schedule information for showing in confirmation screen
+  # (final step of scheduling process)
   def confirmation_data
     self.as_json(only: [
       :id, :service_start_time, :service_end_time, :note
