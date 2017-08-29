@@ -50,7 +50,7 @@ module BackEndServer
         # Specify which origins should be allowed to make requests (e.g. agendador.c3sl.ufpr.br)
         origins '*'
         resource '*', :headers => :any, 
-          :methods => [:get, :post, :options], 
+          :methods => [:get, :post, :put, :options], 
           :expose => ['access-token', 'expiry', 'token-type', 'uid', 'client']
       end
     end
