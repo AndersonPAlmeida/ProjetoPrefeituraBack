@@ -6,7 +6,7 @@ class ScheduleSerializer < ActiveModel::Serializer
     :professional_ajax_read, 
     :reminder_email_sent,
     :reminder_read, 
-    :remainder_time, 
+    :reminder_time, 
     :service_start_time, 
     :service_end_time 
 

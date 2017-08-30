@@ -54,25 +54,20 @@ module Api::V1
           errors: [" Schedule #{params[:id]} does not exist."]
         }, status: 404
       else
+        # schedule_confirm_params contains information provided in the last step
+        # of scheduling process (note and remider_time)
         update_params = schedule_confirm_params
+
+        # @schedule's situations needs to be set as "scheduled"
         update_params[:situation_id] = Situation.agendado.id
+
+        # @schedule needs to be associated with a citizen
         if params[:citizen_id].nil?
           update_params[:citizen_id] = current_user[0].id
         else
           update_params[:citizen_id] = params[:citizen_id]
         end
 
-        # Update the schedule's situation
-        #@schedule.situation_id = Situation.agendado.id
-
-        # Update the schedule's account_id
-        #if params[:citizen_id].nil?
-        #  @schedule.citizen_id = current_user[0].id
-        #else
-        #  @schedule.citizen_id = params[:citizen_id]
-        #end
-
-        #if @schedule.save
         if @schedule.update(update_params)
           render json: @schedule
         else
@@ -148,6 +143,8 @@ module Api::V1
       end
     end
 
+    # Only allow a trusted parameter "white list" through. (Used in confirm
+    # request)
     def schedule_confirm_params
       params.require(:schedule).permit(
         :note,
