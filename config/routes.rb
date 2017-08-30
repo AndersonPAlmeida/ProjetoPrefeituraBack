@@ -8,6 +8,8 @@ Rails.application.routes.draw do
         sessions:      'api/v1/accounts/sessions'
       }
 
+      get "accounts/self" => "accounts#index"
+
       resources :citizens do
         resources :dependants
         member do
