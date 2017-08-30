@@ -17,5 +17,5 @@ class CitizenSerializer < ActiveModel::Serializer
     :phone2, 
     :rg 
 
-  belongs_to :account
+  #belongs_to :account
 end
