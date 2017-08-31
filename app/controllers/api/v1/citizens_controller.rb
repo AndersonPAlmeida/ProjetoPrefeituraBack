@@ -110,8 +110,18 @@ module Api::V1
           errors: ["User #{params[:id]} does not exist."]
         }, status: 404
       else
+        # Allow deativation only if the citizen is reachable from current user
+        authorize @citizen, :deactivate?
+
+        # Deactivate citizen, this will keep the citizen in the database, but 
+        # it will not be displayed in future requests
         @citizen.active = false
-        @citizen.save!
+
+        if @citizen.save
+          render json: @citizen
+        else
+          render json: @citizen.errors, status: :unprocessable_entity
+        end
       end
     end
 
