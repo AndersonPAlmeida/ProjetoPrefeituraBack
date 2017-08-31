@@ -113,7 +113,7 @@ class Api::V1::CitizensControllerTest < ActionDispatch::IntegrationTest
       #end
     end
 
-    describe "Successful request to delete citizen" do
+    describe "Unsuccessful request to delete citizen logged as a citizen" do
       before do
         @number_of_citizens = Citizen.all_active.count
 
@@ -126,16 +126,16 @@ class Api::V1::CitizensControllerTest < ActionDispatch::IntegrationTest
         @resp_uid = response.headers['uid']
       end
 
-      it "should be successful" do
-        assert_equal 204, response.status
+      it "should not be allowed" do
+        assert_equal 403, response.status
       end
 
-      it "should have been deleted" do
-        assert_not Citizen.where(id: @citizen.id).first.active
+      it "should not have been deleted" do
+        assert Citizen.where(id: @citizen.id).first.active
       end
 
-      test "number of citizen should be decreased" do
-        assert_equal @number_of_citizens, Citizen.all_active.count + 1
+      test "number of citizen should not be decreased" do
+        assert_equal @number_of_citizens, Citizen.all_active.count
       end
     end
 

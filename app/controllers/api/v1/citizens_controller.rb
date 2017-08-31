@@ -147,6 +147,10 @@ module Api::V1
         render json: {
           errors: ["You're not allowed to schedule for this citizen."]
         }, status: 403
+      when "deactivate?"
+        render json: {
+          errors: ["You're not allowed to deativate this citizen."]
+        }, status: 403
       end
     end
 
