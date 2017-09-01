@@ -149,7 +149,7 @@ class SectorsControllerTest < ActionDispatch::IntegrationTest
           @sector = Sector.where(city_hall_id: @city_hall.id).first
 
           put '/v1/sectors/' + @sector.id.to_s,
-            params: {sector: {city_hall_id: "1"}},
+            params: {sector: {city_hall_id: (@city_hall.id.to_i + 100).to_s}},
             headers: @auth_headers
 
           @body = JSON.parse(response.body)
