@@ -1,10 +1,10 @@
 class CreateSchedules < ActiveRecord::Migration[5.0]
   def change
     create_table :schedules do |t|
-      t.references :shift, foreign_key: true, index: true, null: false
-      t.references :situation, foreign_key: true, index: true, null: false
-      t.references :service_place, foreign_key: true, index: true, null: false
-      t.references :citizen, foreign_key: true, index: true
+      t.references :shift, index: true, null: false
+      t.references :situation, index: true, null: false
+      t.references :service_place, index: true, null: false
+      t.references :citizen, index: true
       t.integer :citizen_ajax_read, null: false
       t.integer :professional_ajax_read, null: false
       t.integer :reminder_read, null: false

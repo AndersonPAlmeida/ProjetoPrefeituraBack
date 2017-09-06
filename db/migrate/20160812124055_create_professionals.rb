@@ -4,7 +4,7 @@ class CreateProfessionals < ActiveRecord::Migration[5.0]
       t.string :registration
       t.boolean :active, null: false, default: true
       t.timestamps
-      t.references :account, foreign_key: true, index: true
+      t.references :account, index: true
     end
   end
 end

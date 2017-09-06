@@ -287,28 +287,4 @@ ActiveRecord::Schema.define(version: 20170816124750) do
     t.datetime "updated_at",             null: false
   end
 
-  add_foreign_key "addresses", "cities"
-  add_foreign_key "addresses", "states"
-  add_foreign_key "blocks", "citizens"
-  add_foreign_key "blocks", "dependants"
-  add_foreign_key "blocks", "sectors"
-  add_foreign_key "cities", "states"
-  add_foreign_key "citizens", "accounts"
-  add_foreign_key "citizens", "cities"
-  add_foreign_key "city_halls", "cities"
-  add_foreign_key "dependants", "citizens"
-  add_foreign_key "occupations", "city_halls"
-  add_foreign_key "professionals", "accounts"
-  add_foreign_key "professionals", "occupations"
-  add_foreign_key "schedules", "citizens"
-  add_foreign_key "schedules", "service_places"
-  add_foreign_key "schedules", "shifts"
-  add_foreign_key "schedules", "situations"
-  add_foreign_key "sectors", "city_halls"
-  add_foreign_key "service_places", "cities"
-  add_foreign_key "service_places", "city_halls"
-  add_foreign_key "service_types", "sectors"
-  add_foreign_key "shifts", "service_places"
-  add_foreign_key "shifts", "service_types"
-  add_foreign_key "solicitations", "cities"
 end
