@@ -47,6 +47,7 @@ class ServicePlace < ApplicationRecord
       .includes(:shift)
       .where(service_place_id: response["id"])
       .where(situation_id: Situation.disponivel.id)
+      .where("service_start_time > ?", Time.now)
       .as_json(only: [:id, :service_start_time, :service_end_time])
 
     return response
