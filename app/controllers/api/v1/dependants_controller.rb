@@ -60,13 +60,27 @@ module Api::V1
       else
         new_params = dependant_params
         new_params[:responsible_id] = @citizen.id
+
         if new_params[:cep].nil?
           new_params[:cep] = @citizen.cep
         end
         
+        # Create new citizen associated with new dependant
         citizen = Citizen.new(new_params)
         citizen.active = true
         citizen.city_id = Address.get_city_id(new_params[:cep])
+
+
+        # Add image to citizen if provided
+        if params[:dependant][:image]
+          if params[:dependant][:image][:content_type] == "delete"
+            citizen.avatar.destroy
+          else
+            params[:dependant][:image] = parse_image_data(params[:dependant][:image])
+            citizen.update_attribute(:avatar, params[:dependant][:image])
+          end
+        end
+
 
         if not citizen.save
           render json: citizen.errors, status: :unprocessable_entity
@@ -124,6 +138,28 @@ module Api::V1
 
     private
 
+    def parse_image_data(image_data)
+      @tempfile = Tempfile.new('item_image')
+      @tempfile.binmode
+      @tempfile.write Base64.decode64(image_data[:content])
+      @tempfile.rewind
+
+      uploaded_file = ActionDispatch::Http::UploadedFile.new(
+        tempfile: @tempfile,
+        filename: image_data[:filename]
+      )
+
+      uploaded_file.content_type = image_data[:content_type]
+      uploaded_file
+    end
+
+    def clean_tempfile
+      if @tempfile
+        @tempfile.close
+        @tempfile.unlink
+      end
+    end
+
     # Use callbacks to share common setup or constraints between actions.
     def set_dependant
       begin
@@ -144,25 +180,7 @@ module Api::V1
 
     # Only allow a trusted parameter "white list" through.
     def dependant_params
-      params.require(:dependant).permit(
-        :id,
-        :active,
-        :address_complement,
-        :address_number,
-        :address_street,
-        :birth_date,
-        :cep,
-        :city_id,
-        :cpf,
-        :email,
-        :name,
-        :neighborhood,
-        :note,
-        :pcd,
-        :phone1,
-        :phone2,
-        :rg
-      )
+      params.require(:dependant).permit(Citizen.keys)
     end
   end
 end

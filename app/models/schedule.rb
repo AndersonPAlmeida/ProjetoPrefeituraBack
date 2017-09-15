@@ -30,4 +30,32 @@ class Schedule < ApplicationRecord
       service_place_address_number: self.service_place.address_number
     })
   end
+
+  # @return [Json] information for showing an individual schedule 
+  # in the schedule history screen
+  def show_data
+    self.as_json(only: [
+      :id, :service_start_time 
+    ]).merge({
+      sector_name: self.shift.service_type.sector.name,
+      service_type_name: self.shift.service_type.description,
+      service_place_name: self.service_place.name,
+      situation: self.situation.description
+    })
+  end
+
+  # @return [Json] every schedule for each dependant from a citizen and the 
+  # citizen himself for showing in the schedule history screen
+  def self.citizen_history(id)
+    citizens = Citizen.where(responsible_id: id).pluck(:id, :name)
+
+    response = Hash.new.as_json
+    response["schedules"] = Schedule.where(citizen_id: id)
+      .map { |i| i.show_data }.as_json
+
+    citizens.each do |i,name|
+      response[name] = Schedule.where(citizen_id: i)
+       .map{ |i| i.show_data }.as_json
+    end
+  end
 end

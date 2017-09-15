@@ -1,6 +1,7 @@
 # encoding: UTF-8
 namespace :agendador do
   require 'csv'
+  require 'fileutils'
 
   desc "Popula o banco de dados do Agendador"
   task :setup => [:drop_and_create, :environment, :init, :setup_situations,
@@ -21,6 +22,8 @@ namespace :agendador do
     Rake::Task['db:migrate:reset'].invoke
     puts "Migrações executadas com sucesso!"
   end
+
+  FileUtils.rm_rf(Rails.root.to_s() + "/images")
 
 # ======== Task: init ==========================================================
   desc "Inicializa o banco de dados do Agendador"
