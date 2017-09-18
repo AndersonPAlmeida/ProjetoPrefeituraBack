@@ -16,7 +16,6 @@ class Schedule < ApplicationRecord
   # Workaround for Pundit's lack of parameter passing
   attr_accessor :target_citizen_id
 
-
   # @return [Json] schedule information for showing in confirmation screen
   # (final step of scheduling process)
   def confirmation_data
@@ -47,15 +46,22 @@ class Schedule < ApplicationRecord
   # @return [Json] every schedule for each dependant from a citizen and the 
   # citizen himself for showing in the schedule history screen
   def self.citizen_history(id)
+    # Citizen's dependants
     citizens = Citizen.where(responsible_id: id).pluck(:id, :name)
 
+    # Schedules assigned to citizen
     response = Hash.new.as_json
     response["schedules"] = Schedule.where(citizen_id: id)
       .map { |i| i.show_data }.as_json
 
+    response["dependants"] = Hash.new.as_json
+
+    # Schedules assigned to each citizen's dependant
     citizens.each do |i,name|
-      response[name] = Schedule.where(citizen_id: i)
-       .map{ |i| i.show_data }.as_json
+      response["dependants"][name] = Schedule.where(citizen_id: i)
+        .map { |i| i.show_data }.as_json
     end
+
+    return response
   end
 end

@@ -8,7 +8,11 @@ module Api::V1
 
     # GET /schedules
     def index
-      @schedules = Schedule.all
+      if current_user[1] == "citizen"
+        @schedules = Schedule.citizen_history(current_user[0].id)
+      else
+        @schedules = Schedule.all
+      end
 
       render json: @schedules
     end
