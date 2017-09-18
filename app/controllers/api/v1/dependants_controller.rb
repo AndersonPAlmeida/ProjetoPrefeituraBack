@@ -61,7 +61,7 @@ module Api::V1
         new_params = dependant_params
         new_params[:responsible_id] = @citizen.id
 
-        if new_params[:cep].nil?
+        if new_params[:cep].blank?
           new_params[:cep] = @citizen.cep
         end
         
@@ -112,8 +112,24 @@ module Api::V1
             errors: ["Dependant #{params[:id]} does not belong to citizen #{params[:id]}."]
           }, status: :forbidden
         else
-          if @dependant.citizen.update(dependant_params)
-            render json: @dependant
+          new_params = dependant_params
+
+          if new_params[:cep].blank?
+            new_params[:cep] = @citizen.cep
+          end
+
+          # Add image to citizen if provided
+          if params[:dependant][:image]
+            if params[:dependant][:image][:content_type] == "delete"
+              citizen.avatar.destroy
+            else
+              params[:dependant][:image] = parse_image_data(params[:dependant][:image])
+              citizen.update_attribute(:avatar, params[:dependant][:image])
+            end
+          end
+
+          if @dependant.citizen.update(new_params)
+            render json: @dependant.complete_info_response
           else
             render json: @dependant.citizen.errors, status: :unprocessable_entity
           end
