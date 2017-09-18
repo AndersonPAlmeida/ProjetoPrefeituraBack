@@ -136,8 +136,12 @@ module Api::V1
             if params[:citizen][:image][:content_type] == "delete"
               @resource.citizen.avatar.destroy
             else
-              params[:citizen][:image] = parse_image_data(params[:citizen][:image])
-              @resource.citizen.update_attribute(:avatar, params[:citizen][:image])
+              begin
+                params[:citizen][:image] = parse_image_data(params[:citizen][:image])
+                @resource.citizen.update_attribute(:avatar, params[:citizen][:image])
+              ensure
+                clean_tempfile
+              end
             end
           end
 
