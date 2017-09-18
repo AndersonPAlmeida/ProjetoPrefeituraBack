@@ -73,15 +73,11 @@ module Api::V1
 
         # Add image to citizen if provided
         if params[:dependant][:image]
-          if params[:dependant][:image][:content_type] == "delete"
-            citizen.avatar.destroy
-          else
-            begin
-              params[:dependant][:image] = parse_image_data(params[:dependant][:image])
-              citizen.update_attribute(:avatar, params[:dependant][:image])
-            ensure
-              clean_tempfile
-            end
+          begin
+            params[:dependant][:image] = parse_image_data(params[:dependant][:image])
+            citizen.update_attribute(:avatar, params[:dependant][:image])
+          ensure
+            clean_tempfile
           end
         end
 
