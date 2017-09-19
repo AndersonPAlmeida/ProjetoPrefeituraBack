@@ -49,17 +49,26 @@ class Schedule < ApplicationRecord
     # Citizen's dependants
     citizens = Citizen.where(responsible_id: id).pluck(:id, :name)
 
-    # Schedules assigned to citizen
     response = Hash.new.as_json
+    
+    # Citizen's info along with the schedules associated with him
+    response["id"] = id
+    response["name"] = Citizen.find(id).name
     response["schedules"] = Schedule.where(citizen_id: id)
       .map { |i| i.show_data }.as_json
 
-    response["dependants"] = Hash.new.as_json
+    response["dependants"] = [].as_json
 
     # Schedules assigned to each citizen's dependant
     citizens.each do |i,name|
-      response["dependants"][name] = Schedule.where(citizen_id: i)
+      entry = Hash.new.as_json
+
+      entry["id"] = i
+      entry["name"] = name
+      entry["schedules"] = Schedule.where(citizen_id: i)
         .map { |i| i.show_data }.as_json
+
+      response["dependants"].append(entry)
     end
 
     return response
