@@ -35,7 +35,51 @@ class CitizenPolicy < ApplicationPolicy
     end
   end
 
+  def show?
+    return check_other_citizens(user) 
+  end
+
   def deactivate?
+    return check_other_citizens(user)
+  end
+
+  def schedule?
+    citizen = user[0]
+    permission = user[1]
+
+    if permission == "citizen" or citizen.professional.nil?
+      return ((citizen.id == record.id) || (record.responsible_id == citizen.id))
+    elsif permission.nil? and not citizen.professional.nil?
+      permission = citizen.professional.roles[-1]
+    end
+
+    professional = citizen.professional
+
+    city_id = professional.professionals_service_places
+      .find_by(role: permission)
+      .service_place.city_id
+
+    return case
+    when permission == "adm_c3sl" && professional.adm_c3sl?
+      return (citizen.id != record.id)
+
+    when permission == "adm_prefeitura" && professional.adm_prefeitura?
+      return (citizen.id != record.id) && (city_id == record.city_id)
+
+    when permission == "adm_local" && professional.adm_local?
+      return (citizen.id != record.id) && (city_id == record.city_id)
+
+    when permission == "atendente_local" && professional.atendente?
+      return (citizen.id != record.id) && (city_id == record.city_id)
+
+    else
+      false
+    end
+  end
+
+  private
+  
+  def check_other_citizens(user)
     citizen = user[0]
     permission = user[1]
 
@@ -69,37 +113,4 @@ class CitizenPolicy < ApplicationPolicy
     end
   end
 
-  def schedule?
-    citizen = user[0]
-    permission = user[1]
-
-    if permission == "citizen" or citizen.professional.nil?
-      return (citizen.id == record.id)
-    elsif permission.nil? and not citizen.professional.nil?
-      permission = citizen.professional.roles[-1]
-    end
-
-    professional = citizen.professional
-
-    city_id = professional.professionals_service_places
-      .find_by(role: permission)
-      .service_place.city_id
-
-    return case
-    when permission == "adm_c3sl" && professional.adm_c3sl?
-      return (citizen.id != record.id)
-
-    when permission == "adm_prefeitura" && professional.adm_prefeitura?
-      return (citizen.id != record.id) && (city_id == record.city_id)
-
-    when permission == "adm_local" && professional.adm_local?
-      return (citizen.id != record.id) && (city_id == record.city_id)
-
-    when permission == "atendente_local" && professional.atendente?
-      return (citizen.id != record.id) && (city_id == record.city_id)
-
-    else
-      false
-    end
-  end
 end
