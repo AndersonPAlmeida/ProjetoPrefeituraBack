@@ -156,6 +156,10 @@ module Api::V1
         render json: {
           errors: ["You're not allowed to deativate this citizen."]
         }, status: 403
+      when "show?"
+        render json: {
+          errors: ["You're not allowed to view this citizen."]
+        }, status: 403
       end
     end
 

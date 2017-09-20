@@ -45,7 +45,7 @@ class Api::V1::CitizensControllerTest < ActionDispatch::IntegrationTest
       @expiry    = @auth_headers['expiry']
     end
 
-    describe "Successful request to show citizen" do
+    describe "Unsuccessful request to show citizen" do
       before do 
         get '/v1/citizens/' + @citizen.id.to_s, params: {}, 
           headers: @auth_headers
@@ -57,16 +57,12 @@ class Api::V1::CitizensControllerTest < ActionDispatch::IntegrationTest
         @resp_uid = response.headers['uid']
       end 
 
-      it "should be successful" do
-        assert_equal 200, response.status
+      it "should not be successful" do
+        assert_equal 403, response.status
       end
 
-      it "should correspond to the current account" do
-        assert_equal @controller.current_account.citizen.id, @body["id"]
-      end
-
-      it "should correspond to the citizen in the database" do
-        assert_equal Citizen.find(@citizen.id).cpf, @body["cpf"]
+      it "should return an error" do
+        assert_not_empty @body['errors']
       end
     end
 
