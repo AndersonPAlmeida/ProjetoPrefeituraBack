@@ -52,7 +52,9 @@ module Api::V1
           errors: ["User #{params[:id]} does not exist."]
         }, status: 404
       else
+        # Allow request only if the citizen is reachable from current user
         authorize @citizen, :schedule?
+
         schedule_response = @citizen.schedule_response
 
         render json: schedule_response.to_json
@@ -66,6 +68,9 @@ module Api::V1
           errors: ["User #{params[:id]} does not exist."]
         }, status: 404
       else
+        # Allow request only if the citizen is reachable from current user
+        authorize @citizen, :show?
+
         render json: @citizen
       end
     end
@@ -110,7 +115,7 @@ module Api::V1
           errors: ["User #{params[:id]} does not exist."]
         }, status: 404
       else
-        # Allow deativation only if the citizen is reachable from current user
+        # Allow request only if the citizen is reachable from current user
         authorize @citizen, :deactivate?
 
         # Deactivate citizen, this will keep the citizen in the database, but 

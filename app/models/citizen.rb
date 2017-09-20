@@ -31,11 +31,7 @@ class Citizen < ApplicationRecord
 
   has_attached_file :avatar,
     path: "images/citizens/:id/avatar_:style.:extension",
-    styles: { 
-      large: '500x500', 
-      medium: '300x300', 
-      thumb: '100x100' 
-    }
+    styles: { large: '500x500', medium: '300x300', thumb: '100x100' }
 
     validates_attachment_content_type :avatar,
       :content_type => ["image/jpg", "image/jpeg", "image/png", "image/gif"]
@@ -99,14 +95,14 @@ class Citizen < ApplicationRecord
       address = Address.get_address(self.cep)
 
       return self.as_json(except: [:city_id, :created_at, :updated_at])
-      .merge({city: city.as_json(except: [
-        :ibge_code, :state_id, :created_at, :updated_at
+        .merge({city: city.as_json(except: [
+      :ibge_code, :state_id, :created_at, :updated_at
       ])})
-      .merge({state: state.as_json(except: [
-        :ibge_code, :created_at, :updated_at
+        .merge({state: state.as_json(except: [
+      :ibge_code, :created_at, :updated_at
       ])})
-      .merge({address: address.as_json(except: [
-        :created_at, :updated_at, :state_id, :city_id
+        .merge({address: address.as_json(except: [
+      :created_at, :updated_at, :state_id, :city_id
       ])})
     end
 
@@ -114,7 +110,7 @@ class Citizen < ApplicationRecord
     # @return [ActiveRecord_Relation] citizen's dependants and himself
     def schedule_response
       Citizen.where('id = ? OR responsible_id = ?', self.id, self.id)
-      .as_json(only: [:id, :name, :birth_date, :cpf, :rg])
+        .as_json(only: [:id, :name, :birth_date, :cpf, :rg])
     end
 
     private

@@ -2,6 +2,8 @@ module Api::V1
   class DependantsController < ApplicationController 
     include Authenticable
 
+    require "#{Rails.root}/lib/image_parser.rb"
+
     before_action :set_dependant, only: [:show, :update, :destroy]
     before_action :set_citizen, only: [:index, :show, :update, :create]
 
@@ -12,6 +14,9 @@ module Api::V1
           errors: ["Citizen #{params[:citizen_id]} does not exist."]
         }, status: :not_found
       else
+        # Allow request only if the citizen is reachable from current user
+        authorize @citizen, :show_dependants?
+
         @dependants = Dependant.where(citizens: {
           responsible_id: @citizen.id
         }).includes(:citizen)
@@ -46,6 +51,9 @@ module Api::V1
             errors: ["Dependant #{params[:id]} does not belong to citizen #{params[:citizen_id]}."]
           }, status: :forbidden
         else
+          # Allow request only if the citizen is reachable from current user
+          authorize @citizen, :show_dependants?
+
           render json: @dependant.complete_info_response, status: :ok
         end
       end
@@ -58,6 +66,9 @@ module Api::V1
           errors: ["Citizen #{params[:citizen_id]} does not exist."]
         }, status: :not_found
       else
+        # Allow request only if the citizen is reachable from current user
+        authorize @citizen, :create_dependants?
+
         new_params = dependant_params
         new_params[:responsible_id] = @citizen.id
 
@@ -74,10 +85,10 @@ module Api::V1
         # Add image to citizen if provided
         if params[:dependant][:image]
           begin
-            params[:dependant][:image] = parse_image_data(params[:dependant][:image])
+            params[:dependant][:image] = Agendador::Image::Parser.parse(params[:dependant][:image])
             citizen.update_attribute(:avatar, params[:dependant][:image])
           ensure
-            clean_tempfile
+            Agendador::Image::Parser.clean_tempfile
           end
         end
 
@@ -112,6 +123,9 @@ module Api::V1
             errors: ["Dependant #{params[:id]} does not belong to citizen #{params[:id]}."]
           }, status: :forbidden
         else
+          # Allow request only if the citizen is reachable from current user
+          authorize @citizen, :create_dependants?
+
           new_params = dependant_params
 
           if new_params[:cep].blank?
@@ -124,10 +138,10 @@ module Api::V1
               @dependant.citizen.avatar.destroy
             else
               begin
-                params[:dependant][:image] = parse_image_data(params[:dependant][:image])
+                params[:dependant][:image] = Agendador::Image::Parser.parse(params[:dependant][:image])
                 @dependant.citizen.update_attribute(:avatar, params[:dependant][:image])
               ensure
-                clean_tempfile
+                Agendador::Image::Parser.clean_tempfile
               end
             end
           end
@@ -157,28 +171,6 @@ module Api::V1
     end
 
     private
-
-    def parse_image_data(image_data)
-      @tempfile = Tempfile.new('item_image')
-      @tempfile.binmode
-      @tempfile.write Base64.decode64(image_data[:content])
-      @tempfile.rewind
-
-      uploaded_file = ActionDispatch::Http::UploadedFile.new(
-        tempfile: @tempfile,
-        filename: image_data[:filename]
-      )
-
-      uploaded_file.content_type = image_data[:content_type]
-      uploaded_file
-    end
-
-    def clean_tempfile
-      if @tempfile
-        @tempfile.close
-        @tempfile.unlink
-      end
-    end
 
     # Use callbacks to share common setup or constraints between actions.
     def set_dependant

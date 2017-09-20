@@ -1,5 +1,6 @@
 module Api::V1 
   class Accounts::RegistrationsController < DeviseTokenAuth::RegistrationsController
+    require "#{Rails.root}/lib/image_parser.rb"
 
     # Overrides DeviseTokenAuth's RegistrationsController's create method.
     # It's necessary due to the fact that a citizen and an account have to
@@ -137,10 +138,10 @@ module Api::V1
               @resource.citizen.avatar.destroy
             else
               begin
-                params[:citizen][:image] = parse_image_data(params[:citizen][:image])
+                params[:citizen][:image] = Agendador::Image::Parser.parse(params[:citizen][:image])
                 @resource.citizen.update_attribute(:avatar, params[:citizen][:image])
               ensure
-                clean_tempfile
+                Agendador::Image::Parser.clean_tempfile
               end
             end
           end
@@ -223,30 +224,6 @@ module Api::V1
       render json: {
         errors: [I18n.t("devise_token_auth.registrations.user_not_found")]
       }, status: 404
-    end
-
-    private
-
-    def parse_image_data(image_data)
-      @tempfile = Tempfile.new('item_image')
-      @tempfile.binmode
-      @tempfile.write Base64.decode64(image_data[:content])
-      @tempfile.rewind
-
-      uploaded_file = ActionDispatch::Http::UploadedFile.new(
-        tempfile: @tempfile,
-        filename: image_data[:filename]
-      )
-
-      uploaded_file.content_type = image_data[:content_type]
-      uploaded_file
-    end
-
-    def clean_tempfile
-      if @tempfile
-        @tempfile.close
-        @tempfile.unlink
-      end
     end
   end
 end
