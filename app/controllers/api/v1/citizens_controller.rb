@@ -1,11 +1,10 @@
 module Api::V1
   class CitizensController < ApplicationController 
     include Authenticable
+    include HasPolicies
 
     before_action :set_citizen, only: [:picture, :show, :update, :destroy,
                                        :schedule_options]
-
-    rescue_from Pundit::NotAuthorizedError, with: :policy_error_description
 
     # GET /citizens
     def index
@@ -143,11 +142,10 @@ module Api::V1
 
     # Rescue Pundit exception for providing more details in reponse
     def policy_error_description(exception)
+      # Set @policy_name as the policy method that raised the error
+      super
 
-      # Get SchedulePolicy method's name responsible for raising exception 
-      policy_name = exception.message.split(' ')[3]
-
-      case policy_name
+      case @policy_name
       when "schedule?"
         render json: {
           errors: ["You're not allowed to schedule for this citizen."]

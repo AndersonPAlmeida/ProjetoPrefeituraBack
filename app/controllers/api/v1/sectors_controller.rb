@@ -1,6 +1,7 @@
 module Api::V1
   class SectorsController < ApplicationController
     include Authenticable
+    include HasPolicies
 
     before_action :set_sector, only: [:show, :update, :destroy]
 
@@ -20,6 +21,7 @@ module Api::V1
           end
         end
 
+        # Allow request only if the citizen is reachable from current user
         authorize @citizen, :schedule?
 
         @sectors = Sector.schedule_response(@citizen).to_json
@@ -80,6 +82,19 @@ module Api::V1
     end
 
     private
+
+    # Rescue Pundit exception for providing more details in reponse
+    def policy_error_description(exception)
+      # Set @policy_name as the policy method that raised the error
+      super
+
+      case @policy_name
+      when "schedule?"
+        render json: {
+          errors: ["You're not allowed to schedule for this citizen."]
+        }, status: 403
+      end
+    end
 
     # Use callbacks to share common setup or constraints between actions.
     def set_sector
