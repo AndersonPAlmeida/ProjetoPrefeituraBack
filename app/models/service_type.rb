@@ -32,4 +32,18 @@ class ServiceType < ApplicationRecord
 
     return response
   end
+
+  # Used for returning information required to fill forms in front-end
+  #
+  # @param user [Array] current_user (session variable)
+  # @return [Json] list of reachable service_types
+  def self.form_data(user, sector_ids)
+    @citizen = user[0]
+    @permission = user[1]
+
+    response = ServiceType.where(sector_id: sector_ids, active: true)
+      .as_json(only: [:description, :id, :sector_id])
+
+    return response
+  end
 end

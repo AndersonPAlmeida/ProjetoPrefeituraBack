@@ -72,6 +72,33 @@ class ServicePlace < ApplicationRecord
     return response
   end
 
+  # Used for returning information required to fill forms in front-end
+  #
+  # @param user [Array] current_user (session variable)
+  # @return [Json] list of reachable service_places
+  def self.form_data(user, service_type_ids)
+    @citizen = user[0]
+    @permission = user[1]
+
+    service_types = ServiceType.where(id: service_type_ids)
+    ids = service_types.map { |i| i.service_place_ids }.flatten.uniq!
+
+    st_ids = Hash.new
+
+    service_places = ServicePlace.where(id: ids, active: true)
+    response = service_places.as_json(only: [:name, :id])
+
+    for i in service_places
+      st_ids[i.id.to_s] = i.service_type_ids
+    end
+
+    for i in response
+      i["service_types"] = st_ids[i["id"].to_s]
+    end
+
+    return response.as_json
+  end
+
   private
 
   # Method surrounding create method for ServicePlace. It had to be done
