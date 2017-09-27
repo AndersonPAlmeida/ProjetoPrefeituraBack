@@ -1,6 +1,7 @@
 module Api::V1
   class SchedulesController < ApplicationController
     include Authenticable
+    include Searchable
 
     before_action :set_schedule, only: [:show, :update, :destroy, :confirm, :confirmation]
 
@@ -9,7 +10,8 @@ module Api::V1
     # GET /schedules
     def index
       if current_user[1] == "citizen"
-        @schedules = Schedule.citizen_history(current_user[0].id)
+        @schedules = Schedule.citizen_history(current_user[0].id, 
+          search_function, params[:q])
       else
         @schedules = Schedule.all
       end

@@ -16,6 +16,13 @@ class Schedule < ApplicationRecord
   # Workaround for Pundit's lack of parameter passing
   attr_accessor :target_citizen_id
 
+  def self.ransackable_attributes(auth_object = nil)
+    super & %w(shift_service_type_id service_place_id
+               situation_id shift_service_type_sector_id)
+  end
+
+  #private_class_method :ransackable_attributes
+
   # @return [Json] schedule information for showing in confirmation screen
   # (final step of scheduling process)
   def confirmation_data
@@ -43,9 +50,35 @@ class Schedule < ApplicationRecord
     })
   end
 
+  # Translates incoming search parameters to ransack patterns
+  # @params params [Hash] Parameters for searching
+  def self.search_params(params)
+    custom = Hash.new
+
+    params.each do |k, v|
+      case k
+      when "service_type_id"
+        custom["shift_service_type_id_eq"] = v
+      when "service_place_id"
+        custom["service_place_id_eq"] = v
+      when "sector_id"
+        custom["shift_service_type_sector_id_eq"] = v
+      when "situation_id"
+        custom["situation_id_eq"] = v
+      end
+    end
+
+    return custom
+  end
+
+  # @params id [Integer] Citizen the schedules are being returned for 
+  # @params search_f [Lambda] Function that takes the parameters and searches 
+  #   using ransack
+  # @params params [Hash] Parameters for searching
   # @return [Json] every schedule for each dependant from a citizen and the 
-  # citizen himself for showing in the schedule history screen
-  def self.citizen_history(id)
+  #   citizen himself for showing in the schedule history screen
+  def self.citizen_history(id, search_f, params)
+
     # Citizen's dependants
     citizens = Citizen.where(responsible_id: id).pluck(:id, :name)
 
@@ -54,8 +87,8 @@ class Schedule < ApplicationRecord
     # Citizen's info along with the schedules associated with him
     response["id"] = id
     response["name"] = Citizen.find(id).name
-    response["schedules"] = Schedule.where(citizen_id: id)
-      .map { |i| i.show_data }.as_json
+    response["schedules"] = search_f.call(Schedule.where(citizen_id: id),
+      search_params(params)).map { |i| i.show_data }.as_json
 
     response["dependants"] = [].as_json
 
@@ -65,8 +98,8 @@ class Schedule < ApplicationRecord
 
       entry["id"] = i
       entry["name"] = name
-      entry["schedules"] = Schedule.where(citizen_id: i)
-        .map { |i| i.show_data }.as_json
+      entry["schedules"] = search_f.call(Schedule.where(citizen_id: i),
+        search_params(params)).map { |i| i.show_data }.as_json
 
       response["dependants"].append(entry)
     end
