@@ -95,7 +95,7 @@ class SectorsControllerTest < ActionDispatch::IntegrationTest
         assert_equal @number_of_sectors + 1, Sector.count
       end
 
-      describe "Successful request to show all sectors" do
+      describe "Unsuccessful request to show all sectors" do
         before do
           get '/v1/sectors', params: {},
             headers: @auth_headers
@@ -107,12 +107,12 @@ class SectorsControllerTest < ActionDispatch::IntegrationTest
           @resp_uid = response.headers['uid']
         end
 
-        it "should be successful" do
-          assert_equal 200, response.status
+        it "should not be successful" do
+          assert_equal 403, response.status
         end
 
-        it "should return every sector" do
-          assert_equal Sector.where(city_hall_id: @city_hall.id).count, @body.size
+        it "should return an error message" do
+          assert_not_empty @body["errors"]
         end
       end
 

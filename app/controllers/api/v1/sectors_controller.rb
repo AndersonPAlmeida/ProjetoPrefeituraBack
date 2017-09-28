@@ -29,7 +29,13 @@ module Api::V1
         @sectors = policy_scope(Sector)
       end
 
-      render json: @sectors
+      if @sectors.nil?
+        render json: {
+          errors: ["You're not allowed to view sectors"]
+        }, status: 403
+      else
+        render json: @sectors
+      end
     end
 
     # GET /sectors/1
