@@ -17,16 +17,16 @@ class CitizenPolicy < ApplicationPolicy
         .service_place.city_id
       
       return case
-      when permission == "adm_c3sl" && professional.adm_c3sl?
+      when permission == "adm_c3sl"
         scope.all_active.where.not(id: citizen.id)
 
-      when permission == "adm_prefeitura" && professional.adm_prefeitura?
+      when permission == "adm_prefeitura"
         scope.local_active(city_id).where.not(id: citizen.id)
 
-      when permission == "adm_local" && professional.adm_local?
+      when permission == "adm_local"
         scope.local_active(city_id).where.not(id: citizen.id)
 
-      when permission == "atendente_local" && professional.atendente?
+      when permission == "atendente_local"
         scope.local_active(city_id).where.not(id: citizen.id)
 
       else
@@ -82,16 +82,16 @@ class CitizenPolicy < ApplicationPolicy
       .service_place.city_id
 
     return case
-    when permission == "adm_c3sl" && professional.adm_c3sl?
+    when permission == "adm_c3sl"
       return (citizen.id != record.id)
 
-    when permission == "adm_prefeitura" && professional.adm_prefeitura?
+    when permission == "adm_prefeitura"
       return (citizen.id != record.id) && (city_id == record.city_id)
 
-    when permission == "adm_local" && professional.adm_local?
+    when permission == "adm_local"
       return (citizen.id != record.id) && (city_id == record.city_id)
 
-    when permission == "atendente_local" && professional.atendente?
+    when permission == "atendente_local"
       return (citizen.id != record.id) && (city_id == record.city_id)
 
     else

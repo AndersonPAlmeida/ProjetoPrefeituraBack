@@ -21,7 +21,7 @@ class Sector < ApplicationRecord
 
   # @param city_id [Integer] sectors returned are registered with this given city_id
   # @return all active sectors which city_hall belongs to city_id
-  def self.all_active_local(city_id)
+  def self.local_active(city_id)
     city_hall = CityHall.find_by(city_id: city_id)
     Sector.all_active.where(city_hall_id: city_hall.id)
   end
@@ -36,7 +36,7 @@ class Sector < ApplicationRecord
     blocks = Block.where(citizen_id: citizen.id).pluck(:sector_id)
 
     # Every active local sector as Json
-    response = Sector.all_active_local(citizen.city_id).as_json(only: [
+    response = Sector.local_active(citizen.city_id).as_json(only: [
       :id, :absence_max, :blocking_days, :cancel_limit, 
       :description, :name, :schedule_by_sector
     ])
@@ -61,7 +61,7 @@ class Sector < ApplicationRecord
     @citizen = user[0]
     @permission = user[1]
 
-    response = Sector.all_active_local(@citizen.city_id)
+    response = Sector.local_active(@citizen.city_id)
       .as_json(only: [:name, :id])
 
     return response
