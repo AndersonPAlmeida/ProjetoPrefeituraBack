@@ -70,7 +70,7 @@ class SectorsControllerTest < ActionDispatch::IntegrationTest
           cancel_limit: 3,
           description: "the number one",
           schedules_by_sector: 3
-        }}, headers: @auth_headers
+        }, permission: "citizen"}, headers: @auth_headers
 
         @body = JSON.parse(response.body)
         @resp_token = response.headers['access-token']
@@ -95,9 +95,9 @@ class SectorsControllerTest < ActionDispatch::IntegrationTest
         assert_equal @number_of_sectors + 1, Sector.count
       end
 
-      describe "Successful request to show all sectors" do
+      describe "Unsuccessful request to show all sectors" do
         before do
-          get '/v1/sectors', params: {},
+          get '/v1/sectors', params: {permission: "citizen"},
             headers: @auth_headers
 
           @body = JSON.parse(response.body)
@@ -107,12 +107,12 @@ class SectorsControllerTest < ActionDispatch::IntegrationTest
           @resp_uid = response.headers['uid']
         end
 
-        it "should be successful" do
-          assert_equal 200, response.status
+        it "should not be successful" do
+          assert_equal 403, response.status
         end
 
-        it "should return every sector" do
-          assert_equal Sector.where(city_hall_id: @city_hall.id).count, @body.size
+        it "should return an error message" do
+          assert_not_empty @body["errors"]
         end
       end
 
@@ -120,7 +120,7 @@ class SectorsControllerTest < ActionDispatch::IntegrationTest
         before do
           @sector = Sector.where(city_hall_id: @city_hall.id).first
 
-          get '/v1/sectors/' + @sector.id.to_s, params: {},
+          get '/v1/sectors/' + @sector.id.to_s, params: {permission: "citizen"},
             headers: @auth_headers
 
           @body = JSON.parse(response.body)
@@ -149,7 +149,7 @@ class SectorsControllerTest < ActionDispatch::IntegrationTest
           @sector = Sector.where(city_hall_id: @city_hall.id).first
 
           put '/v1/sectors/' + @sector.id.to_s,
-            params: {sector: {city_hall_id: (@city_hall.id.to_i + 100).to_s}},
+            params: {sector: {city_hall_id: (@city_hall.id.to_i + 100).to_s}, permission: "citizen"},
             headers: @auth_headers
 
           @body = JSON.parse(response.body)
@@ -170,7 +170,7 @@ class SectorsControllerTest < ActionDispatch::IntegrationTest
 
       describe "Unsuccessful request to show sector that doesn't exists" do
         before do
-          get '/v1/sectors/222', params: {},
+          get '/v1/sectors/222', params: {permission: "citizen"},
             headers: @auth_headers
 
           @body = JSON.parse(response.body)
@@ -194,7 +194,7 @@ class SectorsControllerTest < ActionDispatch::IntegrationTest
           @sector = Sector.where(city_hall_id: @city_hall.id).first
 
           put '/v1/sectors/' + @sector.id.to_s,
-            params: {sector: {absence_max: "10"}},
+            params: {sector: {absence_max: "10"}, permission: "citizen"},
             headers: @auth_headers
 
           @resp_token = response.headers['access-token']
@@ -215,7 +215,7 @@ class SectorsControllerTest < ActionDispatch::IntegrationTest
 
       describe "Unsuccessful resquest to update sector that doesn't exists" do
         before do
-          put '/v1/sectors/222', params: {sector: {absence_max: "10"}},
+          put '/v1/sectors/222', params: {sector: {absence_max: "10"}, permission: "citizen"},
             headers: @auth_headers
 
           @body = JSON.parse(response.body)
@@ -239,7 +239,7 @@ class SectorsControllerTest < ActionDispatch::IntegrationTest
           @sector = Sector.where(city_hall_id: @city_hall.id).first
 
           put '/v1/sectors/' + @sector.id.to_s,
-            params: {sector: {city_hall_id: nil}},
+            params: {sector: {city_hall_id: nil}, permission: "citizen"},
             headers: @auth_headers
 
           @body = JSON.parse(response.body)
@@ -264,7 +264,7 @@ class SectorsControllerTest < ActionDispatch::IntegrationTest
           @sector = Sector.where(city_hall_id: @city_hall.id).first
 
           delete '/v1/sectors/' + @sector.id.to_s,
-            params: {},
+            params: {permission: "citizen"},
             headers: @auth_headers
 
           @resp_token = response.headers['access-token']
@@ -291,7 +291,7 @@ class SectorsControllerTest < ActionDispatch::IntegrationTest
         before do
           @number_of_sectors = Sector.all_active.count
 
-          delete '/v1/sectors/222', params: {},
+          delete '/v1/sectors/222', params: {permission: "citizen"},
             headers: @auth_headers
 
           @body = JSON.parse(response.body)

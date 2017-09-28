@@ -47,7 +47,7 @@ class Api::V1::CitizensControllerTest < ActionDispatch::IntegrationTest
 
     describe "Unsuccessful request to show citizen" do
       before do 
-        get '/v1/citizens/' + @citizen.id.to_s, params: {}, 
+        get '/v1/citizens/' + @citizen.id.to_s, params: {permission: "citizen"},
           headers: @auth_headers
 
         @body = JSON.parse(response.body)
@@ -68,7 +68,7 @@ class Api::V1::CitizensControllerTest < ActionDispatch::IntegrationTest
 
     describe "Unsuccessful request to show citizen that doesn't exists" do
       before do 
-        get '/v1/citizens/222', params: {}, 
+        get '/v1/citizens/222', params: {permission: "citizen"}, 
           headers: @auth_headers
 
         @body = JSON.parse(response.body)
@@ -89,7 +89,7 @@ class Api::V1::CitizensControllerTest < ActionDispatch::IntegrationTest
 
     describe "Successful request to show all citizens" do
       before do
-        get '/v1/citizens', params: {}, headers: @auth_headers
+        get '/v1/citizens', params: {permission: "citizen"}, headers: @auth_headers
 
         @body = JSON.parse(response.body)
         @resp_token = response.headers['access-token']
@@ -113,7 +113,7 @@ class Api::V1::CitizensControllerTest < ActionDispatch::IntegrationTest
       before do
         @number_of_citizens = Citizen.all_active.count
 
-        delete '/v1/citizens/' + @citizen.id.to_s, params: {}, 
+        delete '/v1/citizens/' + @citizen.id.to_s, params: {permission: "citizen"}, 
           headers: @auth_headers
 
         @resp_token = response.headers['access-token']
@@ -139,7 +139,7 @@ class Api::V1::CitizensControllerTest < ActionDispatch::IntegrationTest
       before do
         @number_of_citizens = Citizen.all_active.count
 
-        delete '/v1/citizens/222', params: {}, 
+        delete '/v1/citizens/222', params: {permission: "citizen"}, 
           headers: @auth_headers
 
         @body = JSON.parse(response.body)
@@ -165,7 +165,7 @@ class Api::V1::CitizensControllerTest < ActionDispatch::IntegrationTest
     describe "Successful request to update citizen" do
       before do
         put '/v1/citizens/' + @citizen.id.to_s,
-          params: {citizen: {cep: "7654321"}}, 
+          params: {citizen: {cep: "7654321"}, permission: "citizen"}, 
           headers: @auth_headers
 
         @resp_token = response.headers['access-token']
@@ -186,7 +186,7 @@ class Api::V1::CitizensControllerTest < ActionDispatch::IntegrationTest
 
     describe "Unsuccessful resquest to update citizen that doesn't exists" do
       before do
-        put '/v1/citizens/222', params: {citizen: {cep: "7654321"}}, 
+        put '/v1/citizens/222', params: {citizen: {cep: "7654321"}, permission: "citizen"}, 
           headers: @auth_headers
 
         @body = JSON.parse(response.body)
@@ -208,7 +208,7 @@ class Api::V1::CitizensControllerTest < ActionDispatch::IntegrationTest
     describe "Unsuccessful resquest to update citizen with conflicting cpf" do
       before do
         put '/v1/citizens/' + @citizen.id.to_s, 
-          params: {citizen: {cpf: "11111111111"}},
+          params: {citizen: {cpf: "11111111111"}, permission: "citizen"},
           headers: @auth_headers
 
         @body = JSON.parse(response.body)
@@ -230,7 +230,7 @@ class Api::V1::CitizensControllerTest < ActionDispatch::IntegrationTest
     describe "Unsuccessful request to update citizen without required field" do
       before do
         put '/v1/citizens/' + @citizen.id.to_s, 
-          params: {citizen: {name: nil}},
+          params: {citizen: {name: nil}, permission: "citizen"},
           headers: @auth_headers
 
         @body = JSON.parse(response.body)

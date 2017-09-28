@@ -57,7 +57,7 @@ class SolicitationsControllerTest < ActionDispatch::IntegrationTest
           email: "teste@teste.com",
           phone: "12121212",
           sent: true,
-        }}, headers: @auth_headers
+        }, permission: "citizen"}, headers: @auth_headers
 
         @body = JSON.parse(response.body)
         @resp_token = response.headers['access-token']
@@ -84,7 +84,7 @@ class SolicitationsControllerTest < ActionDispatch::IntegrationTest
 
       describe "Successful request to show all soliciations" do
         before do 
-          get '/v1/solicitations', params: {}, 
+          get '/v1/solicitations', params: {permission: "citizen"}, 
             headers: @auth_headers
 
           @body = JSON.parse(response.body)
@@ -107,7 +107,7 @@ class SolicitationsControllerTest < ActionDispatch::IntegrationTest
         before do 
           @solicitation = Solicitation.where(city_id: @curitiba.id).first
 
-          get '/v1/solicitations/' + @solicitation.id.to_s, params: {}, 
+          get '/v1/solicitations/' + @solicitation.id.to_s, params: {permission: "citizen"}, 
             headers: @auth_headers
 
           @body = JSON.parse(response.body)
@@ -137,7 +137,7 @@ class SolicitationsControllerTest < ActionDispatch::IntegrationTest
           @solicitation = Solicitation.where(city_id: @curitiba.id).first
 
           delete '/v1/solicitations/' + @solicitation.id.to_s,
-            params: {},
+            params: {permission: "citizen"},
             headers: @auth_headers
 
           @resp_token = response.headers['access-token']
@@ -162,7 +162,7 @@ class SolicitationsControllerTest < ActionDispatch::IntegrationTest
           put '/v1/solicitations/' + @solicitation.id.to_s,
             params: {solicitation: {
             name: "Teste2"
-          }},
+          }, permission: "citizen"},
           headers: @auth_headers
 
           @resp_token = response.headers['access-token']
@@ -183,7 +183,7 @@ class SolicitationsControllerTest < ActionDispatch::IntegrationTest
 
     describe "Unsuccessful request to show solicitation that doesn't exist" do
       before do 
-        get '/v1/solicitations/222', params: {}, 
+        get '/v1/solicitations/222', params: {permission: "citizen"}, 
           headers: @auth_headers
 
         @body = JSON.parse(response.body)
@@ -214,7 +214,7 @@ class SolicitationsControllerTest < ActionDispatch::IntegrationTest
           email: "teste@teste.com",
           phone: "12121212",
           sent: true,
-        }}, headers: @auth_headers
+        }, permission: "citizen"}, headers: @auth_headers
 
         @body = JSON.parse(response.body)
         @resp_token = response.headers['access-token']

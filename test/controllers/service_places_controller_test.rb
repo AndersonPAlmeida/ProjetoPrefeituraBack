@@ -84,7 +84,7 @@ class Api::V1::ServicePlacesControllerTest < ActionDispatch::IntegrationTest
           city_hall_id: @city_hall.id,
           name: "Example SP",
           neighborhood: "Neighborhood Example"
-        }}, headers: @auth_headers
+        }, permission: "citizen"}, headers: @auth_headers
 
         @body = JSON.parse(response.body)
 
@@ -120,7 +120,7 @@ class Api::V1::ServicePlacesControllerTest < ActionDispatch::IntegrationTest
         before do
           @service_place = ServicePlace.where(name: "Example SP").first
 
-          get '/v1/service_places/', params: {},
+          get '/v1/service_places/', params: {permission: "citizen"},
             headers: @auth_headers
 
           @body = JSON.parse(response.body)
@@ -144,7 +144,7 @@ class Api::V1::ServicePlacesControllerTest < ActionDispatch::IntegrationTest
         before do
           @service_place = ServicePlace.where(name: "Example SP").first
 
-          get '/v1/service_places/' + @service_place.id.to_s, params: {},
+          get '/v1/service_places/' + @service_place.id.to_s, params: {permission: "citizen"},
             headers: @auth_headers
 
           @body = JSON.parse(response.body)
@@ -173,7 +173,7 @@ class Api::V1::ServicePlacesControllerTest < ActionDispatch::IntegrationTest
           @service_place = ServicePlace.where(name: "Example SP").first
 
           put '/v1/service_places/' + @service_place.id.to_s,
-            params: {service_place: {name: "New name"}},
+            params: {service_place: {name: "New name"}, permission: "citizen"},
             headers: @auth_headers
 
           @resp_token = response.headers['access-token']
@@ -199,7 +199,7 @@ class Api::V1::ServicePlacesControllerTest < ActionDispatch::IntegrationTest
           @service_place = ServicePlace.where(name: "Example SP").first
 
           delete '/v1/service_places/' + @service_place.id.to_s,
-            params: {},
+            params: {permission: "citizen"},
             headers: @auth_headers
 
           @resp_token = response.headers['access-token']

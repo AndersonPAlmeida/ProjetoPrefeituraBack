@@ -55,6 +55,10 @@ class Schedule < ApplicationRecord
   def self.search_params(params)
     custom = Hash.new
 
+    if params.nil?
+      return nil
+    end
+
     params.each do |k, v|
       case k
       when "service_type_id"
@@ -66,6 +70,10 @@ class Schedule < ApplicationRecord
       when "situation_id"
         custom["situation_id_eq"] = v
       end
+    end
+
+    if custum.empty?
+      return nil
     end
 
     return custom

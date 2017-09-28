@@ -88,7 +88,7 @@ class CityHallsControllerTest < ActionDispatch::IntegrationTest
           phone1: "12121212",
           active: true,
           block_text: "hello" 
-        }}, headers: @auth_headers
+        }, permission: "citizen"}, headers: @auth_headers
 
         @body = JSON.parse(response.body)
         @resp_token = response.headers['access-token']
@@ -115,7 +115,7 @@ class CityHallsControllerTest < ActionDispatch::IntegrationTest
 
       describe "Successful request to show all city halls" do
         before do 
-          get '/v1/city_halls', params: {}, 
+          get '/v1/city_halls', params: {permission: "citizen"}, 
             headers: @auth_headers
 
           @body = JSON.parse(response.body)
@@ -138,7 +138,7 @@ class CityHallsControllerTest < ActionDispatch::IntegrationTest
         before do 
           @city_hall = CityHall.where(city_id: @curitiba.id).first
 
-          get '/v1/city_halls/' + @city_hall.id.to_s, params: {}, 
+          get '/v1/city_halls/' + @city_hall.id.to_s, params: {permission: "citizen"}, 
             headers: @auth_headers
 
           @body = JSON.parse(response.body)
@@ -167,7 +167,7 @@ class CityHallsControllerTest < ActionDispatch::IntegrationTest
           @city_hall = CityHall.where(city_id: @curitiba.id).first
 
           put '/v1/city_halls/' + @city_hall.id.to_s, 
-            params: {city_hall: {city_id: @joinville.id}},
+            params: {city_hall: {city_id: @joinville.id}, permission: "citizen"},
             headers: @auth_headers
 
           @body = JSON.parse(response.body)
@@ -189,7 +189,7 @@ class CityHallsControllerTest < ActionDispatch::IntegrationTest
 
     describe "Unsuccessful request to show city hall that doesn't exists" do
       before do 
-        get '/v1/city_halls/222', params: {}, 
+        get '/v1/city_halls/222', params: {permission: "citizen"}, 
           headers: @auth_headers
 
         @body = JSON.parse(response.body)
@@ -221,7 +221,7 @@ class CityHallsControllerTest < ActionDispatch::IntegrationTest
           phone1: "12121212",
           active: true,
           block_text: "hello" 
-        }}, headers: @auth_headers
+        }, permission: "citizen"}, headers: @auth_headers
 
         @body = JSON.parse(response.body)
         @resp_token = response.headers['access-token']
@@ -253,7 +253,7 @@ class CityHallsControllerTest < ActionDispatch::IntegrationTest
           phone1: "12121212",
           active: true,
           block_text: "hello" 
-        }}, headers: @auth_headers
+        }, permission: "citizen"}, headers: @auth_headers
 
         @body = JSON.parse(response.body)
         @resp_token = response.headers['access-token']
@@ -277,7 +277,7 @@ class CityHallsControllerTest < ActionDispatch::IntegrationTest
         @city_hall = CityHall.where(city_id: @joinville.id).first
 
         delete '/v1/city_halls/' + @city_hall.id.to_s, 
-          params: {}, 
+          params: {permission: "citizen"}, 
           headers: @auth_headers
 
         @resp_token = response.headers['access-token']
@@ -303,7 +303,7 @@ class CityHallsControllerTest < ActionDispatch::IntegrationTest
       before do 
         @number_of_city_halls = CityHall.all_active.count
 
-        delete '/v1/city_halls/222', params: {}, 
+        delete '/v1/city_halls/222', params: {permission: "citizen"}, 
           headers: @auth_headers
 
         @body = JSON.parse(response.body)
@@ -331,7 +331,7 @@ class CityHallsControllerTest < ActionDispatch::IntegrationTest
         @city_hall = CityHall.where(city_id: @joinville.id).first
 
         put '/v1/city_halls/' + @city_hall.id.to_s,
-          params: {city_hall: {cep: "7654321"}}, 
+          params: {city_hall: {cep: "7654321"}, permission: "citizen"}, 
           headers: @auth_headers
 
         @resp_token = response.headers['access-token']
@@ -352,7 +352,7 @@ class CityHallsControllerTest < ActionDispatch::IntegrationTest
 
     describe "Unsuccessful resquest to update city hall that doesn't exists" do
       before do
-        put '/v1/city_halls/222', params: {city_hall: {cep: "7654321"}}, 
+        put '/v1/city_halls/222', params: {city_hall: {cep: "7654321"}, permission: "citizen"}, 
           headers: @auth_headers
 
         @body = JSON.parse(response.body)
@@ -376,7 +376,7 @@ class CityHallsControllerTest < ActionDispatch::IntegrationTest
         @city_hall = CityHall.where(city_id: @joinville.id).first
 
         put '/v1/city_halls/' + @city_hall.id.to_s, 
-          params: {city_hall: {name: nil}},
+          params: {city_hall: {name: nil}, permission: "citizen"},
           headers: @auth_headers
 
         @body = JSON.parse(response.body)

@@ -2,19 +2,16 @@ class SectorPolicy < ApplicationPolicy
   class Scope < Scope
     def resolve
       citizen = user[0]
-      permission = user[1]
+      permission = Professional.get_permission(user[1])
 
-      if permission == "citizen" or citizen.professional.nil?
+      if permission == "citizen"
         return nil
-      elsif permission.nil? and not citizen.professional.nil?
-        permission = citizen.professional.roles[-1]
       end
 
       professional = citizen.professional
 
       city_id = professional.professionals_service_places
-        .find_by(role: permission)
-        .service_place.city_id
+        .find(user[1]).service_place.city_id
       
       return case
       when permission == "adm_c3sl"

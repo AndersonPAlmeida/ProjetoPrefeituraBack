@@ -2,31 +2,28 @@ class CitizenPolicy < ApplicationPolicy
   class Scope < Scope
     def resolve
       citizen = user[0]
-      permission = user[1]
+      permission = Professional.get_permission(user[1])
 
-      if permission == "citizen" or citizen.professional.nil?
+      if permission == "citizen"
         return nil
-      elsif permission.nil? and not citizen.professional.nil?
-        permission = citizen.professional.roles[-1]
       end
 
       professional = citizen.professional
 
       city_id = professional.professionals_service_places
-        .find_by(role: permission)
-        .service_place.city_id
+        .find(user[1]).service_place.city_id
       
-      return case
-      when permission == "adm_c3sl"
+      return case permission
+      when "adm_c3sl"
         scope.all_active.where.not(id: citizen.id)
 
-      when permission == "adm_prefeitura"
+      when "adm_prefeitura"
         scope.local_active(city_id).where.not(id: citizen.id)
 
-      when permission == "adm_local"
+      when "adm_local"
         scope.local_active(city_id).where.not(id: citizen.id)
 
-      when permission == "atendente_local"
+      when "atendente_local"
         scope.local_active(city_id).where.not(id: citizen.id)
 
       else
@@ -67,19 +64,16 @@ class CitizenPolicy < ApplicationPolicy
   # @return [Boolean] true if allowed, false otherwise
   def access_policy(user, condition)
     citizen = user[0]
-    permission = user[1]
+    permission = Professional.get_permission(user[1])
 
-    if permission == "citizen" or citizen.professional.nil?
+    if permission == "citizen"
       return condition 
-    elsif permission.nil? and not citizen.professional.nil?
-      permission = citizen.professional.roles[-1]
     end
 
     professional = citizen.professional
 
     city_id = professional.professionals_service_places
-      .find_by(role: permission)
-      .service_place.city_id
+      .find(user[1]).service_place.city_id
 
     return case
     when permission == "adm_c3sl"
