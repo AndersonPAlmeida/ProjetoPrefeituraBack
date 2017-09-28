@@ -204,7 +204,7 @@ module Api::V1
     # method to show @citizen.cpf
     def render_create_citizen_error
       render json: {
-        errors: @citizen.errors
+        errors: @citizen.errors.to_hash.merge(full_messages: @citizen.errors.full_messages)
       }, status: 422
     end
 
