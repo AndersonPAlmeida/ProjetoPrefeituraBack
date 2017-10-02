@@ -25,4 +25,51 @@ class SectorPolicy < ApplicationPolicy
       end
     end
   end
+
+  def show?
+    return access_policy(user) 
+  end
+
+  def create?
+    return access_policy(user) 
+  end
+
+  def update?
+    return access_policy(user) 
+  end
+
+  def destroy?
+    return access_policy(user) 
+  end
+
+  private
+
+  # Generic method for checking permissions when show/accessing/modifying 
+  # sectors. It is used for avoiding code repetition in citizen's policy
+  # methods.
+  #
+  # @param user [Array] current citizen and the permission provided
+  # @return [Boolean] true if allowed, false otherwise
+  def access_policy(user)
+    citizen = user[0]
+    permission = Professional.get_permission(user[1])
+
+    if permission == "citizen"
+      return false
+    end
+
+    professional = citizen.professional
+
+    city_id = professional.professionals_service_places
+      .find(user[1]).service_place.city_id
+    
+    return case
+    when permission == "adm_c3sl"
+      true
+    when permission == "adm_prefeitura"
+      (city_id == record.city_hall.city_id)
+    else
+      false
+    end
+  end
 end
