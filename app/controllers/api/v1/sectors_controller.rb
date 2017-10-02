@@ -92,7 +92,11 @@ module Api::V1
         authorize @sector, :destroy?
 
         @sector.active = false
-        @sector.save!
+        if @sector.save
+          render json: @sector, status: :ok
+        else
+          render json: @sector.errors, status: :unprocessable_entity
+        end
       end
     end
 
