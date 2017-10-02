@@ -50,35 +50,6 @@ class Schedule < ApplicationRecord
     })
   end
 
-  # Translates incoming search parameters to ransack patterns
-  # @params params [Hash] Parameters for searching
-  def self.search_params(params)
-    custom = Hash.new
-
-    if params.nil?
-      return nil
-    end
-
-    params.each do |k, v|
-      case k
-      when "service_type_id"
-        custom["shift_service_type_id_eq"] = v
-      when "service_place_id"
-        custom["service_place_id_eq"] = v
-      when "sector_id"
-        custom["shift_service_type_sector_id_eq"] = v
-      when "situation_id"
-        custom["situation_id_eq"] = v
-      end
-    end
-
-    if custum.empty?
-      return nil
-    end
-
-    return custom
-  end
-
   # @params id [Integer] Citizen the schedules are being returned for 
   # @params search_f [Lambda] Function that takes the parameters and searches 
   #   using ransack
@@ -113,5 +84,36 @@ class Schedule < ApplicationRecord
     end
 
     return response
+  end
+
+  private
+
+  # Translates incoming search parameters to ransack patterns
+  # @params params [Hash] Parameters for searching
+  def self.search_params(params)
+    custom = Hash.new
+
+    if params.nil?
+      return nil
+    end
+
+    params.each do |k, v|
+      case k
+      when "service_type_id"
+        custom["shift_service_type_id_eq"] = v
+      when "service_place_id"
+        custom["service_place_id_eq"] = v
+      when "sector_id"
+        custom["shift_service_type_sector_id_eq"] = v
+      when "situation_id"
+        custom["situation_id_eq"] = v
+      end
+    end
+
+    if custom.empty?
+      return nil
+    end
+
+    return custom
   end
 end

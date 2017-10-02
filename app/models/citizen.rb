@@ -113,7 +113,48 @@ class Citizen < ApplicationRecord
       .as_json(only: [:id, :name, :birth_date, :cpf, :rg])
   end
 
+  # @params search_f [Lambda] Function that takes the parameters and searches 
+  #   using ransack
+  # @params params [Hash] Parameters for searching
+  # @return [ActiveRecords] filtered citizens 
+  def self.filter(search_f, params)
+    return search_f.call(Citizen, search_params(params))
+  end
+
   private
+
+  # Translates incoming search parameters to ransack patterns
+  # @params params [Hash] Parameters for searching
+  def self.search_params(params)
+    custom = Hash.new
+
+    if params.nil?
+      return nil
+    end
+
+    # Elements allowed to be sorted
+    sortable = ["name", "cpf", "birth_date"]
+
+    params.each do |k, v|
+      case k
+      when "name"
+        custom["name_cont"] = v
+      when "cpf"
+        custom["cpf_eq"] = v
+      when "s"
+        val = v.split(" ")
+        if sortable.include? val[0]
+          custom["s"] = v
+        end
+      end
+    end
+
+    if custom.empty?
+      return nil
+    end
+
+    return custom
+  end
 
   # @return [Boolean] true if cpf is required (isn't a dependant) false if it is
   # not (is a dependant)
