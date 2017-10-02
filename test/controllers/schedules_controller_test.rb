@@ -142,7 +142,7 @@ class Api::V1::SchedulesControllerTest < ActionDispatch::IntegrationTest
           reminder_read: 1,
           service_start_time: DateTime.now,
           service_end_time: DateTime.now+5
-        }}, headers: @auth_headers
+        }, permission: "citizen"}, headers: @auth_headers
 
         @body = JSON.parse(response.body)
         @resp_token = response.headers['access-token']
@@ -172,7 +172,7 @@ class Api::V1::SchedulesControllerTest < ActionDispatch::IntegrationTest
 
           @schedule = Schedule.where(situation_id: @situation.id).first
 
-          get '/v1/schedules/' + @schedule.id.to_s, params: {},
+          get '/v1/schedules/' + @schedule.id.to_s, params: {permission: "citizen"},
             headers: @auth_headers
           @body = JSON.parse(response.body)
           @resp_token = response.headers['access-token']
@@ -189,7 +189,7 @@ class Api::V1::SchedulesControllerTest < ActionDispatch::IntegrationTest
       describe "Succesful request to show all schedules" do
         before do
 
-          get '/v1/schedules/', params: {},
+          get '/v1/schedules/', params: {permission: "citizen"},
             headers: @auth_headers
           @body = JSON.parse(response.body)
           @resp_token = response.headers['access-token']
@@ -212,7 +212,7 @@ class Api::V1::SchedulesControllerTest < ActionDispatch::IntegrationTest
           @schedule = Schedule.where(shift_id: @shift.id).first
 
           put '/v1/schedules/' + @schedule.id.to_s,
-            params: {schedule: {reminder_read: 0}},
+            params: {schedule: {reminder_read: 0}, permission: "citizen"},
             headers: @auth_headers
 
           @resp_token = response.headers['access-token']
@@ -238,7 +238,7 @@ class Api::V1::SchedulesControllerTest < ActionDispatch::IntegrationTest
           @schedule = Schedule.where(shift_id: @shift.id).first
 
           delete '/v1/schedules/' + @schedule.id.to_s,
-            params: {},
+            params: {permission: "citizen"},
             headers: @auth_headers
 
           @resp_token = response.headers['access-token']

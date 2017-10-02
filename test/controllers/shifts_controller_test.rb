@@ -133,7 +133,7 @@ class Api::V1::ShiftsControllerTest < ActionDispatch::IntegrationTest
           service_amount: 3,
           service_type_id: @service_type.id,
           service_place_id: @service_place.id
-        }}, headers: @auth_headers
+        }, permission: "citizen"}, headers: @auth_headers
 
         @body = JSON.parse(response.body)
         @resp_token = response.headers['access-token']
@@ -171,7 +171,7 @@ class Api::V1::ShiftsControllerTest < ActionDispatch::IntegrationTest
 
           @shift = Shift.where(service_place_id: @service_place.id).first
 
-          get '/v1/shifts/' + @shift.id.to_s, params: {},
+          get '/v1/shifts/' + @shift.id.to_s, params: {permission: "citizen"},
             headers: @auth_headers
           @body = JSON.parse(response.body)
           @resp_token = response.headers['access-token']
@@ -187,7 +187,7 @@ class Api::V1::ShiftsControllerTest < ActionDispatch::IntegrationTest
       describe "Succesful request to show all shifts" do
         before do
 
-          get '/v1/shifts/', params: {},
+          get '/v1/shifts/', params: {permission: "citizen"},
             headers: @auth_headers
           @body = JSON.parse(response.body)
           @resp_token = response.headers['access-token']
@@ -210,7 +210,7 @@ class Api::V1::ShiftsControllerTest < ActionDispatch::IntegrationTest
           @shift = Shift.where(service_place_id: @service_place.id).first
 
           put '/v1/shifts/' + @shift.id.to_s,
-            params: {shift: {service_amount: 13}},
+            params: {shift: {service_amount: 13}, permission: "citizen"},
             headers: @auth_headers
 
           @resp_token = response.headers['access-token']
@@ -236,7 +236,7 @@ class Api::V1::ShiftsControllerTest < ActionDispatch::IntegrationTest
           @shift = Shift.where(service_place_id: @service_place.id).first
 
           delete '/v1/shifts/' + @shift.id.to_s,
-            params: {},
+            params: {permission: "citizen"},
             headers: @auth_headers
 
           @resp_token = response.headers['access-token']

@@ -9,7 +9,7 @@ module Api::V1
 
     # GET /citizens
     def index
-      @citizens = policy_scope(Citizen)
+      @citizens = policy_scope(Citizen.filter(search_function, params[:q]))
 
       if @citizens.nil?
         render json: {

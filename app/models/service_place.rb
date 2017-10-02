@@ -74,12 +74,8 @@ class ServicePlace < ApplicationRecord
 
   # Used for returning information required to fill forms in front-end
   #
-  # @param user [Array] current_user (session variable)
   # @return [Json] list of reachable service_places
-  def self.form_data(user, service_type_ids)
-    @citizen = user[0]
-    @permission = user[1]
-
+  def self.form_data(service_type_ids)
     service_types = ServiceType.where(id: service_type_ids)
     ids = service_types.map { |i| i.service_place_ids }.flatten.uniq!
 

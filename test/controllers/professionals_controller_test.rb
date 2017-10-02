@@ -75,7 +75,7 @@ class Api::V1::ProfessionalsControllerTest < ActionDispatch::IntegrationTest
           registration: "123",
           occupation_id: @occupation.id,
           account_id: @account.id
-        }}, headers: @auth_headers
+        }, permission: "citizen"}, headers: @auth_headers
 
         @body = JSON.parse(response.body)
         @resp_token = response.headers['access-token']
@@ -102,7 +102,7 @@ class Api::V1::ProfessionalsControllerTest < ActionDispatch::IntegrationTest
 
       describe "Successful request to show all professionals" do
         before do 
-          get '/v1/professionals', params: {}, 
+          get '/v1/professionals', params: {permission: "citizen"}, 
             headers: @auth_headers
 
           @body = JSON.parse(response.body)
@@ -125,7 +125,7 @@ class Api::V1::ProfessionalsControllerTest < ActionDispatch::IntegrationTest
       describe "Successful request to show professional" do
         before do 
           @professional = Professional.where(account_id: @account.id).first
-          get '/v1/professionals/' + @professional.id.to_s, params: {}, 
+          get '/v1/professionals/' + @professional.id.to_s, params: {permission: "citizen"}, 
             headers: @auth_headers
           @body = JSON.parse(response.body)
           @resp_token = response.headers['access-token']
@@ -155,7 +155,7 @@ class Api::V1::ProfessionalsControllerTest < ActionDispatch::IntegrationTest
 
           @number_of_professionals = Professional.all_active.count
 
-          delete '/v1/professionals/' + @professional.id.to_s, params: {}, 
+          delete '/v1/professionals/' + @professional.id.to_s, params: {permission: "citizen"}, 
             headers: @auth_headers
 
           @resp_token = response.headers['access-token']
@@ -182,7 +182,7 @@ class Api::V1::ProfessionalsControllerTest < ActionDispatch::IntegrationTest
           @professional = Professional.where(account_id: @account.id).first
 
           put '/v1/professionals/' + @professional.id.to_s,
-            params: {professional: {registration: "7654/21" }}, #{professional: {registration: "7654/21"}}, 
+            params: {professional: {registration: "7654/21" }, permission: "citizen"}, 
             headers: @auth_headers
 
           @resp_token = response.headers['access-token']

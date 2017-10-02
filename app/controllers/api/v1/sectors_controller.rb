@@ -45,6 +45,8 @@ module Api::V1
           errors: ["Sector #{params[:id]} does not exist."]
         }, status: 404
       else
+        authorize @sector, :show?
+
         render json: @sector
       end
     end
@@ -52,6 +54,9 @@ module Api::V1
     # POST /sectors
     def create
       @sector = Sector.new(sector_params)
+      @sector.active = true
+
+      authorize @sector, :create?
 
       if @sector.save
         render json: @sector, status: :created
@@ -67,6 +72,8 @@ module Api::V1
           errors: ["Sector #{params[:id]} does not exist."]
         }, status: 404
       else
+        authorize @sector, :update?
+
         if @sector.update(sector_params)
           render json: @sector
         else
@@ -82,8 +89,14 @@ module Api::V1
           errors: ["Sector #{params[:id]} does not exist."]
         }, status: 404
       else
+        authorize @sector, :destroy?
+
         @sector.active = false
-        @sector.save!
+        if @sector.save
+          render json: @sector, status: :ok
+        else
+          render json: @sector.errors, status: :unprocessable_entity
+        end
       end
     end
 
@@ -98,6 +111,22 @@ module Api::V1
       when "schedule?"
         render json: {
           errors: ["You're not allowed to schedule for this citizen."]
+        }, status: 403
+      when "create?"
+        render json: {
+          errors: ["You're not allowed to create this sector."]
+        }, status: 403
+      when "show?"
+        render json: {
+          errors: ["You're not allowed show this sector."]
+        }, status: 403
+      when "update?"
+        render json: {
+          errors: ["You're not allowed update this sector."]
+        }, status: 403
+      when "destroy?"
+        render json: {
+          errors: ["You're not allowed deactivate this sector."]
         }, status: 403
       end
     end
@@ -114,9 +143,7 @@ module Api::V1
     # Only allow a trusted parameter "white list" through.
     def sector_params
       params.require(:sector).permit(
-        :id,
         :absence_max,
-        :active,
         :blocking_days,
         :cancel_limit,
         :city_hall_id,

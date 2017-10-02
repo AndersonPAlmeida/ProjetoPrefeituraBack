@@ -61,7 +61,7 @@ class Api::V1::DependantsControllerTest < ActionDispatch::IntegrationTest
             phone1: "(12)1212-1212",
             city_id: @joinville.id,
             rg: "1234567"
-          }
+          }, permission: "citizen"
         }, headers: @auth_headers
 
         @body = JSON.parse(response.body)
@@ -93,7 +93,7 @@ class Api::V1::DependantsControllerTest < ActionDispatch::IntegrationTest
           }).includes(:citizen).first
 
           get '/v1/citizens/' + @responsible.id.to_s + '/dependants/' + @dependant.id.to_s, 
-            params: {}, 
+            params: {permission: "citizen"}, 
             headers: @auth_headers
 
           @body = JSON.parse(response.body)
@@ -123,7 +123,8 @@ class Api::V1::DependantsControllerTest < ActionDispatch::IntegrationTest
             responsible_id: @responsible.id
           }).includes(:citizen).first
 
-          delete '/v1/citizens/' + @responsible.id.to_s + '/dependants/' + @dependant.id.to_s, params: {}, 
+          delete '/v1/citizens/' + @responsible.id.to_s + '/dependants/' + @dependant.id.to_s, 
+            params: {permission: "citizen"}, 
             headers: @auth_headers
 
           @resp_token = response.headers['access-token']
@@ -148,7 +149,7 @@ class Api::V1::DependantsControllerTest < ActionDispatch::IntegrationTest
           }).includes(:citizen).first
 
           put '/v1/citizens/' + @responsible.id.to_s + '/dependants/' + @dependant.id.to_s,
-            params: {dependant: { phone1: "(41)13131313" }},
+            params: {dependant: { phone1: "(41)13131313" }, permission: "citizen"},
             headers: @auth_headers
 
           @resp_token = response.headers['access-token']

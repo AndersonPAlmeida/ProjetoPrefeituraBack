@@ -78,7 +78,7 @@ class ServiceTypesControllerTest < ActionDispatch::IntegrationTest
           active: true,
           sector_id: @sector.id,
           description: "type one"
-        }}, headers: @auth_headers
+        }, permission: "citizen"}, headers: @auth_headers
 
 
         @body = JSON.parse(response.body)
@@ -107,7 +107,7 @@ class ServiceTypesControllerTest < ActionDispatch::IntegrationTest
 
       describe "Successful request to show all service types" do
         before do 
-          get '/v1/service_types', params: {}, 
+          get '/v1/service_types', params: {permission: "citizen"}, 
             headers: @auth_headers
 
           @body = JSON.parse(response.body)
@@ -130,7 +130,7 @@ class ServiceTypesControllerTest < ActionDispatch::IntegrationTest
         before do 
           @service_type = ServiceType.where(sector_id: @sector.id).first
 
-          get '/v1/service_types/' + @service_type.id.to_s, params: {}, 
+          get '/v1/service_types/' + @service_type.id.to_s, params: {permission: "citizen"}, 
             headers: @auth_headers
 
           @body = JSON.parse(response.body)
@@ -158,7 +158,7 @@ class ServiceTypesControllerTest < ActionDispatch::IntegrationTest
           @service_type = ServiceType.where(sector_id: @sector.id).first
 
           put '/v1/service_types/' + @service_type.id.to_s, 
-            params: {service_type: {sector_id: "222"}},
+            params: {service_type: {sector_id: "222"}, permission: "citizen"},
             headers: @auth_headers
 
           @body = JSON.parse(response.body)
@@ -182,7 +182,7 @@ class ServiceTypesControllerTest < ActionDispatch::IntegrationTest
           @service_type = ServiceType.where(sector_id: @sector.id).first
 
           put '/v1/service_types/' + @service_type.id.to_s,
-            params: {service_type: {description: "type one v2"}}, 
+            params: {service_type: {description: "type one v2"}, permission: "citizen"}, 
             headers: @auth_headers
 
           @resp_token = response.headers['access-token']
@@ -206,7 +206,7 @@ class ServiceTypesControllerTest < ActionDispatch::IntegrationTest
         before do
           @service_type = ServiceType.where(sector_id: @sector.id).first
           put '/v1/service_types/' + @service_type.id.to_s, 
-            params: {service_type: {sector_id: nil}},
+            params: {service_type: {sector_id: nil}, permission: "citizen"},
             headers: @auth_headers
 
           @body = JSON.parse(response.body)
@@ -231,7 +231,7 @@ class ServiceTypesControllerTest < ActionDispatch::IntegrationTest
           @service_type = ServiceType.where(sector_id: @sector.id).first
 
           delete '/v1/service_types/' + @service_type.id.to_s, 
-            params: {}, 
+            params: {permission: "citizen"}, 
             headers: @auth_headers
 
           @resp_token = response.headers['access-token']

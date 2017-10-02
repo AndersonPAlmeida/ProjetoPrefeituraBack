@@ -7,15 +7,15 @@ module Api::V1
       response = Hash.new
 
       # Sectors' ids and names 
-      sectors = Sector.form_data(current_user)
+      sectors = Sector.form_data(current_user[0])
       sector_ids = sectors.map { |row| row["id"] }
 
       # Service Types' ids, sector_ids and descriptions
-      service_types = ServiceType.form_data(current_user, sector_ids)
+      service_types = ServiceType.form_data(sector_ids)
       service_type_ids = service_types.map { |row| row["id"] }
 
       # Service Places' ids, service_types' ids and names 
-      service_places = ServicePlace.form_data(current_user, service_type_ids)
+      service_places = ServicePlace.form_data(service_type_ids)
 
       # Situations' ids and descriptions
       situations = Situation.form_data()

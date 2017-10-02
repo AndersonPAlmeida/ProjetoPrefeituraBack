@@ -67,7 +67,7 @@ class OccupationsControllerTest < ActionDispatch::IntegrationTest
           name: "Tester",
           active: true,
           city_hall_id: @curitiba_city_hall.id
-        }}, headers: @auth_headers
+        }, permission: "citizen"}, headers: @auth_headers
 
         @body = JSON.parse(response.body)
         @resp_token = response.headers['access-token']
@@ -90,7 +90,7 @@ class OccupationsControllerTest < ActionDispatch::IntegrationTest
 
       describe "Successful request to show all occupations" do
         before do
-          get '/v1/occupations', params: {},
+          get '/v1/occupations', params: {permission: "citizen"},
             headers: @auth_headers
 
           @body = JSON.parse(response.body)
@@ -112,7 +112,7 @@ class OccupationsControllerTest < ActionDispatch::IntegrationTest
 
     describe "Unsuccessful request to show occupation that doesn't exists" do
       before do
-        get '/v1/occupations/222', params: {},
+        get '/v1/occupations/222', params: {permission: "citizen"},
           headers: @auth_headers
 
         @body = JSON.parse(response.body)
@@ -139,7 +139,7 @@ class OccupationsControllerTest < ActionDispatch::IntegrationTest
           description: "Teste",
           name: "Tester",
           active: true,
-        }}, headers: @auth_headers
+        }, permission: "citizen"}, headers: @auth_headers
 
         @body = JSON.parse(response.body)
         @resp_token = response.headers['access-token']
@@ -161,7 +161,7 @@ class OccupationsControllerTest < ActionDispatch::IntegrationTest
       before do
         @number_of_occupations = Occupation.all_active.count
 
-        delete '/v1/occupations/222', params: {},
+        delete '/v1/occupations/222', params: {permission: "citizen"},
           headers: @auth_headers
 
         @body = JSON.parse(response.body)

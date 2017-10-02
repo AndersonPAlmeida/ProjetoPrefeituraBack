@@ -55,13 +55,10 @@ class Sector < ApplicationRecord
 
   # Used to return information required to fill forms in front-end
   #
-  # @param user [Array] current_user (session variable)
+  # @param citizen [Citizen] current_user (session variable)
   # @return [Json] list of reachable sectors
-  def self.form_data(user)
-    @citizen = user[0]
-    @permission = user[1]
-
-    response = Sector.local_active(@citizen.city_id)
+  def self.form_data(citizen)
+    response = Sector.local_active(citizen.city_id)
       .as_json(only: [:name, :id])
 
     return response
