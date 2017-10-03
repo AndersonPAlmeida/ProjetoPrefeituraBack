@@ -1,6 +1,7 @@
 module Api::V1
   class DependantsController < ApplicationController 
     include Authenticable
+    include HasPolicies
 
     require "#{Rails.root}/lib/image_parser.rb"
 
@@ -171,6 +172,23 @@ module Api::V1
     end
 
     private
+
+    # Rescue Pundit exception for providing more details in reponse
+    def policy_error_description(exception)
+      # Set @policy_name as the policy method that raised the error
+      super
+
+      case @policy_name
+      when "show_dependants?"
+        render json: {
+          errors: ["You're not allowed to view this dependant."]
+        }, status: 403
+      when "create_dependants?"
+        render json: {
+          errors: ["You're not allowed to create dependants."]
+        }, status: 403
+      end
+    end
 
     # Use callbacks to share common setup or constraints between actions.
     def set_dependant
