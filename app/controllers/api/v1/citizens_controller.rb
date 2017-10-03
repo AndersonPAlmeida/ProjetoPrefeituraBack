@@ -75,15 +75,12 @@ module Api::V1
       end
     end
 
+    # TODO: Check if it's really necessary to have this method (it's never used)
     # POST /citizens
     def create
       @citizen = Citizen.new(citizen_params)
       @citizen.active = true
 
-      # TODO: the city must come from the front-end, which means that
-      # no request to correios should be made in the back-end, except
-      # the validation in the cep_controller when requested by the
-      # front-end
       @citizen.city_id = Address.get_city_id(citizen_params[:cep])
 
       if @citizen.save

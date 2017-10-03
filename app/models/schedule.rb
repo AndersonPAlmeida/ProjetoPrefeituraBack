@@ -66,8 +66,10 @@ class Schedule < ApplicationRecord
     # Citizen's info along with the schedules associated with him
     response["id"] = id
     response["name"] = Citizen.find(id).name
-    response["schedules"] = search_f.call(Schedule.where(citizen_id: id),
-      search_params(params)).map { |i| i.show_data }.as_json
+    response["schedules"] = Schedule.where(citizen_id: id)
+      .filter(search_f, params)
+      .map { |i| i.show_data }.as_json
+      
 
     response["dependants"] = [].as_json
 
@@ -77,8 +79,9 @@ class Schedule < ApplicationRecord
 
       entry["id"] = i
       entry["name"] = name
-      entry["schedules"] = search_f.call(Schedule.where(citizen_id: i),
-        search_params(params)).map { |i| i.show_data }.as_json
+      entry["schedules"] = Schedule.where(citizen_id: i)
+        .filter(search_f, params)
+        .map { |i| i.show_data }.as_json
 
       response["dependants"].append(entry)
     end
@@ -86,34 +89,29 @@ class Schedule < ApplicationRecord
     return response
   end
 
+  # @params search_f [Lambda] Function that filter records using ransack
+  # @params params [Hash] Parameters for searching
+  # @return [ActiveRecords] filtered schedules
+  def self.filter(search_f, params)
+    return search_f.call(self, search_params(params))
+  end
+
   private
 
   # Translates incoming search parameters to ransack patterns
   # @params params [Hash] Parameters for searching
   def self.search_params(params)
-    custom = Hash.new
-
     if params.nil?
       return nil
     end
 
-    params.each do |k, v|
-      case k
-      when "service_type_id"
-        custom["shift_service_type_id_eq"] = v
-      when "service_place_id"
-        custom["service_place_id_eq"] = v
-      when "sector_id"
-        custom["shift_service_type_sector_id_eq"] = v
-      when "situation_id"
-        custom["situation_id_eq"] = v
-      end
-    end
+    filter = {"service_type_id" => "shift_service_type_id_eq", 
+              "service_place_id" => "service_place_id_eq", 
+              "sector_id" => "shift_service_type_sector_id_eq", 
+              "situation_id" => "situation_id_eq"}
 
-    if custom.empty?
-      return nil
+    return params.reduce({}) do |hash, (k,v)| 
+      hash.merge(filter[k] => v) if filter.key?(k)
     end
-
-    return custom
   end
 end
