@@ -15,10 +15,10 @@ class SectorPolicy < ApplicationPolicy
       
       return case
       when permission == "adm_c3sl"
-        scope.all_active
+        scope.all
 
       when permission == "adm_prefeitura"
-        scope.local_active(city_id)
+        scope.local(city_id)
 
       else
         nil

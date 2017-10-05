@@ -100,14 +100,14 @@ class Citizen < ApplicationRecord
 
     return self.as_json(except: [:city_id, :created_at, :updated_at])
       .merge({city: city.as_json(except: [
-    :ibge_code, :state_id, :created_at, :updated_at
-    ])})
+        :ibge_code, :state_id, :created_at, :updated_at
+      ])})
       .merge({state: state.as_json(except: [
-    :ibge_code, :created_at, :updated_at
-    ])})
+        :ibge_code, :created_at, :updated_at
+      ])})
       .merge({address: address.as_json(except: [
-    :created_at, :updated_at, :state_id, :city_id
-    ])})
+        :created_at, :updated_at, :state_id, :city_id
+      ])})
   end
 
   # Used in menu to choose citizen to schedule for in the scheduling process

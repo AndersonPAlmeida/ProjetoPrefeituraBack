@@ -26,7 +26,7 @@ module Api::V1
 
         @sectors = Sector.schedule_response(@citizen).to_json
       else
-        @sectors = policy_scope(Sector)
+        @sectors = policy_scope(Sector.filter(params[:q], params[:page]))
       end
 
       if @sectors.nil?
@@ -143,6 +143,7 @@ module Api::V1
     # Only allow a trusted parameter "white list" through.
     def sector_params
       params.require(:sector).permit(
+        :active,
         :absence_max,
         :blocking_days,
         :cancel_limit,

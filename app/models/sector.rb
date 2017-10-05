@@ -1,4 +1,5 @@
 class Sector < ApplicationRecord
+  include Searchable
 
   # Associations #
   has_many   :blocks
@@ -16,14 +17,14 @@ class Sector < ApplicationRecord
 
   # @return all active sectors
   def self.all_active
-    Sector.where(active: true)
+    self.where(active: true)
   end
 
   # @param city_id [Integer] sectors returned are registered with this given city_id
   # @return all active sectors which city_hall belongs to city_id
-  def self.local_active(city_id)
+  def self.local(city_id)
     city_hall = CityHall.find_by(city_id: city_id)
-    Sector.all_active.where(city_hall_id: city_hall.id)
+    self.where(city_hall_id: city_hall.id)
   end
 
   # In the scheduling process, the first request should return every available
@@ -36,7 +37,7 @@ class Sector < ApplicationRecord
     blocks = Block.where(citizen_id: citizen.id).pluck(:sector_id)
 
     # Every active local sector as Json
-    response = Sector.local_active(citizen.city_id).as_json(only: [
+    response = Sector.all_active.local(citizen.city_id).as_json(only: [
       :id, :absence_max, :blocking_days, :cancel_limit, 
       :description, :name, :schedule_by_sector
     ])
@@ -58,9 +59,28 @@ class Sector < ApplicationRecord
   # @param citizen [Citizen] current_user (session variable)
   # @return [Json] list of reachable sectors
   def self.form_data(citizen)
-    response = Sector.local_active(citizen.city_id)
+    response = Sector.all_active.local(citizen.city_id)
       .as_json(only: [:name, :id])
 
     return response
+  end
+
+  # @params params [ActionController::Parameters] Parameters for searching
+  # @params npage [String] number of page to be returned
+  # @return [ActiveRecords] filtered sectors
+  def self.filter(params, npage)
+    return search(search_params(params), npage)
+  end
+
+  private
+
+  # Translates incoming search parameters to ransack patterns
+  # @params params [ActionController::Parameters] Parameters for searching
+  # @return [Hash] filtered and translated parameters
+  def self.search_params(params)
+    sortable = ["name", "description", "active", "schedules_by_sector"]
+    filter = {"name" => "name_cont", "description" => "description_cont", "s" => "s"}
+
+    return filter_search_params(params, filter, sortable) 
   end
 end
