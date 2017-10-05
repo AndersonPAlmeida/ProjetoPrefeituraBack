@@ -6,7 +6,7 @@ module Searchable
     # @params params [ActionController::Parameters] Parameters for searching
     # @params npage [String] number of page to be returned
     # @return [Array] result of search given the parameters and page
-    def self.search_function(params, npage)
+    def self.search(params, npage)
       return self.ransack(params).result.page(npage).per(20)
     end
 
@@ -19,7 +19,8 @@ module Searchable
         return nil
       end
 
-      if sortable.nil? or (params.key?("s") and not sortable.include?(params["s"]))
+      if sortable.nil? or (params.key?("s") and 
+          not sortable.include?(params["s"].split(' ')[0]))
         params.delete("s")
       end
 

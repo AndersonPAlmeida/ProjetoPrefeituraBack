@@ -86,7 +86,7 @@ class Schedule < ApplicationRecord
   # @params npage [String] number of page to be returned
   # @return [ActiveRecords] filtered schedules
   def self.filter(params, npage)
-    return search_function(search_params(params), npage)
+    return search(search_params(params), npage)
   end
 
   private
