@@ -1,4 +1,5 @@
 class Citizen < ApplicationRecord
+  include Searchable
 
   # Associations #
   belongs_to :account, optional: true
@@ -29,10 +30,13 @@ class Citizen < ApplicationRecord
 
   validates_inclusion_of    :active, in: [true, false]
 
+  # Specify location where the picture should be stored (default is public)
+  # and the formats (large, medium, thumb)
   has_attached_file :avatar,
     path: "images/citizens/:id/avatar_:style.:extension",
     styles: { large: '500x500', medium: '300x300', thumb: '100x100' }
 
+  # Validates format of pictures
   validates_attachment_content_type :avatar,
     :content_type => ["image/jpg", "image/jpeg", "image/png", "image/gif"]
 
@@ -113,32 +117,23 @@ class Citizen < ApplicationRecord
       .as_json(only: [:id, :name, :birth_date, :cpf, :rg])
   end
 
-  # @params search_f [Lambda] Function that filter records using ransack
-  # @params params [Hash] Parameters for searching
+  # @params params [ActionController::Parameters] Parameters for searching
+  # @params npage [String] number of page to be returned
   # @return [ActiveRecords] filtered citizens 
-  def self.filter(search_f, params)
-    return search_f.call(self, search_params(params))
+  def self.filter(params, npage)
+    return search_function(search_params(params), npage)
   end
 
   private
 
   # Translates incoming search parameters to ransack patterns
-  # @params params [Hash] Parameters for searching
+  # @params params [ActionController::Parameters] Parameters for searching
+  # @return [Hash] filtered and translated parameters
   def self.search_params(params)
-    if params.nil?
-      return nil
-    end
-
     sortable = ["name", "cpf", "birth_date"]
     filter = {"name" => "name_cont", "cpf" => "cpf_eq", "s" => "s"}
 
-    if params.key?("s") and not sortable.include?(params["s"])
-      params.delete("s")
-    end
-
-    return params.reduce({}) do |hash, (k,v)| 
-      hash.merge(filter[k] => v) if filter.key?(k)
-    end
+    return filter_search_params(params, filter, sortable) 
   end
 
   # @return [Boolean] true if cpf is required (isn't a dependant) false if it is

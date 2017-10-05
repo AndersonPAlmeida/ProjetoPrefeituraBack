@@ -1,4 +1,5 @@
 class Schedule < ApplicationRecord
+  include Searchable
 
   # Associations #
   belongs_to :situation
@@ -15,13 +16,6 @@ class Schedule < ApplicationRecord
 
   # Workaround for Pundit's lack of parameter passing
   attr_accessor :target_citizen_id
-
-  def self.ransackable_attributes(auth_object = nil)
-    super & %w(shift_service_type_id service_place_id
-               situation_id shift_service_type_sector_id)
-  end
-
-  #private_class_method :ransackable_attributes
 
   # @return [Json] schedule information for showing in confirmation screen
   # (final step of scheduling process)
@@ -51,12 +45,11 @@ class Schedule < ApplicationRecord
   end
 
   # @params id [Integer] Citizen the schedules are being returned for 
-  # @params search_f [Lambda] Function that takes the parameters and searches 
-  #   using ransack
-  # @params params [Hash] Parameters for searching
+  # @params params [ActionController::Parameters] Parameters for searching
+  # @params npage [String] number of page to be returned
   # @return [Json] every schedule for each dependant from a citizen and the 
   #   citizen himself for showing in the schedule history screen
-  def self.citizen_history(id, search_f, params)
+  def self.citizen_history(id, params, npage)
 
     # Citizen's dependants
     citizens = Citizen.where(responsible_id: id).pluck(:id, :name)
@@ -67,7 +60,7 @@ class Schedule < ApplicationRecord
     response["id"] = id
     response["name"] = Citizen.find(id).name
     response["schedules"] = Schedule.where(citizen_id: id)
-      .filter(search_f, params)
+      .filter(params, npage)
       .map { |i| i.show_data }.as_json
       
 
@@ -80,7 +73,7 @@ class Schedule < ApplicationRecord
       entry["id"] = i
       entry["name"] = name
       entry["schedules"] = Schedule.where(citizen_id: i)
-        .filter(search_f, params)
+        .filter(params, npage)
         .map { |i| i.show_data }.as_json
 
       response["dependants"].append(entry)
@@ -89,29 +82,24 @@ class Schedule < ApplicationRecord
     return response
   end
 
-  # @params search_f [Lambda] Function that filter records using ransack
-  # @params params [Hash] Parameters for searching
+  # @params params [ActionController::Parameters] Parameters for searching
+  # @params npage [String] number of page to be returned
   # @return [ActiveRecords] filtered schedules
-  def self.filter(search_f, params)
-    return search_f.call(self, search_params(params))
+  def self.filter(params, npage)
+    return search_function(search_params(params), npage)
   end
 
   private
 
   # Translates incoming search parameters to ransack patterns
-  # @params params [Hash] Parameters for searching
+  # @params params [ActionController::Parameters] Parameters for searching
+  # @return [Hash] filtered and translated parameters
   def self.search_params(params)
-    if params.nil?
-      return nil
-    end
-
     filter = {"service_type_id" => "shift_service_type_id_eq", 
               "service_place_id" => "service_place_id_eq", 
               "sector_id" => "shift_service_type_sector_id_eq", 
               "situation_id" => "situation_id_eq"}
 
-    return params.reduce({}) do |hash, (k,v)| 
-      hash.merge(filter[k] => v) if filter.key?(k)
-    end
+    return filter_search_params(params, filter, nil) 
   end
 end

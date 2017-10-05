@@ -2,14 +2,13 @@ module Api::V1
   class CitizensController < ApplicationController 
     include Authenticable
     include HasPolicies
-    include Searchable
 
     before_action :set_citizen, only: [:picture, :show, :update, :destroy,
                                        :schedule_options]
 
     # GET /citizens
     def index
-      @citizens = policy_scope(Citizen.filter(search_function, params[:q]))
+      @citizens = policy_scope(Citizen.filter(params[:q], params[:page]))
 
       if @citizens.nil?
         render json: {
