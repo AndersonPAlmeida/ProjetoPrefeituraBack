@@ -153,7 +153,9 @@ module Api::V1
             end
           end
 
-          if @dependant.citizen.update(new_params)
+          new_params[:city_id] = Address.get_city_id(new_params[:cep])
+
+          if @dependant.citizen.update(new_params) and 
             render json: @dependant.complete_info_response
           else
             render json: @dependant.citizen.errors, status: :unprocessable_entity
