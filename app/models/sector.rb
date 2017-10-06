@@ -55,16 +55,6 @@ class Sector < ApplicationRecord
     return response
   end
 
-  # Used to return information required to fill forms in front-end
-  # @param citizen [Citizen] current_user (session variable)
-  # @return [Json] list of reachable sectors
-  def self.form_data(citizen)
-    response = Sector.all_active.local(citizen.city_id)
-      .as_json(only: [:name, :id])
-
-    return response
-  end
-
   # @params params [ActionController::Parameters] Parameters for searching
   # @params npage [String] number of page to be returned
   # @return [ActiveRecords] filtered sectors

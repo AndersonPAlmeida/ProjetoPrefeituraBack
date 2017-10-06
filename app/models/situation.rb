@@ -35,9 +35,4 @@ class Situation < ApplicationRecord
   def self.disponivel
     where(description: "Disponível").first
   end
-
-  # Used for returning information required to fill forms in front-end
-  def self.form_data()
-    return Situation.all.as_json(only: [:id, :description])
-  end
 end
