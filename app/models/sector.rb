@@ -33,6 +33,7 @@ class Sector < ApplicationRecord
   # @param citizen [Citizen] the citizen which the schedule will be scheduled for
   # @return [Json] json response to schedule processing with the available sectors
   def self.schedule_response(citizen)
+
     # Array with ids of the sectors which the citizen is blocked
     blocks = Block.where(citizen_id: citizen.id).pluck(:sector_id)
 
@@ -55,7 +56,6 @@ class Sector < ApplicationRecord
   end
 
   # Used to return information required to fill forms in front-end
-  #
   # @param citizen [Citizen] current_user (session variable)
   # @return [Json] list of reachable sectors
   def self.form_data(citizen)
