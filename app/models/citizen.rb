@@ -40,6 +40,14 @@ class Citizen < ApplicationRecord
   validates_attachment_content_type :avatar,
     :content_type => ["image/jpg", "image/jpeg", "image/png", "image/gif"]
 
+
+  scope :all_active, -> { where(active: true, responsible_id: nil) }
+
+  scope :local, ->(city_id) { where(city_id: city_id) }
+
+  scope :dependants, -> { where(responsible_id: self.id) }
+
+
   # @return list of citizen's columns
   def self.keys
     return [
@@ -61,22 +69,6 @@ class Citizen < ApplicationRecord
       :avatar,
       :rg
     ]
-  end
-
-  # @return [ActiveRecord_Relation] every active citizen
-  def self.all_active
-    Citizen.where(active: true, responsible_id: nil)
-  end
-
-  # @param city_id [Integer] the id of the city for querying local citizens
-  # @return [ActiveRecord_Relation] every citizen registered with the city_id
-  def self.local_active(city_id)
-    Citizen.all_active.where(city_id: city_id)
-  end
-
-  # @return [ActiveRecord_Relation] citizen's dependants
-  def dependants
-    Citizen.where(responsible_id: self.id)
   end
 
   # @return citizen's professional data

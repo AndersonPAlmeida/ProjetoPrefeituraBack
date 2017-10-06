@@ -11,10 +11,8 @@ class Professional < ApplicationRecord
   # Validations #
   validates_presence_of :occupation_id, :account_id
 
-  # @return all active professionals
-  def self.all_active
-    Professional.where(active: true)
-  end
+  scope :all_active, -> { where(active: true) }
+
 
   # Method for getting role from id
   # @param id [Integer/String] permission

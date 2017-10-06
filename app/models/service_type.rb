@@ -8,10 +8,8 @@ class ServiceType < ApplicationRecord
   validates_presence_of :description
   validates_inclusion_of :active, in: [true, false]
 
-  # @return all active service types
-  def self.all_active
-    ServiceType.where(active: true)
-  end
+  scope :all_active, -> { where(active: true) }
+
 
   # Response used to fill the list of service_types in the scheduling process,
   # consists of all the service_type from a given sector

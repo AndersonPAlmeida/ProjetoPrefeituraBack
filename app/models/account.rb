@@ -16,14 +16,11 @@ class Account < ApplicationRecord
   devise :database_authenticatable, :registerable,
     :recoverable, :rememberable, :trackable, :validatable
 
+  delegate :cpf, to: :citizen
+
   # DeviseTokenAuth #
   # Include default DeviseTokenAuth methods.
   include DeviseTokenAuth::Concerns::User
-
-  # @return [String] citizen's cpf
-  def cpf
-    self.citizen.cpf
-  end
 
   # Overrides devise_token_auth method to add citizen's information
   #

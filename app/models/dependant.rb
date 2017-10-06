@@ -5,10 +5,8 @@ class Dependant < ApplicationRecord
   belongs_to :citizen
   has_many   :blocks
 
-  # @return all active dependants
-  def self.all_active
-    Dependant.where(citizens: { active: true }).includes(:citizen)
-  end
+  scope :all_active, -> { where(citizens: { active: true }).includes(:citizen) }
+
 
   # Used when the city, state and address are necessary (show)
   #

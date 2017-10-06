@@ -18,13 +18,13 @@ class CitizenPolicy < ApplicationPolicy
         scope.all_active.where.not(id: citizen.id)
 
       when "adm_prefeitura"
-        scope.local_active(city_id).where.not(id: citizen.id)
+        scope.all_active.local(city_id).where.not(id: citizen.id)
 
       when "adm_local"
-        scope.local_active(city_id).where.not(id: citizen.id)
+        scope.all_active.local(city_id).where.not(id: citizen.id)
 
       when "atendente_local"
-        scope.local_active(city_id).where.not(id: citizen.id)
+        scope.all_active.local(city_id).where.not(id: citizen.id)
 
       else
         nil

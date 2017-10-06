@@ -5,6 +5,5 @@ class ProfessionalsServicePlace < ApplicationRecord
   belongs_to :professional
 
   # Validations #
-  validates_presence_of :active,
-    :role
+  validates_presence_of :active, :role
 end

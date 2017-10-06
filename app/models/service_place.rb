@@ -25,10 +25,8 @@ class ServicePlace < ApplicationRecord
 
   around_save :create_service_place
 
-  # @return all active service places
-  def self.all_active
-    ServicePlace.where(active: true)
-  end
+  scope :all_active, -> { where(active: true) }
+
 
   # Get every available schedule from the current service_place given a 
   # service_type

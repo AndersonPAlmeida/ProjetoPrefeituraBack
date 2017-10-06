@@ -38,10 +38,7 @@ class CityHall < ApplicationRecord
 
   validates_length_of       :address_number, maximum: 10, allow_blank: true
 
-  # @return every active city hall
-  def self.all_active
-    CityHall.where(active: true)
-  end
+  scope :all_active, -> { where(active: true) }
 
   private
 

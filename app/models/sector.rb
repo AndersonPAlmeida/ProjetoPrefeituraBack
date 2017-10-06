@@ -15,17 +15,11 @@ class Sector < ApplicationRecord
 
   validates_inclusion_of :active, in: [true, false]
 
-  # @return all active sectors
-  def self.all_active
-    self.where(active: true)
-  end
+  scope :all_active, -> { where(active: true) }
 
-  # @param city_id [Integer] sectors returned are registered with this given city_id
-  # @return all active sectors which city_hall belongs to city_id
-  def self.local(city_id)
-    city_hall = CityHall.find_by(city_id: city_id)
-    self.where(city_hall_id: city_hall.id)
-  end
+  scope :local, ->(city_id) { 
+    where(city_halls: {city_id: city_id}).includes(:city_hall)
+  }
 
   # In the scheduling process, the first request should return every available
   # local sector and for each of them show if it is blocked or not
