@@ -43,6 +43,7 @@ class Account < ApplicationRecord
         service_place = ServicePlace.find(val[2])
         val[3] = service_place.city_id
         val[4] = service_place.name
+        val[5] = service_place.city_hall_id
       end
 
       roles_response = [].as_json
@@ -53,6 +54,7 @@ class Account < ApplicationRecord
           'role' => val[1],
           'city_id' => val[3],
           'city_name' => City.find(val[3]).name,
+          'city_hall_id' => val[5],
           'service_place' => val[4]
         }.as_json
       end
