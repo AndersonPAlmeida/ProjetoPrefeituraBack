@@ -40,6 +40,18 @@ class ProfessionalPolicy < ApplicationPolicy
     return access_policy(user)
   end
 
+  def create?
+    return access_policy(user)
+  end
+
+  def deactivate?
+    return access_policy(user)
+  end
+
+  def update?
+    return access_policy(user)
+  end
+
   private
   
   # Generic method for checking permissions when show/accessing/modifying 

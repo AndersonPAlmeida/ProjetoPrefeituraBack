@@ -36,6 +36,8 @@ module Api::V1
     def create
       @professional = Professional.new(professional_params)
 
+      authorize @professional, :create?
+
       if @professional.save
         render json: @professional, status: :created
       else
@@ -50,6 +52,8 @@ module Api::V1
           errors: ["Professional #{params[:id]} does not exist."]
         }, status: 404
       else
+        authorize @professional, :update?
+
         if @professional.update(professional_params)
           render json: @professional
         else
@@ -65,6 +69,8 @@ module Api::V1
           errors: ["Professional #{params[:id]} does not exist."]
         }, status: 404
       else
+        authorize @professional, :deactivate?
+
         @professional.active = false
         @professional.save!
       end
@@ -81,6 +87,18 @@ module Api::V1
       when "show?"
         render json: {
           errors: ["You're not allowed to view this professional."]
+        }, status: 403
+      when "create?"
+        render json: {
+          errors: ["You're not allowed to create this professional."]
+        }, status: 403
+      when "deactivate?"
+        render json: {
+          errors: ["You're not allowed to delete this professional."]
+        }, status: 403
+      when "update?"
+        render json: {
+          errors: ["You're not allowed to update this professional."]
         }, status: 403
       end
     end

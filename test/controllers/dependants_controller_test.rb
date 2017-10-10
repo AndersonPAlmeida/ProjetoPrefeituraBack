@@ -21,7 +21,7 @@ class Api::V1::DependantsControllerTest < ActionDispatch::IntegrationTest
         active: true,
         cpf: "10845922904", 
         birth_date: "18/04/1997", 
-        cep: "1234567", 
+        cep: "89218230",
         email: "test@example.com",
         name: "Test Example", 
         phone1: "(12)1212-1212",

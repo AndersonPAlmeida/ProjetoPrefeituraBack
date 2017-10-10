@@ -135,7 +135,7 @@ module Api::V1
 
           new_params = dependant_params
 
-          if new_params[:cep].blank?
+          if not new_params[:cep].nil? and new_params[:cep].empty?
             new_params[:cep] = @citizen.cep
           end
 
@@ -153,7 +153,9 @@ module Api::V1
             end
           end
 
-          new_params[:city_id] = Address.get_city_id(new_params[:cep])
+          if not new_params[:cep].nil?
+            new_params[:city_id] = Address.get_city_id(new_params[:cep])
+          end
 
           if @dependant.citizen.update(new_params) and 
             render json: @dependant.complete_info_response
