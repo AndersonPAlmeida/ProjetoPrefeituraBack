@@ -149,6 +149,7 @@ module Api::V1
         :cancel_limit,
         :city_hall_id,
         :description,
+        :previous_notice, 
         :name,
         :schedules_by_sector
       );

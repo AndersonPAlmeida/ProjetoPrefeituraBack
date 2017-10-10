@@ -6,6 +6,7 @@ class SectorSerializer < ActiveModel::Serializer
     :cancel_limit, 
     :description,
     :name,
+    :previous_notice, 
     :schedules_by_sector
 
   #belongs_to :city_hall

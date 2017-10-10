@@ -114,7 +114,6 @@ ActiveRecord::Schema.define(version: 20170816124750) do
     t.boolean  "citizen_register",              default: true, null: false
     t.string   "name",                                         null: false
     t.string   "neighborhood",                                 null: false
-    t.integer  "previous_notice",               default: 48,   null: false
     t.integer  "schedule_period",               default: 90,   null: false
     t.string   "address_complement"
     t.text     "description"
@@ -194,16 +193,17 @@ ActiveRecord::Schema.define(version: 20170816124750) do
   end
 
   create_table "sectors", force: :cascade do |t|
-    t.integer  "city_hall_id",        null: false
+    t.integer  "city_hall_id",                     null: false
     t.boolean  "active"
     t.integer  "absence_max"
     t.integer  "blocking_days"
     t.integer  "cancel_limit"
+    t.integer  "previous_notice",     default: 48, null: false
     t.text     "description"
     t.string   "name"
     t.integer  "schedules_by_sector"
-    t.datetime "created_at",          null: false
-    t.datetime "updated_at",          null: false
+    t.datetime "created_at",                       null: false
+    t.datetime "updated_at",                       null: false
     t.index ["city_hall_id"], name: "index_sectors_on_city_hall_id", using: :btree
   end
 

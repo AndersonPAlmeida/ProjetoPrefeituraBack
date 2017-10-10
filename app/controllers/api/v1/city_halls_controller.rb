@@ -92,7 +92,6 @@ module Api::V1
         :logo_updated_at, 
         :name, 
         :neighborhood, 
-        :previous_notice, 
         :phone1, 
         :phone2, 
         :schedule_period, 

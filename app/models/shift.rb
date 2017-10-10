@@ -26,6 +26,7 @@ class Shift < ApplicationRecord
     :execution_end_time,
     :service_amount
 
+
   around_create :create_schedules
 
   private

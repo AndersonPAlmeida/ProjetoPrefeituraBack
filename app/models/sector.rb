@@ -11,9 +11,13 @@ class Sector < ApplicationRecord
     :cancel_limit,
     :description,
     :name,
-    :schedules_by_sector
+    :schedules_by_sector,
+    :previous_notice
 
   validates_inclusion_of :active, in: [true, false]
+
+  validates_numericality_of :previous_notice, greater_than: 0,
+    less_than_or_equal_to: 2000000000
 
   scope :all_active, -> { where(active: true) }
 
