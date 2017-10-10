@@ -1,14 +1,22 @@
 module Api::V1
   class ProfessionalsController < ApplicationController
     include Authenticable
+    include HasPolicies
 
     before_action :set_professional, only: [:show, :update, :destroy]
 
     # GET /professionals
     def index
-      @professionals = Professional.all
+      # TODO: @professionals = policy_scope(Professional.filter(params[:q], params[:page]))
+      @professionals = policy_scope(Professional)
 
-      render json: @professionals
+      if @professionals.nil?
+        render json: {
+          errors: ["You don't have the permission to view professionals."]
+        }, status: 403
+      else
+        render json: @professionals.index_response.to_json
+      end
     end
 
     # GET /professionals/1
@@ -18,7 +26,9 @@ module Api::V1
           errors: ["Professional #{params[:id]} does not exist."]
         }, status: 404
       else
-        render json: @professional
+        authorize @professional, :show?
+
+        render json: @professional.complete_info_response
       end
     end
 
@@ -62,9 +72,26 @@ module Api::V1
 
     private
 
+    # Rescue Pundit exception for providing more details in reponse
+    def policy_error_description(exception)
+      # Set @policy_name as the policy method that raised the error
+      super
+
+      case @policy_name
+      when "show?"
+        render json: {
+          errors: ["You're not allowed to view this professional."]
+        }, status: 403
+      end
+    end
+
     # Use callbacks to share common setup or constraints between actions.
     def set_professional
-      @professional = Professional.find(params[:id])
+      begin
+        @professional = Professional.find(params[:id])
+      rescue
+        @professional = nil
+      end
     end
 
     # Only allow a trusted parameter "white list" through.

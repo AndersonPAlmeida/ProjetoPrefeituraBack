@@ -13,6 +13,16 @@ class Professional < ApplicationRecord
 
   scope :all_active, -> { where(active: true) }
 
+  scope :local_city, -> (city_id) { 
+    joins(:service_places).where("service_places.city_id": city_id).distinct 
+  }
+
+  scope :local_service_place, -> (serv_id) { 
+    joins(:service_places).where("service_places.id": serv_id).distinct
+  }
+
+  delegate :name, to: :citizen
+  delegate :cpf, to: :citizen
 
   # Method for getting role from id
   # @param id [Integer/String] permission
@@ -25,8 +35,25 @@ class Professional < ApplicationRecord
     end
   end
 
+  # Returns json response to index professionals 
+  # @return [Json] response
+  def self.index_response
+    self.all.as_json(only: [:id, :registration, :active], 
+                     methods: %w(cpf name roles_names))
+  end
+
+  # @return [Json] detailed professional's data
+  def complete_info_response
+    return self.as_json(only: [:id, :registration, :active])
+      .merge({
+        occupation: self.occupation.name,
+        citizen: self.citizen.partial_info_response,
+        service_places: self.professionals_service_places.map { |i| i.info_listing }
+      })
+  end
+
   # @return [Array] list of roles
-  def roles
+  def roles_ids
     # Array containing every role that the current professional has
     array = self.professionals_service_places.pluck(:id)
     return array

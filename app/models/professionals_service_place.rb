@@ -6,4 +6,12 @@ class ProfessionalsServicePlace < ApplicationRecord
 
   # Validations #
   validates_presence_of :active, :role
+
+  def info_listing
+    return {
+      id: self.service_place.id, 
+      name: self.service_place.name, 
+      role: self.role
+    }
+  end
 end
