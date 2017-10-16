@@ -1,20 +1,23 @@
 module Api::V1
   class ServiceTypesController < ApplicationController
     include Authenticable
+    include HasPolicies
 
-    before_action :set_service_type, only: [:show, :update, :destroy]
+    before_action :set_service_type, only: [:show, :update]
 
     # GET /service_types
     def index
-      if params[:sector_id].nil?
-        @service_types = ServiceType.where(active: true)
-      elsif params[:schedule].nil? or params[:schedule] != 'true'
-        @service_types = ServiceType.where(sector_id: params[:sector_id], active: true)
+      if params[:sector_id].nil? or params[:schedule].nil? or params[:schedule] != 'true'
+        # TODO: The returned columns are different when request by a adm_c3sl
+        @service_types = policy_scope(ServiceType.filter(params[:q], params[:page]))
       else
         @service_types = ServiceType.schedule_response(params[:sector_id]).to_json
+
+        render json: @service_types
+        return
       end
 
-      render json: @service_types
+      render json: @service_types.index_response
     end
 
     # GET /service_types/1
@@ -24,7 +27,9 @@ module Api::V1
           errors: ["Service type #{params[:id]} does not exist."]
         }, status: 404
       else
-        render json: @service_type
+        authorize @service_type, :show?
+
+        render json: @service_type.complete_info_response
       end
     end
 
@@ -32,8 +37,10 @@ module Api::V1
     def create
       @service_type = ServiceType.new(service_type_params)
 
+      authorize @service_type, :create?
+
       if @service_type.save
-        render json: @service_type, status: :created
+        render json: @service_type.complete_info_response, status: :created
       else
         render json: @service_type.errors, status: :unprocessable_entity
       end
@@ -46,7 +53,11 @@ module Api::V1
           errors: ["Service type #{params[:id]} does not exist."]
         }, status: 404
       else
-        if @service_type.update(service_type_params)
+        @service_type.assign_attributes(service_type_params)
+
+        authorize @service_type, :update?
+
+        if @service_type.save 
           render json: @service_type
         else
           render json: {
@@ -56,19 +67,28 @@ module Api::V1
       end
     end
 
-    # DELETE /service_types/1
-    def destroy
-      if @service_type.nil?
+    private
+
+    # Rescue Pundit exception for providing more details in reponse
+    def policy_error_description(exception)
+      # Set @policy_name as the policy method that raised the error
+      super
+
+      case @policy_name
+      when "show?"
         render json: {
-          errors: ["Service type #{params[:id]} does not exist."]
-        }, status: 404
-      else
-        @service_type.active = false
-        @service_type.save!
+          errors: ["You're not allowed to view this service type."]
+        }, status: 403
+      when "create?"
+        render json: {
+          errors: ["You're not allowed to create this service type."]
+        }, status: 403
+      when "update?"
+        render json: {
+          errors: ["You're not allowed to update this service type."]
+        }, status: 403
       end
     end
-
-    private
 
     # Use callbacks to share common setup or constraints between actions.
     def set_service_type

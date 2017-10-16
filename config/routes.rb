@@ -30,12 +30,13 @@ Rails.application.routes.draw do
       resources :professionals
       resources :sectors
       resources :service_places
-      resources :service_types
+      resources :service_types, except: :destroy
       resources :shifts
       resources :solicitations
 
       post "validate_cep" => "cep#validate"
       get "forms/schedule_history" => "forms#schedule_history"
+      get "forms/create_service_type" => "forms#create_service_type"
     end
   end
 end
