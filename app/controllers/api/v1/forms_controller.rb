@@ -13,12 +13,12 @@ module Api::V1
       sector_ids = sectors.map { |row| row["id"] }
 
       # ======================== Service Types ========================
-      service_types = ServiceType.where(sector_id: sector_ids, active: true)
+      service_types_resp = ServiceType.where(sector_id: sector_ids, active: true)
         .as_json(only: [:description, :id, :sector_id])
 
-      service_type_ids = service_types.map { |row| row["id"] }
-
       # ======================= Service Places ========================
+      service_type_ids = service_types_resp.map { |row| row["id"] }
+
       service_types = ServiceType.where(id: service_type_ids)
       ids = service_types.map { |i| i.service_place_ids }.flatten.uniq!
 
@@ -35,16 +35,14 @@ module Api::V1
         i["service_types"] = st_ids[i["id"].to_s]
       end
 
-      service_places_resp.as_json
-
       # ========================== Situations =========================
       situations = Situation.all.as_json(only: [:id, :description])
 
       # ========================== Form Data ==========================
       response = Hash.new
       response[:sectors]       = sectors
-      response[:service_type]  = service_types 
-      response[:service_place] = service_places
+      response[:service_type]  = service_types_resp
+      response[:service_place] = service_places_resp
       response[:situation]     = situations
 
       render json: response.as_json 
