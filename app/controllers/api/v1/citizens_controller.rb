@@ -8,7 +8,8 @@ module Api::V1
 
     # GET /citizens
     def index
-      @citizens = policy_scope(Citizen.filter(params[:q], params[:page]))
+      @citizens = policy_scope(Citizen.filter(params[:q], params[:page],
+        Professional.get_permission(current_user[1])))
 
       if @citizens.nil?
         render json: {

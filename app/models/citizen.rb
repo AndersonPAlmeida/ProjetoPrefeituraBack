@@ -127,8 +127,8 @@ class Citizen < ApplicationRecord
   # @params params [ActionController::Parameters] Parameters for searching
   # @params npage [String] number of page to be returned
   # @return [ActiveRecords] filtered citizens 
-  def self.filter(params, npage)
-    return search(search_params(params), npage)
+  def self.filter(params, npage, permission)
+    return search(search_params(params, permission), npage)
   end
 
   private
@@ -136,9 +136,15 @@ class Citizen < ApplicationRecord
   # Translates incoming search parameters to ransack patterns
   # @params params [ActionController::Parameters] Parameters for searching
   # @return [Hash] filtered and translated parameters
-  def self.search_params(params)
-    sortable = ["name", "cpf", "birth_date"]
-    filter = {"name" => "name_cont", "cpf" => "cpf_eq", "s" => "s"}
+  def self.search_params(params, permission)
+    case permission
+    when "adm_c3sl"
+      sortable = ["name", "cpf", "birth_date"]
+      filter = {"name" => "name_cont", "cpf" => "cpf_eq", "city_id" => "city_id_eq", "s" => "s"}
+    when "adm_prefeitura"
+      sortable = ["name", "cpf", "birth_date"]
+      filter = {"name" => "name_cont", "cpf" => "cpf_eq", "s" => "s"}
+    end
 
     return filter_search_params(params, filter, sortable) 
   end
