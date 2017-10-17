@@ -20,7 +20,7 @@ module Api::V1
       service_type_ids = service_types_resp.map { |row| row["id"] }
 
       service_types = ServiceType.where(id: service_type_ids)
-      ids = service_types.map { |i| i.service_place_ids }.flatten.uniq!
+      ids = service_types.map { |i| i.service_place_ids }.flatten.uniq
 
       st_ids = Hash.new
 
