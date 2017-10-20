@@ -48,6 +48,27 @@ module Api::V1
       render json: response.as_json 
     end
 
+    # GET /forms/citizen_index
+    def citizen_index
+      citizen = current_user[0]
+      permission = Professional.get_permission(current_user[1])
+      response = Hash.new
+
+      case permission
+      when "adm_c3sl"
+        city_halls = CityHall.all_active
+        response[:city_halls] = city_halls.as_json(only: [:id, :name, :city_id])
+
+      else
+        render json: {
+          errors: ["You're not allowed to view this form."]
+        }, status: 403
+        return
+      end
+
+      render json: response.as_json
+    end
+
     # GET /forms/create_service_type
     def create_service_type
       citizen = current_user[0]
@@ -55,7 +76,8 @@ module Api::V1
 
       response = Hash.new
 
-      if permission == "adm_c3sl"
+      case permission
+      when "adm_c3sl"
         city_halls = CityHall.all_active
         ids = city_halls.pluck(:id)
 
@@ -63,7 +85,7 @@ module Api::V1
         response[:sectors] = Sector.where(city_hall_id: ids)
           .as_json(only: [:id, :name, :city_hall_id])
 
-      elsif permission == "adm_prefeitura"
+      when "adm_prefeitura"
         city_hall_id = citizen.professional.professionals_service_places
           .find(current_user[1]).service_place.city_hall.id
 
@@ -74,7 +96,6 @@ module Api::V1
         render json: {
           errors: ["You're not allowed to view this form."]
         }, status: 403
-
         return
       end
 
