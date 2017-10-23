@@ -16,10 +16,11 @@ class ServiceType < ApplicationRecord
   }
 
   delegate :name, to: :sector, prefix: true
+  delegate :city_hall_id, to: :sector, prefix: true
 
   # Returns json response to index service_types 
   # @return [Json] response
-  def self.index_response()
+  def self.index_response
     self.all.as_json(only: [:id, :description, :active], 
                      methods: %w(sector_name))
   end
@@ -34,7 +35,6 @@ class ServiceType < ApplicationRecord
 
   # Response used to fill the list of service_types in the scheduling process,
   # consists of all the service_type from a given sector
-  #
   # @param sector_id [String] the id of the specified sector
   # @return [Json] reponse with list of service_types
   def self.schedule_response(sector_id)
@@ -54,20 +54,30 @@ class ServiceType < ApplicationRecord
 
   # @params params [ActionController::Parameters] Parameters for searching
   # @params npage [String] number of page to be returned
+  # @params permission [String] Permission of current user
   # @return [ActiveRecords] filtered service_types
-  def self.filter(params, npage)
-    return search(search_params(params), npage)
+  def self.filter(params, npage, permission)
+    return search(search_params(params, permission), npage)
   end
 
   private
 
   # Translates incoming search parameters to ransack patterns
   # @params params [ActionController::Parameters] Parameters for searching
+  # @params permission [String] Permission of current user
   # @return [Hash] filtered and translated parameters
-  def self.search_params(params)
+  def self.search_params(params, permission)
     # TODO: The returned columns are different when request by a adm_c3sl
-    sortable = ["description", "active", "sector_name"]
-    filter = {"description" => "description_cont", "active" => "active_eq", "s" => "s"}
+
+    case permission
+    when "adm_c3sl"
+      sortable = ["description", "active", "sector_name", "sector_city_hall_name"]
+      filter = {"description" => "description_cont", "active" => "active_eq", 
+                "city_hall_id" => "sector_city_hall_id_eq", "s" => "s"}
+    when "adm_prefeitura"
+      sortable = ["description", "active", "sector_name"]
+      filter = {"description" => "description_cont", "active" => "active_eq", "s" => "s"}
+    end
 
     return filter_search_params(params, filter, sortable) 
   end

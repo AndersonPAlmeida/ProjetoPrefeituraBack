@@ -12,9 +12,11 @@ module Api::V1
 
       sector_ids = sectors.map { |row| row["id"] }
 
+      
       # ======================== Service Types ========================
       service_types_resp = ServiceType.where(sector_id: sector_ids, active: true)
         .as_json(only: [:description, :id, :sector_id])
+
 
       # ======================= Service Places ========================
       service_type_ids = service_types_resp.map { |row| row["id"] }
@@ -35,8 +37,10 @@ module Api::V1
         i["service_types"] = st_ids[i["id"].to_s]
       end
 
+
       # ========================== Situations =========================
       situations = Situation.all.as_json(only: [:id, :description])
+
 
       # ========================== Form Data ==========================
       response = Hash.new
@@ -50,6 +54,27 @@ module Api::V1
 
     # GET /forms/citizen_index
     def citizen_index
+      citizen = current_user[0]
+      permission = Professional.get_permission(current_user[1])
+      response = Hash.new
+
+      case permission
+      when "adm_c3sl"
+        city_halls = CityHall.all_active
+        response[:city_halls] = city_halls.as_json(only: [:id, :name, :city_id])
+
+      else
+        render json: {
+          errors: ["You're not allowed to view this form."]
+        }, status: 403
+        return
+      end
+
+      render json: response.as_json
+    end
+
+    # GET /forms/service_type_index
+    def service_type_index
       citizen = current_user[0]
       permission = Professional.get_permission(current_user[1])
       response = Hash.new

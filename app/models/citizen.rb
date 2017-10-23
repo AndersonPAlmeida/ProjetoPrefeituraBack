@@ -126,6 +126,7 @@ class Citizen < ApplicationRecord
 
   # @params params [ActionController::Parameters] Parameters for searching
   # @params npage [String] number of page to be returned
+  # @params permission [String] Permission of current user
   # @return [ActiveRecords] filtered citizens 
   def self.filter(params, npage, permission)
     return search(search_params(params, permission), npage)
@@ -135,6 +136,7 @@ class Citizen < ApplicationRecord
 
   # Translates incoming search parameters to ransack patterns
   # @params params [ActionController::Parameters] Parameters for searching
+  # @params permission [String] Permission of current user
   # @return [Hash] filtered and translated parameters
   def self.search_params(params, permission)
     case permission

@@ -8,8 +8,8 @@ module Api::V1
     # GET /service_types
     def index
       if params[:sector_id].nil? or params[:schedule].nil? or params[:schedule] != 'true'
-        # TODO: The returned columns are different when request by a adm_c3sl
-        @service_types = policy_scope(ServiceType.filter(params[:q], params[:page]))
+        @service_types = policy_scope(ServiceType.filter(params[:q], params[:page],
+          Professional.get_permission(current_user[1])))
       else
         @service_types = ServiceType.schedule_response(params[:sector_id]).to_json
 
@@ -17,7 +17,13 @@ module Api::V1
         return
       end
 
-      render json: @service_types.index_response
+      if @service_types.nil?
+        render json: {
+          errors: ["You don't have the permission to view service types."]
+        }, status: 403
+      else
+        render json: @service_types.index_response
+      end
     end
 
     # GET /service_types/1
