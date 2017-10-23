@@ -67,8 +67,6 @@ class ServiceType < ApplicationRecord
   # @params permission [String] Permission of current user
   # @return [Hash] filtered and translated parameters
   def self.search_params(params, permission)
-    # TODO: The returned columns are different when request by a adm_c3sl
-
     case permission
     when "adm_c3sl"
       sortable = ["description", "active", "sector_name", "sector_city_hall_name"]

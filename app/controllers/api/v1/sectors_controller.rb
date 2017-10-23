@@ -26,7 +26,8 @@ module Api::V1
 
         @sectors = Sector.schedule_response(@citizen).to_json
       else
-        @sectors = policy_scope(Sector.filter(params[:q], params[:page]))
+        @sectors = policy_scope(Sector.filter(params[:q], params[:page],
+          Professional.get_permission(current_user[1])))
       end
 
       if @sectors.nil?
