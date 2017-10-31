@@ -25,9 +25,8 @@ class ServicePlaceTest < ActiveSupport::TestCase
 
       @service_place = ServicePlace.new(active: true, 
                                         address_number: "12", 
-                                        address_street: "Addr 1", 
-                                        name: "call me whatever", 
-                                        neighborhood: "randomland")
+                                        name: "Service P", 
+                                        cep: "81530110")
 
       @city_hall.save!
     end

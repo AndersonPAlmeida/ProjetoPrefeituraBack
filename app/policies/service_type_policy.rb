@@ -43,7 +43,7 @@ class ServiceTypePolicy < ApplicationPolicy
   private
   
   # Generic method for checking permissions when show/accessing/modifying 
-  # professionals. It is used for avoiding code repetition in professional's policy
+  # service types. It is used for avoiding code repetition in service type's policy
   # methods.
   #
   # @param user [Array] current citizen and the permission provided

@@ -210,8 +210,8 @@ ActiveRecord::Schema.define(version: 20170816124750) do
   create_table "service_places", force: :cascade do |t|
     t.string   "name",                                         null: false
     t.string   "cep",                limit: 10
-    t.string   "neighborhood",                                 null: false
-    t.string   "address_street",                               null: false
+    t.string   "neighborhood"
+    t.string   "address_street"
     t.string   "address_number",     limit: 10,                null: false
     t.string   "address_complement"
     t.string   "phone1",             limit: 13

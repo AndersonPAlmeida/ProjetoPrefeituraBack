@@ -10,6 +10,7 @@ module Api::V1
       if params[:sector_id].nil? or params[:schedule].nil? or params[:schedule] != 'true'
         @service_types = policy_scope(ServiceType.filter(params[:q], params[:page],
           Professional.get_permission(current_user[1])))
+
       else
         @service_types = ServiceType.schedule_response(params[:sector_id]).to_json
 

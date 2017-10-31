@@ -149,6 +149,7 @@ module Api::V1
           # The city id has to be updated in case the cep needs change
           if not account_update_params[:citizen][:cep].nil?
             city_id = Address.get_city_id(account_update_params[:citizen][:cep])
+
             if @resource.citizen.update_attribute(:city_id, city_id)
               render_update_success
             end

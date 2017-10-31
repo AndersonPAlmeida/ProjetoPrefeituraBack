@@ -9,7 +9,9 @@ class ServiceType < ApplicationRecord
   validates_presence_of :description
   validates_inclusion_of :active, in: [true, false]
 
-  scope :all_active, -> { where(active: true) }
+  scope :all_active, -> {
+    where(active: true)
+  }
 
   scope :local_city_hall, -> (city_hall_id) { 
     where(sectors: {city_hall_id: city_hall_id}).includes(:sector) 
@@ -72,9 +74,11 @@ class ServiceType < ApplicationRecord
       sortable = ["description", "active", "sector_name", "sector_city_hall_name"]
       filter = {"description" => "description_cont", "active" => "active_eq", 
                 "city_hall_id" => "sector_city_hall_id_eq", "s" => "s"}
+
     when "adm_prefeitura"
       sortable = ["description", "active", "sector_name"]
       filter = {"description" => "description_cont", "active" => "active_eq", "s" => "s"}
+
     end
 
     return filter_search_params(params, filter, sortable) 

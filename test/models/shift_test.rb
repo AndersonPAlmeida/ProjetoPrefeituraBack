@@ -86,9 +86,8 @@ class ShiftTest < ActiveSupport::TestCase
 
       @service_place = ServicePlace.new(active: true,
                                         address_number: "123",
-                                        address_street: "Test Avenue",
                                         name: "Example SP",
-                                        neighborhood:"Neighborhood Example")
+                                        cep: "89221005")
 
       @service_place.city_hall = @city_hall
       @service_place.save!

@@ -42,6 +42,12 @@ class Professional < ApplicationRecord
                      methods: %w(cpf name roles_names))
   end
 
+  # Returns partial info json response to index professionals 
+  # @return [Json] response
+  def self.simple_index_response
+    self.all.as_json(only: :id, methods: %w(name))
+  end
+
   # @return [Json] detailed professional's data
   def complete_info_response
     return self.as_json(only: [:id, :registration, :active])
