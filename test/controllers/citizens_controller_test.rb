@@ -20,7 +20,7 @@ class Api::V1::CitizensControllerTest < ActionDispatch::IntegrationTest
       @citizen = Citizen.new(
         cpf: "10845922904", 
         birth_date: "Apr 18 1997", 
-        cep: "1234567", 
+        cep: "81530110", 
         email: "test@example.com",
         name: "Test Example", 
         phone1: "(12)1212-1212",
@@ -165,7 +165,7 @@ class Api::V1::CitizensControllerTest < ActionDispatch::IntegrationTest
     describe "Successful request to update citizen" do
       before do
         put '/v1/citizens/' + @citizen.id.to_s,
-          params: {citizen: {cep: "7654321"}, permission: "citizen"}, 
+          params: {citizen: {cep: "80530336"}, permission: "citizen"}, 
           headers: @auth_headers
 
         @resp_token = response.headers['access-token']
@@ -180,13 +180,13 @@ class Api::V1::CitizensControllerTest < ActionDispatch::IntegrationTest
 
       test "cep should have been changed" do
         @citizen = Citizen.where(cpf: @citizen.cpf).first
-        assert_equal "7654321", @citizen.cep
+        assert_equal "80530336", @citizen.cep
       end
     end
 
     describe "Unsuccessful resquest to update citizen that doesn't exists" do
       before do
-        put '/v1/citizens/222', params: {citizen: {cep: "7654321"}, permission: "citizen"}, 
+        put '/v1/citizens/222', params: {citizen: {cep: "80530336"}, permission: "citizen"}, 
           headers: @auth_headers
 
         @body = JSON.parse(response.body)

@@ -13,7 +13,7 @@ class CityTest < ActiveSupport::TestCase
                              state_id: @parana.id)
         @curitiba.save!
 
-        @city_hall = CityHall.new(cep: "1234567",
+        @city_hall = CityHall.new(cep: "81530110",
                                   neighborhood: "Test neighborhood",
                                   address_street: "Test street",
                                   address_number: "123",
@@ -76,7 +76,7 @@ class CityTest < ActiveSupport::TestCase
         @curitiba.save!
 
         @city_hall = CityHall.new(name: "Prefeitura de Curitiba",
-                                  cep: "1234567",
+                                  cep: "81530110",
                                   address_street: "Test street",
                                   address_number: "123",
                                   city_id: @curitiba.id,
@@ -107,7 +107,7 @@ class CityTest < ActiveSupport::TestCase
         @curitiba.save!
 
         @city_hall = CityHall.new(name: "Prefeitura de Curitiba",
-                                  cep: "1234567",
+                                  cep: "81530110",
                                   neighborhood: "Test neighborhood",
                                   address_number: "123",
                                   city_id: @curitiba.id,
@@ -138,7 +138,7 @@ class CityTest < ActiveSupport::TestCase
         @curitiba.save!
 
         @city_hall = CityHall.new(name: "Prefeitura de Curitiba",
-                                  cep: "1234567",
+                                  cep: "81530110",
                                   neighborhood: "Test neighborhood",
                                   address_street: "Test street",
                                   city_id: @curitiba.id,
@@ -169,7 +169,7 @@ class CityTest < ActiveSupport::TestCase
         @curitiba.save!
 
         @city_hall = CityHall.new(name: "Prefeitura de Curitiba",
-                                  cep: "1234567",
+                                  cep: "81530110",
                                   neighborhood: "Test neighborhood",
                                   address_street: "Test street",
                                   address_number: "123",
@@ -200,7 +200,7 @@ class CityTest < ActiveSupport::TestCase
         @curitiba.save!
 
         @city_hall = CityHall.new(name: "Prefeitura de Curitiba",
-                                  cep: "1234567",
+                                  cep: "81530110",
                                   neighborhood: "Test neighborhood",
                                   address_street: "Test street",
                                   address_number: "123",
@@ -231,7 +231,7 @@ class CityTest < ActiveSupport::TestCase
         @curitiba.save!
 
         @city_hall = CityHall.new(name: "Prefeitura de Curitiba",
-                                  cep: "1234567",
+                                  cep: "81530110",
                                   neighborhood: "Test neighborhood",
                                   address_street: "Test street",
                                   address_number: "123",

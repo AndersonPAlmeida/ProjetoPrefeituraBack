@@ -33,7 +33,7 @@ class CityHallsControllerTest < ActionDispatch::IntegrationTest
 
       @joinville_city_hall = CityHall.new(
         name: "Prefeitura de Joinville",
-        cep: "1234567",
+        cep: "89221005",
         neighborhood: "Test neighborhood",
         address_street: "Test street",
         address_number: "123",
@@ -48,7 +48,7 @@ class CityHallsControllerTest < ActionDispatch::IntegrationTest
         cpf: "10845922904",
         active: true,
         birth_date: "Apr 18 1997",
-        cep: "1234567",
+        cep: "81530110",
         email: "test@example.com",
         name: "Test Example",
         phone1: "(12)1212-1212",
@@ -331,7 +331,7 @@ class CityHallsControllerTest < ActionDispatch::IntegrationTest
         @city_hall = CityHall.where(city_id: @joinville.id).first
 
         put '/v1/city_halls/' + @city_hall.id.to_s,
-          params: {city_hall: {cep: "7654321"}, permission: "citizen"}, 
+          params: {city_hall: {cep: "89218230"}, permission: "citizen"}, 
           headers: @auth_headers
 
         @resp_token = response.headers['access-token']
@@ -346,13 +346,13 @@ class CityHallsControllerTest < ActionDispatch::IntegrationTest
 
       test "cep should have been changed" do
         @city_hall = CityHall.where(city_id: @joinville.id).first
-        assert_equal "7654321", @city_hall.cep
+        assert_equal "89218230", @city_hall.cep
       end
     end
 
     describe "Unsuccessful resquest to update city hall that doesn't exists" do
       before do
-        put '/v1/city_halls/222', params: {city_hall: {cep: "7654321"}, permission: "citizen"}, 
+        put '/v1/city_halls/222', params: {city_hall: {cep: "81530110"}, permission: "citizen"}, 
           headers: @auth_headers
 
         @body = JSON.parse(response.body)

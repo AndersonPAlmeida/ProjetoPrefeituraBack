@@ -21,7 +21,7 @@ class Api::V1::ProfessionalsControllerTest < ActionDispatch::IntegrationTest
         active: true,
         cpf: "10845922904", 
         birth_date: "18/04/1997", 
-        cep: "1234567", 
+        cep: "81530110", 
         email: "test@example.com",
         name: "Test Example", 
         phone1: "(12)1212-1212",
@@ -40,7 +40,7 @@ class Api::V1::ProfessionalsControllerTest < ActionDispatch::IntegrationTest
 
       @curitiba_city_hall = CityHall.new(
         name: "Prefeitura de Curitiba",
-        cep: "1234567",
+        cep: "80530336",
         neighborhood: "Test neighborhood",
         address_street: "Test street",
         address_number: "123",

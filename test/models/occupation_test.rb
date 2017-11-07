@@ -12,7 +12,7 @@ class OccupationTest < ActiveSupport::TestCase
                            state_id: @parana.id)
       @curitiba.save!
       @curitiba_city_hall = CityHall.new(name: "Prefeitura de Curitiba",
-                                         cep: "1234567",
+                                         cep: "81530110",
                                          neighborhood: "Test neighborhood",
                                          address_street: "Test street",
                                          address_number: "123",

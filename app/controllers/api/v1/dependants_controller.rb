@@ -86,8 +86,6 @@ module Api::V1
         # Create new citizen associated with new dependant
         citizen = Citizen.new(new_params)
         citizen.active = true
-        citizen.city_id = Address.get_city_id(new_params[:cep])
-
 
         # Add image to citizen if provided
         if params[:dependant][:image]
