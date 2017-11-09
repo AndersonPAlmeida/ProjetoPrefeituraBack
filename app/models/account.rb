@@ -5,6 +5,7 @@ class Account < ApplicationRecord
   has_one :professional
   has_and_belongs_to_many :service_places
   has_many :blocks
+  has_many :notification, dependent: :destroy
 
   # Validations #
   validates_presence_of :encrypted_password
