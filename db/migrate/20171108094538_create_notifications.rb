@@ -2,7 +2,7 @@ class CreateNotifications < ActiveRecord::Migration[5.0]
   
   def change
     create_table :notifications do |t|
-      t.integer :accounts_id, foreign_key: true, null: false
+      t.integer :account_id, foreign_key: true, null: false
       t.integer :schedule_id, foreign_key: true 
       t.integer :resource_schedule_id, foreign_key: true 
       t.datetime :reminder_time

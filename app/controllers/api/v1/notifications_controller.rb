@@ -6,12 +6,14 @@ module Api::V1
     # GET /notifications 
     def index
       @notifications = Notification.all 
+      authorize @notifications, :index?      
       render json: @notifications
     end
 
     # POST /notifications 
     def create
       @notification = Notification.create!(notification_params)
+      authorize @notification, :create?
       render json: @notification, status: :created            
     end
   
@@ -22,6 +24,7 @@ module Api::V1
         errors: ["Notification #{params[:id]} does not exist."]
         }, status: 404
       else
+        authorize @notification, :show?        
         render json: @notification
       end
     end
@@ -34,6 +37,7 @@ module Api::V1
         }, status: 404
       else
         if @notification.update(notification_params)
+          authorize @notification, :update?
           render json: @notification
         else
           render json: @notification.errors, status: :unprocessable_entity
@@ -48,6 +52,7 @@ module Api::V1
             errors: ["Notification #{params[:id]} does not exist."]
         }, status: 404
       else
+        authorize @notification, :update?
         @notification.read = true
         @notification.save!
       end
@@ -66,8 +71,8 @@ module Api::V1
     
     # Only allow a trusted parameter "white list" through.
     def notification_params
-      params.permit(
-          :accounts_id,
+      params.require(:notification).permit(
+          :account_id,
           :schedule_id,
           :resource_schedule_id,
           :reminder_time,

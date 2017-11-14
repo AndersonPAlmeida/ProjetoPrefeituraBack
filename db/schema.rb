@@ -142,7 +142,7 @@ ActiveRecord::Schema.define(version: 20171108094538) do
   end
 
   create_table "notifications", force: :cascade do |t|
-    t.integer  "accounts_id",          null: false
+    t.integer  "account_id",           null: false
     t.integer  "schedule_id"
     t.integer  "resource_schedule_id"
     t.datetime "reminder_time"
