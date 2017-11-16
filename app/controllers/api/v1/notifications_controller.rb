@@ -5,15 +5,16 @@ module Api::V1
       
     # GET /notifications 
     def index
-      @notifications = Notification.all 
-      authorize @notifications, :index?      
+      @notifications = Notification.where(account_id: current_user.first.account_id)
       render json: @notifications
     end
 
     # POST /notifications 
     def create
-      @notification = Notification.create!(notification_params)
-      authorize @notification, :create?
+      notification = notification_params
+      notification["account_id"] = current_user.first.account_id
+      authorize notification, :create?
+      @notification = Notification.create!(notification)
       render json: @notification, status: :created            
     end
   

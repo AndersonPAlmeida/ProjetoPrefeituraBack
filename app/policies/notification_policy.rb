@@ -39,9 +39,6 @@ class NotificationPolicy < ApplicationPolicy
     def create?
       return access_policy(user)
     end
-    def index?
-      return access_policy_2(user)
-    end
 
     private
     
@@ -53,22 +50,5 @@ class NotificationPolicy < ApplicationPolicy
 
       return ((notification_account_id == citizen.account_id) or (permission != "citizen"))
     end
-  
-
-    def access_policy_2(user)
-      
-      citizen = user[0]
-      permission = Professional.get_permission(user[1])
-      length_records = record.length
-      counting_records = 0
-
-      record.each do |r|
-        if r.account_id == citizen.account_id or permission !="citizen"
-          counting_records = counting_records + 1 
-        end
-      end
-      return counting_records == length_records
-    end
-
   end
   
