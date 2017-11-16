@@ -13,8 +13,8 @@ module Api::V1
     def create
       notification = notification_params
       notification["account_id"] = current_user.first.account_id
-      authorize notification, :create?
       @notification = Notification.create!(notification)
+      authorize @notification, :create?
       render json: @notification, status: :created            
     end
   
