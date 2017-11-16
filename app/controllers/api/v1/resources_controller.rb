@@ -76,11 +76,15 @@ module Api::V1
 
     def resource_params
       params.require(:resource).permit(
-        :city_hall_id,
-        :name,
+        :resource_types_id,
+        :serivce_place_id,
+        :minimum_schedule_time,
+        :maximum_schedule_time
         :active,
-        :mobile,
-        :description
+        :brand,
+        :model,
+        :label,
+        :note
       )
     end
   end
