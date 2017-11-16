@@ -10,11 +10,13 @@ Rails.application.routes.draw do
 
       get "accounts/self" => "accounts#index"
 
+      get "citizens/schedule_options" => "citizens#schedule_options"
+
       resources :citizens do
         resources :dependants
         member do
           get 'picture'
-          get 'schedule_options'
+      #    get 'schedule_options'
         end
       end
 
@@ -27,7 +29,9 @@ Rails.application.routes.draw do
 
       resources :city_halls
       resources :occupations
+
       resources :professionals
+
       resources :sectors
       resources :service_places
       resources :service_types, except: :destroy
@@ -43,6 +47,8 @@ Rails.application.routes.draw do
       get "forms/citizen_index" => "forms#citizen_index"
       get "forms/service_type_index" => "forms#service_type_index"
       get "forms/service_place_index" => "forms#service_place_index"
+
+      get "check_create_professional" => "professionals#check_create_professional"
     end
   end
 end
