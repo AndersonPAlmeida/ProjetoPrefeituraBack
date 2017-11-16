@@ -74,7 +74,8 @@ module Api::V1
 
     # Only allow a trusted parameter "white list" through.
 
-    def resource_type_params.permit(
+    def resource_type_params
+      params.require(:resource_type).permit(
         :city_hall_id,
         :name,
         :active,

@@ -75,7 +75,8 @@ module Api::V1
 
     # Only allow a trusted parameter "white list" through.
 
-    def resource_shift_params.permit(
+    def resource_shift_params
+      params.require(:resource_shift).permit(
         :resource_id,
         :professional_responsible_id,
         :next_shift_id,

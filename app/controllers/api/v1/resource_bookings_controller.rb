@@ -74,7 +74,8 @@ module Api::V1
 
     # Only allow a trusted parameter "white list" through.
 
-    def resource_booking_params.permit(
+    def resource_booking_params
+      params.require(:resource_booking).permit(
         :address_id,
         :resource_shift_id,
         :situation_id,
