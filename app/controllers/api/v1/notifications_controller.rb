@@ -73,7 +73,6 @@ module Api::V1
     # Only allow a trusted parameter "white list" through.
     def notification_params
       params.require(:notification).permit(
-          :account_id,
           :schedule_id,
           :resource_schedule_id,
           :reminder_time,
