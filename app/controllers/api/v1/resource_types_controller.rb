@@ -1,14 +1,20 @@
 module Api::V1
-  class Api::V1::ResourceTypesController < ApplicationController
+  class ResourceTypesController < ApplicationController
     include Authenticable
-    # include HasPolicies - Should I define policies? If yes, how? Who can do what?     
     
     before_action :set_resource_type, only: [:show, :update, :destroy]
 
     # GET /resource_types
     def index
-      @resource_type = Resource_type.all_active
+      citizen = current_user.first
+      city_hall = CityHall.where(city_id:citizen.city_id).first
+      if params[:permission] == "1"
+        @resource_type = ResourceType.all
+      else
+        @resource_type = ResourceType.where(city_hall_id: city_hall.id)
+      end 
 
+      authorize @resource_type, :index?    
       render json: @resource_type
     end
 
@@ -19,15 +25,21 @@ module Api::V1
           errors: ["Resource type #{params[:id]} does not exist."]
         }, status: 404
       else
-        render json: @resource_type
+        citizen = current_user.first
+        city_hall = CityHall.where(city_id:citizen.city_id).first
+        authorize @resource_type, :show?          
+        if @resource_type.city_hall_id == city_hall.id or params[:permission] == "1"
+          render json: @resource_type          
+        end
       end
     end
 
     # POST /resource_types
     def create
-      @resource_type = Resource_type.new(resource_type_params)
+      @resource_type = ResourceType.new(resource_type_params)
       @resource_type.active = true
 
+      authorize @resource_type, :create?      
       if @resource_type.save
         render json: @resource_type, status: :created
       else
@@ -42,6 +54,7 @@ module Api::V1
           errors: ["Resource type #{params[:id]} does not exist."]
         }, status: 404
       else
+        authorize @resource_type, :update?            
         if @resource_type.update(resource_type_params)
           render json: @resource_type
         else
@@ -57,6 +70,7 @@ module Api::V1
           errors: ["Resource type #{params[:id]} does not exist."]
         }, status: 404
       else
+        authorize @resource_type, :destroy?                    
         @resource_type.active = false
         @resource_type.save!
       end
@@ -66,7 +80,7 @@ module Api::V1
     # Use callbacks to share common setup or constraints between actions.
     def set_resource_type
       begin
-        @resource_type = Resource_type.find(params[:id])
+        @resource_type = ResourceType.find(params[:id])
       rescue
         @resource_type = nil
       end

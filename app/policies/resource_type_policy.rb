@@ -42,6 +42,10 @@ class ResourceTypePolicy < ApplicationPolicy
     return access_policy(user) 
   end
 
+  def index?
+    return access_policy_index(user) 
+  end
+
   private
 
   # Generic method for checking permissions when show/accessing/modifying 
@@ -60,16 +64,47 @@ class ResourceTypePolicy < ApplicationPolicy
 
     professional = citizen.professional
 
-    city_id = professional.professionals_service_places
-      .find(user[1]).service_place.city_id
-    
+    service_place = professional.professionals_service_places
+    .find(user[1]).service_place
+
+    city_hall_id = service_place.city_hall_id
+
+
     return case
     when permission == "adm_c3sl"
       true
     when permission == "adm_prefeitura" 
-      (city_id == record.city_hall_id)     
+      (city_hall_id == record.city_hall_id)     
     else
       false
     end
   end
+
+
+  def access_policy_index(user)
+    citizen = user[0]
+    permission = Professional.get_permission(user[1])
+
+    if permission == "citizen"
+      return false
+    end
+
+    professional = citizen.professional
+
+    service_place = professional.professionals_service_places
+    .find(user[1]).service_place
+
+    city_hall_id = service_place.city_hall_id
+
+
+    return case
+    when permission == "adm_c3sl"
+      true
+    when permission == "adm_prefeitura" 
+      (city_hall_id == record.first.city_hall_id)     
+    else
+      false
+    end
+  end
+
 end

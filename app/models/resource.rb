@@ -1,6 +1,6 @@
 class Resource < ApplicationRecord
     belongs_to :service_place
-    has_one :resource_type
+    belongs_to :resource_type
     has_many :resource_shift
 
     validates_presence_of :resource_types_id, 
