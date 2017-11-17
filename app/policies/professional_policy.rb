@@ -40,9 +40,6 @@ class ProfessionalPolicy < ApplicationPolicy
     return access_policy(user)
   end
 
-  def create?
-    return access_policy(user)
-  end
 
   def deactivate?
     return access_policy(user)

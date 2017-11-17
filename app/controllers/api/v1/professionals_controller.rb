@@ -19,6 +19,27 @@ module Api::V1
       end
     end
 
+    # GET professionals/check_citizen
+    def check_create_professional
+      cpf = params[:cpf]
+
+      @citizen = Citizen.find_by(cpf: cpf)
+
+      if @citizen.nil?
+        render json: {
+          errors: ["The citizen doesn't exist."]
+        }, status: 404
+      else
+        if @citizen.professional.nil?
+          render json: @citizen.complete_info_response
+        else
+          render json: {
+            errors: ["The citizen already is a professional."]
+          }, status: 422
+        end
+      end
+    end
+
     # GET /professionals/1
     def show
       if @professional.nil?
@@ -34,14 +55,82 @@ module Api::V1
 
     # POST /professionals
     def create
-      @professional = Professional.new(professional_params)
+      if params[:create_citizen] == "true"
 
-      authorize @professional, :create?
+        @citizen = Citizen.new(citizen_params)
+        @citizen.active = true
 
-      if @professional.save
-        render json: @professional, status: :created
+        begin
+          @account = Account.new({
+            uid: params[:cpf],
+            provider: "cpf",
+            password: @citizen.birth_date.strftime('%d%m%y'),
+            password_confirmation: @citizen.birth_date.strftime('%d%m%y')
+          })
+
+          if not @account.save
+            render json: {
+              errors: @account.errors.to_hash.merge(full_messages: @account.errors.full_messages)
+            }, status: 422
+            return
+          end
+        rescue
+          render json: {
+            errors: [I18n.t("devise_token_auth.registrations.email_already_exists", email: @citizen.cpf)]
+          }, status: 422
+          return
+        end
+
+        @citizen.account_id = @account.id
+
+        authorize @citizen, :create?
+
+        if not @citizen.save
+          Account.delete(@account.id)
+
+          render json: {
+            errors: @citizen.errors.to_hash.merge(full_messages: @citizen.errors.full_messages)
+          }, status: 422
+          return
+        end
+        
+        @professional = Professional.new(professional_params)
+        @professional.account_id = @account.id
+        @professional.active = true
+
+        if @professional.save
+          render json: @professional.complete_info_response, status: :created
+        else
+          Citizen.delete(@citizen.id)
+          Account.delete(@account.id)
+
+          render json: {
+            errors: @professional.errors.to_hash
+              .merge(full_messages: @professional.errors.full_messages)
+          }, status: 422
+          return
+        end
+
       else
-        render json: @professional.errors, status: :unprocessable_entity
+        @account = Account.find_by(uid: params[:cpf])
+      
+        if @account.nil?
+          render json: {
+            errors: "Account #{params[:cpf]} doesn't exist."
+          }, status: 404
+          return
+        end
+
+        authorize @account.citizen, :create?
+
+        @professional = Professional.new(professional_params)
+        @professional.account_id = Account.find_by(uid: params[:cpf]).id
+
+        if @professional.save
+          render json: @professional.complete_info_response, status: :created
+        else
+          render json: @professional.errors, status: :unprocessable_entity
+        end
       end
     end
 
@@ -112,12 +201,29 @@ module Api::V1
       end
     end
 
+    def citizen_params
+      params.require(:professional).permit(
+        :address_complement,
+        :address_number,
+        :address_street,
+        :birth_date,
+        :cep,
+        :city_id,
+        :cpf,
+        :email,
+        :name,
+        :neighborhood,
+        :note,
+        :pcd,
+        :phone1,
+        :phone2,
+        :rg
+      )
+    end
+
     # Only allow a trusted parameter "white list" through.
     def professional_params
       params.require(:professional).permit(
-        :id,
-        :active,
-        :account_id,
         :occupation_id,
         :registration
       )

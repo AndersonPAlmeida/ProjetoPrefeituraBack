@@ -43,6 +43,8 @@ class Citizen < ApplicationRecord
   before_create :set_address
   before_save :set_address
 
+  before_validation :set_address
+
   scope :all_active, -> { where(active: true, responsible_id: nil) }
 
   scope :local, ->(city_id) { where(city_id: city_id) }
@@ -160,6 +162,11 @@ class Citizen < ApplicationRecord
   end
 
   def set_address
+    if self.cep.nil? or self.cep.empty?
+      self.errors["cep"] << "Cep can't be blank."
+      return false
+    end
+
     address = Address.get_address(self.cep)
 
     if not address.nil?

@@ -36,6 +36,10 @@ class CitizenPolicy < ApplicationPolicy
     return access_policy(user, false)
   end
 
+  def create?
+    return access_policy(user, false)
+  end
+
   def deactivate?
     return access_policy(user, false)
   end

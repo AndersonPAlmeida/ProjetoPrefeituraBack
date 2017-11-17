@@ -43,6 +43,7 @@ Rails.application.routes.draw do
       get "forms/schedule_history" => "forms#schedule_history"
       get "forms/create_service_type" => "forms#create_service_type"
       get "forms/create_service_place" => "forms#create_service_place"
+      get "forms/create_professional" => "forms#create_professional"
 
       get "forms/citizen_index" => "forms#citizen_index"
       get "forms/service_type_index" => "forms#service_type_index"

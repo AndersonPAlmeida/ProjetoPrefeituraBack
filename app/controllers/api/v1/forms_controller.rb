@@ -223,5 +223,57 @@ module Api::V1
 
       render json: result.as_json
     end
+
+    def create_professional
+      citizen = current_user[0]
+      permission = Professional.get_permission(current_user[1])
+
+      city_hall = citizen.professional.professionals_service_places
+        .find(current_user[1]).service_place.city_hall
+
+      response = Hash.new
+
+      roles = [
+        { "role": "adm_prefeitura", "name": "Administrador da Prefeitura" },
+        { "role": "adm_local", "name": "Administrador Local" },
+        { "role": "atendente_local", "name": "Atendente Local" },
+        { "role": "responsavel_atendimento", "name": "Responsável Atendimento" }
+      ]
+
+      case permission
+      when "adm_c3sl"
+        response["occupations"] = Occupation.all.as_json(only: [:id, :name])
+
+        response["service_places"] = ServicePlace.all.as_json(only: [:id, :name])
+
+        response["permissions"] = roles.as_json 
+
+      when "adm_prefeitura"
+        response["occupations"] = Occupation.where(city_hall_id: city_hall.id)
+          .as_json(only: [:id, :name])
+
+        response["service_places"] = ServicePlace.where(city_hall_id: city_hall.id)
+          .as_json(only: [:id, :name])
+
+        response["permissions"] = roles.as_json[1..-1] 
+
+      when "adm_local"
+        response["occupations"] = Occupation.where(city_hall_id: city_hall.id)
+          .as_json(only: [:id, :name])
+
+        response["service_places"] = ProfessionalsServicePlace.find(current_user[1])
+          .service_place.as_json(only: [:id, :name]) 
+
+        response["permissions"] = roles.as_json[1..-2] 
+
+      else
+        render json: {
+          errors: ["You're not allowed to view this form."]
+        }, status: 403
+        return
+      end
+      
+      render json: response.as_json
+    end
   end
 end
