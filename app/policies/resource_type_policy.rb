@@ -75,6 +75,8 @@ class ResourceTypePolicy < ApplicationPolicy
       true
     when permission == "adm_prefeitura" 
       (city_hall_id == record.city_hall_id)     
+    when permission == "adm_local" 
+      (city_hall_id == record.city_hall_id)  
     else
       false
     end
@@ -101,7 +103,9 @@ class ResourceTypePolicy < ApplicationPolicy
     when permission == "adm_c3sl"
       true
     when permission == "adm_prefeitura" 
-      (city_hall_id == record.first.city_hall_id)     
+      (city_hall_id == record.first.city_hall_id)   
+    when permission == "adm_local" 
+      (city_hall_id == record.first.city_hall_id)    
     else
       false
     end
