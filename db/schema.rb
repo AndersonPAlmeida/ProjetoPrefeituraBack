@@ -221,18 +221,18 @@ ActiveRecord::Schema.define(version: 20171109134344) do
   end
 
   create_table "resources", force: :cascade do |t|
-    t.integer  "resource_types_id",     null: false
-    t.integer  "service_place_id",      null: false
-    t.float    "minimum_schedule_time", null: false
-    t.float    "maximum_schedule_time", null: false
-    t.integer  "active",                null: false
+    t.integer  "resource_types_id",           null: false
+    t.integer  "service_place_id",            null: false
+    t.integer  "professional_responsible_id"
+    t.float    "minimum_schedule_time",       null: false
+    t.float    "maximum_schedule_time",       null: false
+    t.integer  "active",                      null: false
     t.string   "brand"
     t.string   "model"
     t.string   "label"
     t.string   "note"
-    t.datetime "created_at",            null: false
-    t.datetime "update_at",             null: false
-    t.datetime "updated_at",            null: false
+    t.datetime "created_at",                  null: false
+    t.datetime "updated_at",                  null: false
   end
 
   create_table "schedules", force: :cascade do |t|

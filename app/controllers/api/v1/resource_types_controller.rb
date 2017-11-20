@@ -8,8 +8,7 @@ module Api::V1
     def index
       if params[:permission] != "citizen"
         citizen = current_user.first
-        city_hall = CityHall.where(city_id:citizen.city_id).first
-
+        
         professional = citizen.professional
 
         service_place = professional.professionals_service_places
