@@ -74,9 +74,7 @@ class ResourceTypePolicy < ApplicationPolicy
     when permission == "adm_c3sl"
       true
     when permission == "adm_prefeitura" 
-      (city_hall_id == record.city_hall_id)     
-    when permission == "adm_local" 
-      (city_hall_id == record.city_hall_id)  
+      (city_hall_id == record.city_hall_id)      
     else
       false
     end
@@ -98,14 +96,21 @@ class ResourceTypePolicy < ApplicationPolicy
 
     city_hall_id = service_place.city_hall_id
 
-
     return case
     when permission == "adm_c3sl"
       true
     when permission == "adm_prefeitura" 
-      (city_hall_id == record.first.city_hall_id)   
+      if record.first != nil
+        (city_hall_id == record.first.city_hall_id)  
+      else 
+        true  
+      end
     when permission == "adm_local" 
-      (city_hall_id == record.first.city_hall_id)    
+      if record.first != nil
+        (city_hall_id == record.first.city_hall_id)  
+      else 
+        true  
+      end 
     else
       false
     end

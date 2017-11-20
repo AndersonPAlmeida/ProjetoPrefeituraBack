@@ -6,16 +6,26 @@ module Api::V1
 
     # GET /resource_types
     def index
-      citizen = current_user.first
-      city_hall = CityHall.where(city_id:citizen.city_id).first
-      if params[:permission] == "1"
-        @resource_type = ResourceType.all
-      else
-        @resource_type = ResourceType.where(city_hall_id: city_hall.id)
-      end 
+      if params[:permission] != "citizen"
+        citizen = current_user.first
+        city_hall = CityHall.where(city_id:citizen.city_id).first
 
-      authorize @resource_type, :index?    
-      render json: @resource_type
+        professional = citizen.professional
+
+        service_place = professional.professionals_service_places
+        .find(params[:permission]).service_place  
+
+        city_hall_id = service_place.city_hall_id
+
+        if params[:permission] == "1"
+          @resource_type = ResourceType.all
+        else
+          @resource_type = ResourceType.where(city_hall_id: city_hall_id)
+        end 
+        
+        authorize @resource_type, :index?    
+        render json: @resource_type
+      end
     end
 
     # GET /resource_types/1
