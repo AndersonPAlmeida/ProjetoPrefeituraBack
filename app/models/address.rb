@@ -1,6 +1,8 @@
 class Address < ApplicationRecord
   require "#{Rails.root}/lib/cep_finder"
 
+  has_many :resouce_booking
+
   # Search for zipcode in database, if not registered, get address from correios
   # api and insert in database to be used as cache
   #

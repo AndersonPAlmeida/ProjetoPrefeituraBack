@@ -77,7 +77,9 @@ module Api::V1
           :resource_schedule_id,
           :reminder_time,
           :read,
-          :content
+          :content,
+          :reminder_email,
+          :reminder_email_sent          
       )
     end
   end

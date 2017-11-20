@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171108094538) do
+ActiveRecord::Schema.define(version: 20171109134344) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -145,9 +145,11 @@ ActiveRecord::Schema.define(version: 20171108094538) do
     t.integer  "account_id",           null: false
     t.integer  "schedule_id"
     t.integer  "resource_schedule_id"
-    t.datetime "reminder_time"
     t.integer  "read"
     t.string   "content"
+    t.datetime "reminder_time"
+    t.integer  "reminder_email_sent"
+    t.string   "reminder_email"
     t.datetime "created_at",           null: false
     t.datetime "updated_at",           null: false
   end
@@ -180,6 +182,57 @@ ActiveRecord::Schema.define(version: 20171108094538) do
     t.boolean "active",           default: true, null: false
     t.index ["professional_id", "service_place_id"], name: "idx_professional_service_place", using: :btree
     t.index ["service_place_id", "professional_id"], name: "idx_service_place_professional", using: :btree
+  end
+
+  create_table "resource_bookings", force: :cascade do |t|
+    t.integer  "address_id",         null: false
+    t.integer  "resource_shift_id",  null: false
+    t.integer  "situation_id",       null: false
+    t.integer  "citizen_id",         null: false
+    t.integer  "active",             null: false
+    t.string   "booking_reason",     null: false
+    t.datetime "booking_start_time", null: false
+    t.datetime "booking_end_time",   null: false
+    t.datetime "created_at",         null: false
+    t.datetime "updated_at",         null: false
+  end
+
+  create_table "resource_shifts", force: :cascade do |t|
+    t.integer  "resource_id",                 null: false
+    t.integer  "professional_responsible_id", null: false
+    t.integer  "next_shift_id",               null: false
+    t.integer  "active",                      null: false
+    t.integer  "borrowed",                    null: false
+    t.datetime "execution_start_time",        null: false
+    t.datetime "execution_end_time",          null: false
+    t.string   "notes"
+    t.datetime "created_at",                  null: false
+    t.datetime "updated_at",                  null: false
+  end
+
+  create_table "resource_types", force: :cascade do |t|
+    t.integer  "city_hall_id", null: false
+    t.string   "name",         null: false
+    t.integer  "active",       null: false
+    t.string   "mobile",       null: false
+    t.string   "description"
+    t.datetime "created_at",   null: false
+    t.datetime "updated_at",   null: false
+  end
+
+  create_table "resources", force: :cascade do |t|
+    t.integer  "resource_types_id",           null: false
+    t.integer  "service_place_id",            null: false
+    t.integer  "professional_responsible_id"
+    t.float    "minimum_schedule_time",       null: false
+    t.float    "maximum_schedule_time",       null: false
+    t.integer  "active",                      null: false
+    t.string   "brand"
+    t.string   "model"
+    t.string   "label"
+    t.string   "note"
+    t.datetime "created_at",                  null: false
+    t.datetime "updated_at",                  null: false
   end
 
   create_table "schedules", force: :cascade do |t|

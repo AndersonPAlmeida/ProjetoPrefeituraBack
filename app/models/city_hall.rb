@@ -2,6 +2,7 @@ class CityHall < ApplicationRecord
 
   # Associations #
   has_many :service_places
+  has_many :resource_type 
   belongs_to :city
 
   # Validations #
