@@ -51,14 +51,39 @@ module Api::V1
       resource_type = ResourceType.where(id:@resources.resource_types_id)
       info = get_basic_info
 
-      if resource_type.city_hall_id == info.city_hall_id
-        if @resources.save
-          render json: @resources, status: :created
+      if resource_type.first.city_hall_id == info[:city_hall_id]
+        if @resources.service_place_id == nil 
+          @resources.service_place_id = info[:service_place].id
+          error = nil
         else
-          render json: @resources.errors, status: :unprocessable_entity
+          if (info[:permission] == "adm_prefeitura" or 
+                info[:permission] == "adm_c3sl" or 
+                info[:service_place].id != @resources.service_place_id)
+
+            error = {
+              errors: ["You can not create a resource for this service place"]
+            }
+          end
+        end
+        if !error
+          authorize @resources, :create?
+          if @resources.save  
+            render json: @resources, status: :created
+          else
+            render json: @resources.errors, status: :unprocessable_entity
+          end
         end
       else 
-        render json: "You can not use this resource type", status: :unprocessable_entity        
+        if !error
+          error = {
+            errors: ["You can not use this resource type"]
+         }
+        else 
+          error[:errors] << "You can not use this resource type"
+        end
+      end
+      if error
+        render json: error, status: :unprocessable_entity
       end
     end
 
@@ -126,11 +151,14 @@ module Api::V1
 
       city_hall_id = service_place.city_hall_id
 
+      permission = Professional.get_permission(params[:permission])
+
       return {
         citizen: citizen, 
         professional: professional, 
         service_place: service_place,
-        city_hall_id: city_hall_id
+        city_hall_id: city_hall_id,
+        permission: permission
       }
     end
   end

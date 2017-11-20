@@ -63,15 +63,15 @@ class ResourcePolicy < ApplicationPolicy
     end
 
     professional = citizen.professional
-    
+
     service_place = professional.professionals_service_places
     .find(user[1]).service_place
 
     city_hall_id = service_place.city_hall_id
 
-    if (record.first != nil)
+    if (record!= nil)
       city_hall_id_resource = 
-        CityHall.where(id:ResourceType.where(id:record.first.resource_types_id).first.city_hall_id).first.id
+        CityHall.where(id:ResourceType.where(id:record.resource_types_id).first.city_hall_id).first.id
     else 
       city_hall_id_resource = nil 
     end
@@ -80,9 +80,9 @@ class ResourcePolicy < ApplicationPolicy
     when permission == "adm_c3sl"
       true
     when permission == "adm_prefeitura" 
-      (city_hall_id == record.city_hall_id)  
+      (city_hall_id == city_hall_id)  
     when permission == "adm_local" 
-      (city_hall_id == record.city_hall_id)     
+      (city_hall_id == city_hall_id)     
     else
       false
     end
