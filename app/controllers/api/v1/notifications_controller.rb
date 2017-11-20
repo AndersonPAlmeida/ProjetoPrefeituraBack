@@ -12,8 +12,12 @@ module Api::V1
     # POST /notifications 
     def create
       notification = notification_params
-      notification["account_id"] = current_user.first.account_id
-      @notification = Notification.create!(notification)
+      if notification["account_id"] == nil 
+        notification["account_id"] = current_user.first.account_id
+      else         
+        notification["account_id"] = Citizen.where(account_id:notification["account_id"]).first.id
+      end   
+      @notification = Notification.create!(notification)   
       authorize @notification, :create?
       render json: @notification, status: :created            
     end
@@ -73,6 +77,7 @@ module Api::V1
     # Only allow a trusted parameter "white list" through.
     def notification_params
       params.require(:notification).permit(
+          :account_id,
           :schedule_id,
           :resource_schedule_id,
           :reminder_time,
