@@ -3,7 +3,7 @@ class CreateResourceShifts < ActiveRecord::Migration[5.0]
     create_table :resource_shifts do |t|
       t.integer :resource_id, foreign_key: true, null: false
       t.integer :professional_responsible_id, foreign_key: true, null: false
-      t.integer :next_shift_id, foreign_key: true, null: false
+      t.integer :next_shift_id, foreign_key: true
       t.integer :active, null: false
       t.integer :borrowed, null: false
       t.datetime :execution_start_time, null: false

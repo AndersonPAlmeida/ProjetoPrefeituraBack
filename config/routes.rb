@@ -39,7 +39,7 @@ Rails.application.routes.draw do
       resources :resources
       resources :resources_bookings
       resources :resource_types
-      resources :resources_shifts
+      resources :resource_shifts
       
       post "validate_cep" => "cep#validate"
 

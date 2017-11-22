@@ -200,7 +200,7 @@ ActiveRecord::Schema.define(version: 20171109134344) do
   create_table "resource_shifts", force: :cascade do |t|
     t.integer  "resource_id",                 null: false
     t.integer  "professional_responsible_id", null: false
-    t.integer  "next_shift_id",               null: false
+    t.integer  "next_shift_id"
     t.integer  "active",                      null: false
     t.integer  "borrowed",                    null: false
     t.datetime "execution_start_time",        null: false

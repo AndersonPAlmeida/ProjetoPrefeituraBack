@@ -1,12 +1,8 @@
-class ResourcePolicy < ApplicationPolicy
+class ResourceShiftPolicy < ApplicationPolicy
   class Scope < Scope
     def resolve
       citizen = user[0]
       permission = Professional.get_permission(user[1])
-
-      if permission == "citizen"
-        return nil
-      end
 
       professional = citizen.professional
 
@@ -14,8 +10,8 @@ class ResourcePolicy < ApplicationPolicy
         .find(user[1]).service_place.city_id
 
       service_place_id = professional.professionals_service_places
-        .find(user[1]).service_place.id  
-
+      .find(user[1]).service_place.id
+      
       return case
       when permission == "adm_c3sl"
         scope.all
@@ -23,29 +19,26 @@ class ResourcePolicy < ApplicationPolicy
       when permission == "adm_prefeitura"
         scope.local(city_id)
 
-      when permission == "adm_local"
+      when permission == "citizen"
+        scope.local(city_id)
+        
+      else
         scope.local(service_place_id)
 
-      else
-        nil
       end
     end
   end
 
-  def show?
-    return access_policy(user) 
-  end
-
   def create?
-    return access_policy(user) 
+    return access_policy_professional(user) 
   end
 
   def update?
-    return access_policy(user) 
+    return access_policy_professional(user) 
   end
 
   def destroy?
-    return access_policy(user) 
+    return access_policy_professional(user) 
   end
 
   def index?
@@ -60,7 +53,8 @@ class ResourcePolicy < ApplicationPolicy
   #
   # @param user [Array] current citizen and the permission provided
   # @return [Boolean] true if allowed, false otherwise
-  def access_policy(user)
+
+  def access_policy_professional(user)
     citizen = user[0]
     permission = Professional.get_permission(user[1])
 
@@ -73,27 +67,35 @@ class ResourcePolicy < ApplicationPolicy
     service_place = professional.professionals_service_places
     .find(user[1]).service_place
 
-    city_hall_id = service_place.city_hall_id
+    service_place_id = service_place.id
 
-    if (record!= nil)
-      city_hall_id_resource = 
-        CityHall.where(id:ResourceType.where(id:record.resource_types_id).first.city_hall_id).first.id
-    else 
-      city_hall_id_resource = nil 
-    end
+    current_resource_id = record.resource_id
+    
+    city_hall_id = service_place.city_hall_id
+    
+    resource_service_place_id = Resource.where(id: current_resource_id).first.service_place_id
+
+    resource_city_hall_id = ResourceType.where(
+                              id: (Resource.where(
+                                    id: current_resource_id
+                                  ).first.resource_types_id
+                              )).first.city_hall_id
 
     return case
     when permission == "adm_c3sl"
       true
     when permission == "adm_prefeitura" 
-      (city_hall_id == city_hall_id)  
+      (city_hall_id == resource_city_hall_id)    
+    when permission == "atendente_local" 
+      (service_place_id == resource_service_place_id)
+    when permission == "responsavel_atendimento" 
+      (service_place_id == resource_service_place_id)
     when permission == "adm_local" 
-      (city_hall_id == city_hall_id)     
+      (service_place_id == resource_service_place_id)
     else
       false
     end
   end
-
 
   def access_policy_index(user)
     citizen = user[0]
@@ -110,28 +112,21 @@ class ResourcePolicy < ApplicationPolicy
 
     city_hall_id = service_place.city_hall_id
 
-    if (record.first != nil)
-      city_hall_id_resource = 
-        CityHall.where(id:ResourceType.where(id:record.first.resource_types_id).first.city_hall_id).first.id
-    else 
-      city_hall_id_resource = nil 
-    end
-
     return case
     when permission == "adm_c3sl"
       true
     when permission == "adm_prefeitura" 
       if record.first != nil
-        (city_hall_id == city_hall_id_resource)   
+        (city_hall_id == record.first.city_hall_id)  
       else 
-        true
+        true  
       end
     when permission == "adm_local" 
       if record.first != nil
-        (city_hall_id == city_hall_id_resource)   
+        (city_hall_id == record.first.city_hall_id)  
       else 
-        true
-      end   
+        true  
+      end 
     else
       false
     end
