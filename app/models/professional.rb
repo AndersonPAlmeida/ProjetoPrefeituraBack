@@ -11,7 +11,9 @@ class Professional < ApplicationRecord
   # Validations #
   validates_presence_of :occupation_id, :account_id
 
-  scope :all_active, -> { where(active: true) }
+  scope :all_active, -> { 
+    where(active: true) 
+  }
 
   scope :local_city, -> (city_id) { 
     joins(:service_places).where("service_places.city_id": city_id).distinct 
@@ -23,6 +25,9 @@ class Professional < ApplicationRecord
 
   delegate :name, to: :citizen
   delegate :cpf, to: :citizen
+  delegate :phone1, to: :citizen
+  delegate :email, to: :citizen
+  delegate :name, to: :occupation, prefix: true
 
   # Method for getting role from id
   # @param id [Integer/String] permission
@@ -39,7 +44,7 @@ class Professional < ApplicationRecord
   # @return [Json] response
   def self.index_response
     self.all.as_json(only: [:id, :registration, :active], 
-                     methods: %w(cpf name roles_names))
+                     methods: %w(occupation_name cpf name phone1 email roles_names ))
   end
 
   # Returns partial info json response to index professionals 
