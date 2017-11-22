@@ -208,23 +208,22 @@ module Api::V1
 
             raise_rollback.call(error_message)
           end
+
+          error_message = @professional.errors if not @professional.update(professional_params)
+          raise_rollback.call(error_message)
+
+          error_message = @professional
+            .citizen.errors if not @professional.citizen.update(citizen_params)
+          raise_rollback.call(error_message)
         end
 
-        if not error_message.nil?
+        if error_message.nil?
+          render json: @professional.complete_info_response
+        else
           render json: {
             errors: error_message 
           }, status: 422
           return
-        end
-
-        if @professional.update(professional_params)
-          if @professional.account.citizen.update(citizen_params)
-            render json: @professional.complete_info_response
-          else
-            render json: @professional.account.citizen.errors, status: :unprocessable_entity
-          end
-        else
-          render json: @professional.errors, status: :unprocessable_entity
         end
       end
     end
