@@ -181,8 +181,48 @@ module Api::V1
       else
         authorize @professional, :update?
 
+        error_message = nil
+        raise_rollback = -> (error) { raise ActiveRecord::Rollback if not error.nil? }
+
+        ActiveRecord::Base.transaction do
+          ProfessionalsServicePlace.where(professional_id: @professional.id).destroy_all
+
+          # Creates professionals service places
+          params[:professional][:roles].each do |item|
+            psp = ProfessionalsServicePlace.new({
+              professional_id: @professional.id, 
+              service_place_id: item[:service_place_id],
+              role: item[:role]
+            })
+
+            begin
+              authorize psp, :create_psp?
+            rescue
+              error_message = ["You're not allowed to register this professional in the given service place."]
+            end
+            raise_rollback.call(error_message)
+
+            error_message = psp.errors.to_hash.merge(
+              full_messages: psp.errors.full_messages
+            ) if not psp.save
+
+            raise_rollback.call(error_message)
+          end
+        end
+
+        if not error_message.nil?
+          render json: {
+            errors: error_message 
+          }, status: 422
+          return
+        end
+
         if @professional.update(professional_params)
-          render json: @professional
+          if @professional.account.citizen.update(citizen_params)
+            render json: @professional.complete_info_response
+          else
+            render json: @professional.account.citizen.errors, status: :unprocessable_entity
+          end
         else
           render json: @professional.errors, status: :unprocessable_entity
         end
@@ -266,6 +306,7 @@ module Api::V1
     # Only allow a trusted parameter "white list" through.
     def professional_params
       params.require(:professional).permit(
+        :active,
         :occupation_id,
         :registration
       )

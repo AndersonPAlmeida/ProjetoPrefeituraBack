@@ -40,7 +40,6 @@ class ProfessionalPolicy < ApplicationPolicy
     return access_policy(user)
   end
 
-
   def deactivate?
     return access_policy(user)
   end
@@ -84,7 +83,7 @@ class ProfessionalPolicy < ApplicationPolicy
     when permission == "adm_local"
       return (citizen.id != record.citizen.id) && 
         (record.service_places.pluck(:id).include? service_place.id) && 
-        (not record.adm_c3sl?)
+        ((not record.adm_c3sl?) and (not record.adm_prefeitura?))
 
     else
       false
