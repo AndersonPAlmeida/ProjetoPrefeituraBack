@@ -37,7 +37,34 @@ class CitizenPolicy < ApplicationPolicy
   end
 
   def create?
-    return access_policy(user, false)
+    citizen = user[0]
+    permission = Professional.get_permission(user[1])
+
+    if permission == "citizen"
+      return condition 
+    end
+
+    professional = citizen.professional
+
+    city_id = professional.professionals_service_places
+      .find(user[1]).service_place.city_id
+
+    return case
+    when permission == "adm_c3sl"
+      return (citizen.id != record.id)
+
+    when permission == "adm_prefeitura"
+      return (citizen.id != record.id)
+
+    when permission == "adm_local"
+      return (citizen.id != record.id)
+
+    when permission == "atendente_local"
+      return (citizen.id != record.id)
+
+    else
+      false
+    end
   end
 
   def deactivate?

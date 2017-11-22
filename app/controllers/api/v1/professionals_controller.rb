@@ -55,82 +55,120 @@ module Api::V1
 
     # POST /professionals
     def create
+      success = false
+      error_message = nil
+      raise_rollback = -> (error) { raise ActiveRecord::Rollback if not error.nil? }
+
       if params[:create_citizen] == "true"
+        ActiveRecord::Base.transaction do
+          # Creates citizen
+          @citizen = Citizen.new(citizen_params)
+          @citizen.active = true
 
-        @citizen = Citizen.new(citizen_params)
-        @citizen.active = true
+          # Creates account
+          begin
+            @account = Account.new({
+              uid: params[:cpf],
+              provider: "cpf",
+              password: @citizen.birth_date.strftime('%d%m%y'),
+              password_confirmation: @citizen.birth_date.strftime('%d%m%y')
+            })
 
-        begin
-          @account = Account.new({
-            uid: params[:cpf],
-            provider: "cpf",
-            password: @citizen.birth_date.strftime('%d%m%y'),
-            password_confirmation: @citizen.birth_date.strftime('%d%m%y')
-          })
+            @account.save
+          rescue ActiveRecord::RecordNotUnique
+            error_message = [I18n.t(
+              "devise_token_auth.registrations.email_already_exists", email: @citizen.cpf
+            )]
+          end
 
-          if not @account.save
+          raise_rollback.call(error_message)
+
+          # Assign new account to new citizen
+          @citizen.account_id = @account.id
+
+          error_message = @citizen.errors.to_hash if not @citizen.save
+          raise_rollback.call(error_message)
+
+
+          # Creates professional
+          @professional = Professional.new(professional_params)
+
+          @professional.account_id = @account.id
+          @professional.active = true
+
+          error_message = @professional.errors.to_hash if not @professional.save
+          raise_rollback.call(error_message)
+
+
+          # Creates professionals service places
+          params[:professional][:roles].each do |item|
+            psp = ProfessionalsServicePlace.new({
+              professional_id: @professional.id, 
+              service_place_id: item[:service_place_id],
+              role: item[:role]
+            })
+
+            begin
+              authorize psp, :create_psp?
+            rescue
+              error_message =  ["You're not allowed to register this professional in the given service place."]
+            end
+            raise_rollback.call(error_message)
+
+            error_message = psp.errors.to_hash.merge(full_messages: psp.errors.full_messages) if not psp.save
+            raise_rollback.call(error_message)
+          end
+
+          success = true
+        end # End Transaction
+
+      else # If the citizen already exists
+        ActiveRecord::Base.transaction do
+          @account = Account.find_by(uid: params[:cpf])
+        
+          if @account.nil?
             render json: {
-              errors: @account.errors.to_hash.merge(full_messages: @account.errors.full_messages)
-            }, status: 422
+              errors: "Account #{params[:cpf]} doesn't exist."
+            }, status: 404
             return
           end
-        rescue
-          render json: {
-            errors: [I18n.t("devise_token_auth.registrations.email_already_exists", email: @citizen.cpf)]
-          }, status: 422
-          return
-        end
 
-        @citizen.account_id = @account.id
+          @professional = Professional.new(professional_params)
+          @professional.account_id = Account.find_by(uid: params[:cpf]).id
+          @professional.active = true
 
-        authorize @citizen, :create?
+          error_message = @professional.errors.to_hash if not @professional.save
+          raise_rollback.call(error_message)
 
-        if not @citizen.save
-          Account.delete(@account.id)
+          # Creates professionals service places
+          params[:professional][:roles].each do |item|
+            psp = ProfessionalsServicePlace.new({
+              professional_id: @professional.id, 
+              service_place_id: item[:service_place_id],
+              role: item[:role]
+            })
 
-          render json: {
-            errors: @citizen.errors.to_hash.merge(full_messages: @citizen.errors.full_messages)
-          }, status: 422
-          return
-        end
-        
-        @professional = Professional.new(professional_params)
-        @professional.account_id = @account.id
-        @professional.active = true
+            begin
+              authorize psp, :create_psp?
+            rescue
+              error_message =  ["You're not allowed to register this professional in the given service place."]
+            end
+            raise_rollback.call(error_message)
 
-        if @professional.save
-          render json: @professional.complete_info_response, status: :created
-        else
-          Citizen.delete(@citizen.id)
-          Account.delete(@account.id)
+            error_message = psp.errors.to_hash.merge(full_messages: psp.errors.full_messages) if not psp.save
+            raise_rollback.call(error_message)
+          end
 
-          render json: {
-            errors: @professional.errors.to_hash
-              .merge(full_messages: @professional.errors.full_messages)
-          }, status: 422
-          return
-        end
+          success = true
+        end # End Transaction
+      end
 
+      if success
+        render json: @professional.complete_info_response, status: :created
       else
-        @account = Account.find_by(uid: params[:cpf])
-      
-        if @account.nil?
-          render json: {
-            errors: "Account #{params[:cpf]} doesn't exist."
-          }, status: 404
-          return
-        end
-
-        authorize @account.citizen, :create?
-
-        @professional = Professional.new(professional_params)
-        @professional.account_id = Account.find_by(uid: params[:cpf]).id
-
-        if @professional.save
-          render json: @professional.complete_info_response, status: :created
-        else
-          render json: @professional.errors, status: :unprocessable_entity
-        end
+        render json: {
+          errors: error_message 
+        }, status: 422
       end
     end
 
@@ -188,6 +226,10 @@ module Api::V1
       when "update?"
         render json: {
           errors: ["You're not allowed to update this professional."]
+        }, status: 403
+      when "create_psp?"
+        render json: {
+          errors: ["You're not allowed to register this professional in the given service place."]
         }, status: 403
       end
     end
