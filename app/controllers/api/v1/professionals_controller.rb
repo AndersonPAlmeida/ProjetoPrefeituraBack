@@ -57,7 +57,11 @@ module Api::V1
     def create
       success = false
       error_message = nil
-      raise_rollback = -> (error) { raise ActiveRecord::Rollback if not error.nil? }
+
+      raise_rollback = -> (error) {
+        error_message = error
+        raise ActiveRecord::Rollback
+      }
 
       if params[:create_citizen] == "true"
         ActiveRecord::Base.transaction do
@@ -76,18 +80,15 @@ module Api::V1
 
             @account.save
           rescue ActiveRecord::RecordNotUnique
-            error_message = [I18n.t(
+            raise_rollback.call([I18n.t(
               "devise_token_auth.registrations.email_already_exists", email: @citizen.cpf
-            )]
+            )])
           end
 
-          raise_rollback.call(error_message)
 
           # Assign new account to new citizen
           @citizen.account_id = @account.id
-
-          error_message = @citizen.errors.to_hash if not @citizen.save
-          raise_rollback.call(error_message)
+          raise_rollback.call(@citizen.errors.to_hash) unless @citizen.save
 
 
           # Creates professional
@@ -95,11 +96,10 @@ module Api::V1
 
           @professional.account_id = @account.id
           @professional.active = true
-
-          error_message = @professional.errors.to_hash if not @professional.save
-          raise_rollback.call(error_message)
+          raise_rollback.call(@professional.errors.to_hash) unless @professional.save
 
 
+          psp_id_list = []
           # Creates professionals service places
           params[:professional][:roles].each do |item|
             psp = ProfessionalsServicePlace.new({
@@ -108,15 +108,23 @@ module Api::V1
               role: item[:role]
             })
 
+            if psp_id_list.include?(item[:service_place_id])
+              raise_rollback.call(["Only one role per service place is allowed"])
+            end
+
+            psp_id_list << item[:service_place_id]
+
             begin
               authorize psp, :create_psp?
             rescue
-              error_message =  ["You're not allowed to register this professional in the given service place."]
+              raise_rollback.call(
+                ["You're not allowed to register this professional in the given service place."]
+              )
             end
-            raise_rollback.call(error_message)
 
-            error_message = psp.errors.to_hash.merge(full_messages: psp.errors.full_messages) if not psp.save
-            raise_rollback.call(error_message)
+            raise_rollback.call(
+              psp.errors.to_hash.merge(full_messages: psp.errors.full_messages)
+            ) unless psp.save
           end
 
           success = true
@@ -137,9 +145,9 @@ module Api::V1
           @professional.account_id = Account.find_by(uid: params[:cpf]).id
           @professional.active = true
 
-          error_message = @professional.errors.to_hash if not @professional.save
-          raise_rollback.call(error_message)
+          raise_rollback.call(@professional.errors.to_hash) unless @professional.save
 
+          psp_id_list = []
           # Creates professionals service places
           params[:professional][:roles].each do |item|
             psp = ProfessionalsServicePlace.new({
@@ -148,15 +156,23 @@ module Api::V1
               role: item[:role]
             })
 
+            if psp_id_list.include?(item[:service_place_id])
+              raise_rollback.call(["Only one role per service place is allowed"])
+            end
+
+            psp_id_list << item[:service_place_id]
+
             begin
               authorize psp, :create_psp?
             rescue
-              error_message =  ["You're not allowed to register this professional in the given service place."]
+              raise_rollback.call(
+                ["You're not allowed to register this professional in the given service place."]
+              )
             end
-            raise_rollback.call(error_message)
 
-            error_message = psp.errors.to_hash.merge(full_messages: psp.errors.full_messages) if not psp.save
-            raise_rollback.call(error_message)
+            raise_rollback.call(
+              psp.errors.to_hash.merge(full_messages: psp.errors.full_messages)
+            ) unless psp.save
           end
 
           success = true
@@ -182,10 +198,16 @@ module Api::V1
         authorize @professional, :update?
 
         error_message = nil
-        raise_rollback = -> (error) { raise ActiveRecord::Rollback if not error.nil? }
+
+        raise_rollback = -> (error) {
+          error_message = error
+          raise ActiveRecord::Rollback
+        }
 
         ActiveRecord::Base.transaction do
           ProfessionalsServicePlace.where(professional_id: @professional.id).destroy_all
+
+          psp_id_list = []
 
           # Creates professionals service places
           params[:professional][:roles].each do |item|
@@ -195,26 +217,27 @@ module Api::V1
               role: item[:role]
             })
 
+            if psp_id_list.include?(item[:service_place_id])
+              raise_rollback.call(["Only one role per service place is allowed"])
+            end
+
+            psp_id_list << item[:service_place_id]
+
             begin
               authorize psp, :create_psp?
             rescue
-              error_message = ["You're not allowed to register this professional in the given service place."]
+              raise_rollback.call(
+                ["You're not allowed to register this professional in the given service place."]
+              )
             end
-            raise_rollback.call(error_message)
 
-            error_message = psp.errors.to_hash.merge(
-              full_messages: psp.errors.full_messages
-            ) if not psp.save
-
-            raise_rollback.call(error_message)
+            raise_rollback.call(
+              psp.errors.to_hash.merge(full_messages: psp.errors.full_messages)
+            ) unless psp.save
           end
 
-          error_message = @professional.errors if not @professional.update(professional_params)
-          raise_rollback.call(error_message)
-
-          error_message = @professional
-            .citizen.errors if not @professional.citizen.update(citizen_params)
-          raise_rollback.call(error_message)
+          raise_rollback.call(@professional.errors) unless @professional.update(professional_params)
+          raise_rollback.call(@professional.citizen.errors) unless @professional.citizen.update(citizen_params)
         end
 
         if error_message.nil?
