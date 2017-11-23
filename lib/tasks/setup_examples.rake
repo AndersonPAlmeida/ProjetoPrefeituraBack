@@ -708,6 +708,127 @@ namespace :agendador do
       professional_performer_id: professionals[:pedro].id
     })
 
+    puts "Criando tipo de Recurso: Notebook - Prefeitura 1"
+    ResourceType.create({
+      city_hall_id:1,
+      name: "Notebook",
+      mobile: true,
+      description:"Notebooks para empréstimo dos funcionários",
+      active: true
+    })
+
+    puts "Criando tipo de Recurso: Laptop - Prefeitura 2"
+    ResourceType.create({
+      city_hall_id:1,
+      name: "Laptop",
+      mobile: true,
+      description:"Notebooks para empréstimo dos funcionários",
+      active: true
+    })
+
+    puts "Criando Recurso: Notebook 1 - Prefeitura 1"
+    Resource.create({
+      resource_types_id:1,
+	    service_place_id:1,
+	    professional_responsible_id:1,
+	    minimum_schedule_time:0.5,
+	    maximum_schedule_time:2,
+	    brand:"Lenovo",
+	    model:"Thinkpad Carbon X1",
+	    label:"NB-1",
+      note:"SN:1407124942335",
+      active: true
+    })
+
+    puts "Criando Recurso: Notebook 2 - Prefeitura 1"
+    Resource.create({
+      resource_types_id:1,
+	    service_place_id:1,
+	    professional_responsible_id:1,
+	    minimum_schedule_time:0.5,
+	    maximum_schedule_time:2,
+	    brand:"Lenovo",
+	    model:"Thinkpad Carbon X1",
+	    label:"NB-2",
+      note:"SN:1407124942336",
+      active: true
+    })
+
+    puts "Criando Recurso: Laptop 1 - Prefeitura 2"
+    Resource.create({
+      resource_types_id:2,
+	    service_place_id:4,
+	    professional_responsible_id:1,
+	    minimum_schedule_time:0.5,
+	    maximum_schedule_time:2,
+	    brand:"Apple",
+	    model:"Macbook Air",
+	    label:"LT-1",
+      note:"SN:1407124946739",
+      active: true
+    })
+
+    puts "Criando Recurso: Laptop 2 - Prefeitura 2"
+    Resource.create({
+      resource_types_id:2,
+	    service_place_id:4,
+	    professional_responsible_id:1,
+	    minimum_schedule_time:0.5,
+	    maximum_schedule_time:2,
+	    brand:"Apple",
+	    model:"Macbook Air",
+	    label:"LT-2",
+      note:"SN:1407124946740",
+      active: true
+    })
+
+    puts "Criando Escala de Recurso: Notebook 1 - Prefeitura 1"
+    ResourceShift.create({
+      resource_id:1,
+      professional_responsible_id:2,
+      execution_start_time: DateTime.now.beginning_of_day + 1.day + 120.hours,
+      execution_end_time: DateTime.now.beginning_of_day + 1.day + 128.hours,
+      notes:"Alguma nota",
+      active: true,
+      borrowed:false
+    })
+
+    puts "Criando Escala de Recurso: Notebook 2 - Prefeitura 1"
+    ResourceShift.create({
+      resource_id:2,
+      professional_responsible_id:2,
+      execution_start_time: DateTime.now.beginning_of_day + 1.day + 120.hours,
+      execution_end_time: DateTime.now.beginning_of_day + 1.day + 128.hours,
+      notes:"Alguma nota",
+      active: true,
+      borrowed:false
+    })
+
+    puts "Criando Escala de Recurso: Laptop 1 - Prefeitura 2"
+    ResourceShift.create({
+      resource_id:3,
+      professional_responsible_id:7,
+      execution_start_time: DateTime.now.beginning_of_day + 1.day + 120.hours,
+      execution_end_time: DateTime.now.beginning_of_day + 1.day + 128.hours,
+      notes:"Alguma nota",
+      active: true,
+      borrowed:false
+    })
+
+    puts "Criando Escala de Recurso: Laptop 2 - Prefeitura 2"
+    ResourceShift.create({
+      resource_id:4,
+      professional_responsible_id:7,
+      execution_start_time: DateTime.now.beginning_of_day + 1.day + 120.hours,
+      execution_end_time: DateTime.now.beginning_of_day + 1.day + 128.hours,
+      notes:"Alguma nota",
+      active: true,
+      borrowed:false
+    })
+
+
+
+    
     #situations = [Situation.disponivel]
 
     #shifts[3].service_amount.times do |i|

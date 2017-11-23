@@ -2,6 +2,7 @@ class Situation < ApplicationRecord
 
   # Associations #
   has_many :schedules
+  has_many :resource_booking
 
   # Validations #
   validates_presence_of :description

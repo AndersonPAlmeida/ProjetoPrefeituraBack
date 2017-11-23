@@ -34,6 +34,13 @@ Rails.application.routes.draw do
       resources :shifts
       resources :solicitations
 
+      resources :notifications 
+      
+      resources :resources
+      resources :resource_bookings
+      resources :resource_types
+      resources :resource_shifts
+      
       post "validate_cep" => "cep#validate"
 
       get "forms/schedule_history" => "forms#schedule_history"

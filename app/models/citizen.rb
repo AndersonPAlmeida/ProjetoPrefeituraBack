@@ -6,6 +6,7 @@ class Citizen < ApplicationRecord
   belongs_to :city
   belongs_to :citizen, optional: true, foreign_key: :responsible_id, class_name: "Citizen"
   has_one :dependant
+  has_many :resource_booking
 
   # Validations #
   validates :cpf, cpf: true, if: :cpf_required?
