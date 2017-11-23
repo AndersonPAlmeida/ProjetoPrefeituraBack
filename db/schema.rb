@@ -185,7 +185,7 @@ ActiveRecord::Schema.define(version: 20171109134344) do
   end
 
   create_table "resource_bookings", force: :cascade do |t|
-    t.integer  "address_id",         null: false
+    t.integer  "service_place_id",   null: false
     t.integer  "resource_shift_id",  null: false
     t.integer  "situation_id",       null: false
     t.integer  "citizen_id",         null: false
@@ -195,6 +195,7 @@ ActiveRecord::Schema.define(version: 20171109134344) do
     t.datetime "booking_end_time",   null: false
     t.datetime "created_at",         null: false
     t.datetime "updated_at",         null: false
+    t.string   "status",             null: false
   end
 
   create_table "resource_shifts", force: :cascade do |t|

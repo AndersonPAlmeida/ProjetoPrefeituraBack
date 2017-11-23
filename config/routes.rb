@@ -37,7 +37,7 @@ Rails.application.routes.draw do
       resources :notifications 
       
       resources :resources
-      resources :resources_bookings
+      resources :resource_bookings
       resources :resource_types
       resources :resource_shifts
       
