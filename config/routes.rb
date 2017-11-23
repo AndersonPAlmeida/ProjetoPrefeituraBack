@@ -48,6 +48,7 @@ Rails.application.routes.draw do
       get "forms/citizen_index" => "forms#citizen_index"
       get "forms/service_type_index" => "forms#service_type_index"
       get "forms/service_place_index" => "forms#service_place_index"
+      get "forms/professional_index" => "forms#professional_index"
 
       get "check_create_professional" => "professionals#check_create_professional"
     end

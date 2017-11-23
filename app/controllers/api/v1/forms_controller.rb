@@ -231,14 +231,14 @@ module Api::V1
       city_hall = citizen.professional.professionals_service_places
         .find(current_user[1]).service_place.city_hall
 
-      response = Hash.new
-
       roles = [
         { "role": "adm_prefeitura", "name": "Administrador da Prefeitura" },
         { "role": "adm_local", "name": "Administrador Local" },
         { "role": "atendente_local", "name": "Atendente Local" },
         { "role": "responsavel_atendimento", "name": "Responsável Atendimento" }
       ]
+
+      response = Hash.new
 
       case permission
       when "adm_c3sl"
@@ -273,6 +273,67 @@ module Api::V1
         return
       end
       
+      render json: response.as_json
+    end
+
+    def professional_index
+      citizen = current_user[0]
+      permission = Professional.get_permission(current_user[1])
+
+      city_hall = citizen.professional.professionals_service_places
+        .find(current_user[1]).service_place.city_hall
+
+      roles = [
+        { "role": "adm_prefeitura", "name": "Administrador da Prefeitura" },
+        { "role": "adm_local", "name": "Administrador Local" },
+        { "role": "atendente_local", "name": "Atendente Local" },
+        { "role": "responsavel_atendimento", "name": "Responsável Atendimento" }
+      ]
+
+      response = Hash.new
+
+      case permission
+      when "adm_c3sl"
+        response["permissions"] = roles.as_json
+
+        response["city_hall"] = CityHall.all_active.as_json(only: [:id, :name])
+
+        response["occupations"] = Occupation.all_active
+          .as_json(only: [:id, :name, :city_hall_id])
+
+        response["service_places"] = ServicePlace.all_active
+          .as_json(only: [:id, :name, :city_hall_id])
+
+
+      when "adm_prefeitura"
+        response["permissions"] = roles[1..-1].as_json
+
+        response["city_hall"] = city_hall.as_json(only: [:id, :name])
+
+        response["occupations"] = Occupation.all_active.local_city_hall(city_hall.id)
+          .as_json(only: [:id, :name])
+
+        response["service_places"] = ServicePlace.all_active.local_city_hall(city_hall.id)
+          .as_json(only: [:id, :name])
+
+      when "adm_local"
+        response["permissions"] = roles[1..-2].as_json
+
+        response["city_hall"] = city_hall.as_json(only: [:id, :name])
+
+        response["occupations"] = Occupation.all_active.local_city_hall(city_hall.id)
+          .as_json(only: [:id, :name])
+
+        response["service_places"] = ServicePlace.all_active.local_city_hall(city_hall.id)
+          .as_json(only: [:id, :name])
+      
+      else
+        render json: {
+          errors: ["You're not allowed to view this form."]
+        }, status: 403
+        return
+      end
+
       render json: response.as_json
     end
   end

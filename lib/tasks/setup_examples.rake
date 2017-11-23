@@ -562,7 +562,7 @@ namespace :agendador do
 
     ProfessionalsServicePlace.create({ # Prof Fabricio as adm_pref in Sao J. adm
       service_place: service_places[1],
-      role: "atendente_local",
+      role: "adm_prefeitura",
       active: true,
       professional: professionals[:fabricio]
     })
