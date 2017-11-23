@@ -205,6 +205,9 @@ module Api::V1
         }
 
         ActiveRecord::Base.transaction do
+          raise_rollback.call(@professional.citizen
+            .errors.to_hash) unless @professional.citizen.update(citizen_params)
+
           ProfessionalsServicePlace.where(professional_id: @professional.id).destroy_all
 
           psp_id_list = []
@@ -288,10 +291,6 @@ module Api::V1
       when "update?"
         render json: {
           errors: ["You're not allowed to update this professional."]
-        }, status: 403
-      when "create_psp?"
-        render json: {
-          errors: ["You're not allowed to register this professional in the given service place."]
         }, status: 403
       end
     end
