@@ -143,7 +143,7 @@ class ServicePlace < ApplicationRecord
       sortable = ["name", "cep", "active", "neighborhood"]
       filter = {"name" => "name_cont", "active" => "active_eq", 
                 "neighborhood" => "neighborhood_cont",
-                "cep" => "cep_cont", "s" => "s"}
+                "cep" => "cep_cont", "role" => "professionals_service_places_role_eq","s" => "s"}
 
     end
 

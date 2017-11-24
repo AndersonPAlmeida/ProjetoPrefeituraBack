@@ -7,8 +7,9 @@ module Api::V1
 
     # GET /professionals
     def index
-      # TODO: @professionals = policy_scope(Professional.filter(params[:q], params[:page]))
-      @professionals = policy_scope(Professional)
+      @professionals = policy_scope(Professional.filter(params[:q], params[:page], 
+        Professional.get_permission(current_user[1])))
+      #@professionals = policy_scope(Professional)
 
       if @professionals.nil?
         render json: {

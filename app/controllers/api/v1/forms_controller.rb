@@ -316,6 +316,7 @@ module Api::V1
         response["service_places"] = ServicePlace.all_active.local_city_hall(city_hall.id)
           .as_json(only: [:id, :name])
 
+
       when "adm_local"
         response["permissions"] = roles[1..-2].as_json
 
@@ -327,6 +328,7 @@ module Api::V1
         response["service_places"] = ServicePlace.all_active.local_city_hall(city_hall.id)
           .as_json(only: [:id, :name])
       
+
       else
         render json: {
           errors: ["You're not allowed to view this form."]
