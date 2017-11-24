@@ -3,8 +3,7 @@ module Api::V1
     include Authenticable
     include HasPolicies
 
-    before_action :set_citizen, only: [:picture, :show, :update, :destroy,
-                                       :schedule_options]
+    before_action :set_citizen, only: [:picture, :show, :update, :destroy]
 
     # GET /citizens
     def index
@@ -47,6 +46,8 @@ module Api::V1
 
     # GET /citizen/1/schedule_options
     def schedule_options
+      @citizen = Citizen.find_by(cpf: params[:cpf])
+
       if @citizen.nil?
         render json: {
           errors: ["User #{params[:id]} does not exist."]

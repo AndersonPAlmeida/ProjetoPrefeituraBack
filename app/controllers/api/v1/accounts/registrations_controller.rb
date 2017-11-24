@@ -38,24 +38,6 @@ module Api::V1
         @resource.uid = @citizen.cpf.gsub(/[^0-9]/, '')
       end
 
-      # give redirect value from params priority
-      @redirect_url = params[:confirm_success_url]
-
-      # fall back to default value if provided
-      @redirect_url ||= DeviseTokenAuth.default_confirm_success_url
-
-      # success redirect url is required
-      if resource_class.devise_modules.include?(:confirmable) && !@redirect_url
-        return render_create_error_missing_confirm_success_url
-      end
-
-      # if whitelist is set, validate redirect_url against whitelist
-      if DeviseTokenAuth.redirect_whitelist
-        unless DeviseTokenAuth.redirect_whitelist.include?(@redirect_url)
-          return render_create_error_redirect_url_not_allowed
-        end
-      end
-
       begin
         # override email confirmation, must be sent manually from ctrl
         resource_class.set_callback("create", :after, 

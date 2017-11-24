@@ -64,7 +64,7 @@ class Api::V1::Accounts::SessionsControllerTest < ActionDispatch::IntegrationTes
         end
 
         it "should correspond to the current account" do
-          assert_equal @controller.current_account.citizen.id, 
+          assert_equal @controller.current_user[0].id, 
             Account.where(uid: @body["data"]["uid"]).first.citizen.id
         end
 

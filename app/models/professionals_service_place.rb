@@ -7,6 +7,7 @@ class ProfessionalsServicePlace < ApplicationRecord
 
   # Validations #
   validates_presence_of :active, :role
+  validates :service_place, exclusion: { in: [nil] }
 
   def info_listing
     return {

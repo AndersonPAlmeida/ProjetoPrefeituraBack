@@ -21,7 +21,7 @@ class SolicitationsControllerTest < ActionDispatch::IntegrationTest
         active: true,
         cpf: "10845922904", 
         birth_date: "Apr 18 1997", 
-        cep: "1234567", 
+        cep: "81530110", 
         email: "test@example.com",
         name: "Test Example", 
         phone1: "(12)1212-1212",

@@ -7,8 +7,9 @@ module Api::V1
 
     # GET /professionals
     def index
-      # TODO: @professionals = policy_scope(Professional.filter(params[:q], params[:page]))
-      @professionals = policy_scope(Professional)
+      @professionals = policy_scope(Professional.filter(params[:q], params[:page], 
+        Professional.get_permission(current_user[1])))
+      #@professionals = policy_scope(Professional)
 
       if @professionals.nil?
         render json: {
@@ -16,6 +17,27 @@ module Api::V1
         }, status: 403
       else
         render json: @professionals.index_response.to_json
+      end
+    end
+
+    # GET professionals/check_citizen
+    def check_create_professional
+      cpf = params[:cpf]
+
+      @citizen = Citizen.find_by(cpf: cpf)
+
+      if @citizen.nil?
+        render json: {
+          errors: ["The citizen doesn't exist."]
+        }, status: 404
+      else
+        if @citizen.professional.nil?
+          render json: @citizen.complete_info_response
+        else
+          render json: {
+            errors: ["The citizen already is a professional."]
+          }, status: 422
+        end
       end
     end
 
@@ -34,14 +56,136 @@ module Api::V1
 
     # POST /professionals
     def create
-      @professional = Professional.new(professional_params)
+      success = false
+      error_message = nil
 
-      authorize @professional, :create?
+      raise_rollback = -> (error) {
+        error_message = error
+        raise ActiveRecord::Rollback
+      }
 
-      if @professional.save
-        render json: @professional, status: :created
+      if params[:create_citizen] == "true"
+        ActiveRecord::Base.transaction do
+          # Creates citizen
+          @citizen = Citizen.new(citizen_params)
+          @citizen.active = true
+
+          # Creates account
+          begin
+            @account = Account.new({
+              uid: params[:cpf],
+              provider: "cpf",
+              password: @citizen.birth_date.strftime('%d%m%y'),
+              password_confirmation: @citizen.birth_date.strftime('%d%m%y')
+            })
+
+            @account.save
+          rescue ActiveRecord::RecordNotUnique
+            raise_rollback.call([I18n.t(
+              "devise_token_auth.registrations.email_already_exists", email: @citizen.cpf
+            )])
+          end
+
+
+          # Assign new account to new citizen
+          @citizen.account_id = @account.id
+          raise_rollback.call(@citizen.errors.to_hash) unless @citizen.save
+
+
+          # Creates professional
+          @professional = Professional.new(professional_params)
+
+          @professional.account_id = @account.id
+          @professional.active = true
+          raise_rollback.call(@professional.errors.to_hash) unless @professional.save
+
+
+          psp_id_list = []
+          # Creates professionals service places
+          params[:professional][:roles].each do |item|
+            psp = ProfessionalsServicePlace.new({
+              professional_id: @professional.id, 
+              service_place_id: item[:service_place_id],
+              role: item[:role]
+            })
+
+            if psp_id_list.include?(item[:service_place_id])
+              raise_rollback.call(["Only one role per service place is allowed"])
+            end
+
+            psp_id_list << item[:service_place_id]
+
+            begin
+              authorize psp, :create_psp?
+            rescue
+              raise_rollback.call(
+                ["You're not allowed to register this professional in the given service place."]
+              )
+            end
+
+            raise_rollback.call(
+              psp.errors.to_hash.merge(full_messages: psp.errors.full_messages)
+            ) unless psp.save
+          end
+
+          success = true
+        end # End Transaction
+
+      else # If the citizen already exists
+        ActiveRecord::Base.transaction do
+          @account = Account.find_by(uid: params[:cpf])
+        
+          if @account.nil?
+            render json: {
+              errors: "Account #{params[:cpf]} doesn't exist."
+            }, status: 404
+            return
+          end
+
+          @professional = Professional.new(professional_params)
+          @professional.account_id = Account.find_by(uid: params[:cpf]).id
+          @professional.active = true
+
+          raise_rollback.call(@professional.errors.to_hash) unless @professional.save
+
+          psp_id_list = []
+          # Creates professionals service places
+          params[:professional][:roles].each do |item|
+            psp = ProfessionalsServicePlace.new({
+              professional_id: @professional.id, 
+              service_place_id: item[:service_place_id],
+              role: item[:role]
+            })
+
+            if psp_id_list.include?(item[:service_place_id])
+              raise_rollback.call(["Only one role per service place is allowed"])
+            end
+
+            psp_id_list << item[:service_place_id]
+
+            begin
+              authorize psp, :create_psp?
+            rescue
+              raise_rollback.call(
+                ["You're not allowed to register this professional in the given service place."]
+              )
+            end
+
+            raise_rollback.call(
+              psp.errors.to_hash.merge(full_messages: psp.errors.full_messages)
+            ) unless psp.save
+          end
+
+          success = true
+        end # End Transaction
+      end
+
+      if success
+        render json: @professional.complete_info_response, status: :created
       else
-        render json: @professional.errors, status: :unprocessable_entity
+        render json: {
+          errors: error_message 
+        }, status: 422
       end
     end
 
@@ -54,10 +198,59 @@ module Api::V1
       else
         authorize @professional, :update?
 
-        if @professional.update(professional_params)
-          render json: @professional
+        error_message = nil
+
+        raise_rollback = -> (error) {
+          error_message = error
+          raise ActiveRecord::Rollback
+        }
+
+        ActiveRecord::Base.transaction do
+          raise_rollback.call(@professional.citizen
+            .errors.to_hash) unless @professional.citizen.update(citizen_params)
+
+          ProfessionalsServicePlace.where(professional_id: @professional.id).destroy_all
+
+          psp_id_list = []
+
+          # Creates professionals service places
+          params[:professional][:roles].each do |item|
+            psp = ProfessionalsServicePlace.new({
+              professional_id: @professional.id, 
+              service_place_id: item[:service_place_id],
+              role: item[:role]
+            })
+
+            if psp_id_list.include?(item[:service_place_id])
+              raise_rollback.call(["Only one role per service place is allowed"])
+            end
+
+            psp_id_list << item[:service_place_id]
+
+            begin
+              authorize psp, :create_psp?
+            rescue
+              raise_rollback.call(
+                ["You're not allowed to register this professional in the given service place."]
+              )
+            end
+
+            raise_rollback.call(
+              psp.errors.to_hash.merge(full_messages: psp.errors.full_messages)
+            ) unless psp.save
+          end
+
+          raise_rollback.call(@professional.errors) unless @professional.update(professional_params)
+          raise_rollback.call(@professional.citizen.errors) unless @professional.citizen.update(citizen_params)
+        end
+
+        if error_message.nil?
+          render json: @professional.complete_info_response
         else
-          render json: @professional.errors, status: :unprocessable_entity
+          render json: {
+            errors: error_message 
+          }, status: 422
+          return
         end
       end
     end
@@ -112,12 +305,30 @@ module Api::V1
       end
     end
 
+    def citizen_params
+      params.require(:professional).permit(
+        :address_complement,
+        :address_number,
+        :address_street,
+        :birth_date,
+        :cep,
+        :city_id,
+        :cpf,
+        :email,
+        :name,
+        :neighborhood,
+        :note,
+        :pcd,
+        :phone1,
+        :phone2,
+        :rg
+      )
+    end
+
     # Only allow a trusted parameter "white list" through.
     def professional_params
       params.require(:professional).permit(
-        :id,
         :active,
-        :account_id,
         :occupation_id,
         :registration
       )

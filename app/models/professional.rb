@@ -1,4 +1,5 @@
 class Professional < ApplicationRecord
+  include Searchable
 
   # Associations #
   belongs_to :account
@@ -11,10 +12,12 @@ class Professional < ApplicationRecord
   # Validations #
   validates_presence_of :occupation_id, :account_id
 
-  scope :all_active, -> { where(active: true) }
+  scope :all_active, -> { 
+    where(active: true) 
+  }
 
   scope :local_city, -> (city_id) { 
-    joins(:service_places).where("service_places.city_id": city_id).distinct 
+    joins(:service_places).where("service_places.city_id": city_id).distinct
   }
 
   scope :local_service_place, -> (serv_id) { 
@@ -23,6 +26,9 @@ class Professional < ApplicationRecord
 
   delegate :name, to: :citizen
   delegate :cpf, to: :citizen
+  delegate :phone1, to: :citizen
+  delegate :email, to: :citizen
+  delegate :name, to: :occupation, prefix: true
 
   # Method for getting role from id
   # @param id [Integer/String] permission
@@ -39,7 +45,7 @@ class Professional < ApplicationRecord
   # @return [Json] response
   def self.index_response
     self.all.as_json(only: [:id, :registration, :active], 
-                     methods: %w(cpf name roles_names))
+                     methods: %w(occupation_name cpf name phone1 email roles_names ))
   end
 
   # Returns partial info json response to index professionals 
@@ -95,5 +101,71 @@ class Professional < ApplicationRecord
   # @return [Boolean] professional is tecnico
   def tecnico?
     self.roles_names.include?("responsavel_atendimento")
+  end
+
+  # @params params [ActionController::Parameters] Parameters for searching
+  # @params npage [String] number of page to be returned
+  # @params permission [String] Permission of current user
+  # @return [ActiveRecords] filtered sectors
+  def self.filter(params, npage, permission)
+    return search(search_params(params, permission), npage)
+  end
+
+  private
+
+  # Translates incoming search parameters to ransack patterns
+  # @params params [ActionController::Parameters] Parameters for searching
+  # @params permission [String] Permission of current user
+  # @return [Hash] filtered and translated parameters
+  def self.search_params(params, permission)
+
+    case permission
+    when "adm_c3sl"
+      sortable = ["citizen_name", "registration", "occupation", "citizen_cpf", 
+                  "citizen_email", "active"]
+
+      filter = {"name" => "citizen_name_cont", 
+                "registration" => "registration_cont", 
+                "cpf" => "citizen_cpf_eq", 
+                "role" => "professionals_service_places_role_eq", 
+                "city_hall" => "service_places_city_hall_id_eq",
+                "occupation" => "occupation_id_eq",
+                "service_place" => "service_places_id_eq",
+                "active" => "active_eq",
+                "s" => "s"}
+
+
+    when "adm_prefeitura"
+      sortable = ["citizen_name", "registration", "occupation", "citizen_cpf", 
+                  "citizen_email", "active"]
+
+      filter = {"name" => "citizen_name_cont", 
+                "registration" => "registration_cont", 
+                "cpf" => "citizen_cpf_eq", 
+                "role" => "professionals_service_places_role_eq", 
+                "city_hall" => "service_places_city_hall_id_eq",
+                "occupation" => "occupation_id_eq",
+                "service_place" => "service_places_id_eq",
+                "active" => "active_eq",
+                "s" => "s"}
+
+
+    when "adm_local"
+      sortable = ["citizen_name", "registration", "occupation", "citizen_cpf", 
+                  "citizen_email", "active"]
+
+      filter = {"name" => "citizen_name_cont", 
+                "registration" => "registration_cont", 
+                "cpf" => "citizen_cpf_eq", 
+                "role" => "professionals_service_places_role_eq", 
+                "city_hall" => "service_places_city_hall_id_eq",
+                "occupation" => "occupation_id_eq",
+                "service_place" => "service_places_id_eq",
+                "active" => "active_eq",
+                "s" => "s"}
+
+    end
+
+    return filter_search_params(params, filter, sortable) 
   end
 end

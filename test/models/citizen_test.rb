@@ -17,7 +17,7 @@ class CitizenTest < ActiveSupport::TestCase
         @curitiba.save!
 
         @citizen = Citizen.new(birth_date: "Apr 18 1997", 
-                               cep: "1234567", 
+                               cep: "81530110", 
                                email: "test@example.com",
                                name: "Test Example", 
                                phone1: "(12)1212-1212",
@@ -46,7 +46,7 @@ class CitizenTest < ActiveSupport::TestCase
       before do
 
         @citizen = Citizen.new(birth_date: "Apr 18 1997", 
-                               cep: "1234567", 
+                               cep: "81530110", 
                                email: "test@example.com",
                                name: "Test Example", 
                                phone1: "(12)1212-1212",
@@ -73,7 +73,7 @@ class CitizenTest < ActiveSupport::TestCase
     describe "Missing city" do
       before do
         @citizen = Citizen.new(birth_date: "Apr 18 1997", 
-                               cep: "1234567", 
+                               cep: "81530110", 
                                email: "test@example.com",
                                name: "Test Example", 
                                phone1: "(12)1212-1212",
@@ -99,7 +99,7 @@ class CitizenTest < ActiveSupport::TestCase
       before do
         @citizen = Citizen.new(cpf: "11111111111",
                                birth_date: "Apr 18 1997", 
-                               cep: "1234567", 
+                               cep: "81530110", 
                                email: "test@example.com",
                                name: "Test Example", 
                                phone1: "(12)1212-1212",
@@ -124,7 +124,7 @@ class CitizenTest < ActiveSupport::TestCase
     describe "Missing birth date" do
       before do
         @citizen = Citizen.new(cpf: "10845922904",
-                               cep: "1234567", 
+                               cep: "81530110", 
                                email: "test@example.com",
                                name: "Test Example", 
                                phone1: "(12)1212-1212",
@@ -175,7 +175,7 @@ class CitizenTest < ActiveSupport::TestCase
       before do
         @citizen = Citizen.new(cpf: "10845922904",
                                birth_date: "Apr 18 1997", 
-                               cep: "1234567", 
+                               cep: "81530110", 
                                email: "test@example.com",
                                phone1: "(12)1212-1212",
                                rg: "1234567")
@@ -200,7 +200,7 @@ class CitizenTest < ActiveSupport::TestCase
       before do
         @citizen = Citizen.new(cpf: "10845922904",
                                birth_date: "Apr 18 1997", 
-                               cep: "1234567",
+                               cep: "81530110",
                                email: "test@example.com",
                                name: "Test Example", 
                                rg: "1234567")
@@ -225,7 +225,7 @@ class CitizenTest < ActiveSupport::TestCase
       before do
         @citizen = Citizen.new(cpf: "10845922904",
                                birth_date: "Apr 18 1997", 
-                               cep: "1234567",
+                               cep: "81530110",
                                email: "test@example.com",
                                name: "Test Example", 
                                phone1: "(12)1212-1212")

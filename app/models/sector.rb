@@ -19,7 +19,9 @@ class Sector < ApplicationRecord
   validates_numericality_of :previous_notice, greater_than: 0,
     less_than_or_equal_to: 2000000000
 
-  scope :all_active, -> { where(active: true) }
+  scope :all_active, -> { 
+    where(active: true) 
+  }
 
   scope :local, ->(city_id) { 
     where(city_halls: {city_id: city_id}).includes(:city_hall)

@@ -41,6 +41,10 @@ class Citizen < ApplicationRecord
   validates_attachment_content_type :avatar,
     :content_type => ["image/jpg", "image/jpeg", "image/png", "image/gif"]
 
+  before_create :set_address
+  before_save :set_address
+
+  before_validation :set_address
 
   scope :all_active, -> { where(active: true, responsible_id: nil) }
 
@@ -156,5 +160,21 @@ class Citizen < ApplicationRecord
   # not (is a dependant)
   def cpf_required?
     self.responsible_id.nil?
+  end
+
+  def set_address
+    if self.cep.nil? or self.cep.empty?
+      self.errors["cep"] << "Cep can't be blank."
+      return false
+    end
+
+    address = Address.get_address(self.cep)
+
+    if not address.nil?
+      self.city_id = address.city_id
+    else
+      self.errors["cep"] << "#{self.cep} is invalid."
+      return false
+    end
   end
 end
