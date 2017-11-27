@@ -118,6 +118,7 @@ module Api::V1
           if params[:citizen][:image]
             if params[:citizen][:image][:content_type] == "delete"
               @resource.citizen.avatar.destroy
+              @resource.citizen.save
             else
               begin
                 params[:citizen][:image] = Agendador::Image::Parser.parse(params[:citizen][:image])
