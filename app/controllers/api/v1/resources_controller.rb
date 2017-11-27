@@ -16,15 +16,18 @@ module Api::V1
 
         city_hall_id = service_place.city_hall_id
 
+        permission = Professional.get_permission(params[:permission])
+
         if params[:permission] == "1"
-          @resources = Resource.all
+          @resources = Resource.all.filter(params[:q], params[:page], permission)
         else
           resource_type_ids = []
           resource_types = ResourceType.where(city_hall_id: city_hall_id)
           resource_types.each do |rt|
             resource_type_ids << rt.id          
           end
-          @resources = Resource.where(resource_types_id:resource_type_ids.uniq)
+          @resources = Resource.where(service_place_id:resource_type_ids.uniq)
+            .filter(params[:q], params[:page], permission)
         end 
 
         authorize @resources, :index?    

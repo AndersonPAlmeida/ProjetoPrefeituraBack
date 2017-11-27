@@ -24,7 +24,6 @@ class ResourceType < ApplicationRecord
 
         case permission
         when "adm_c3sl"
-            # sortable = ["name", "description", "active", "schedules_by_sector", "city_hall_name"]
             sortable = ["city_hall_id","name", "active", "mobile", "description"]
             filter = {"name" => "name_cont", "description" => "description_cont", 
                     "city_hall_id" => "city_hall_id_eq", "s" => "s"}
