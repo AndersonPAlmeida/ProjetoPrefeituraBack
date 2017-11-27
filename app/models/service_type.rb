@@ -19,6 +19,7 @@ class ServiceType < ApplicationRecord
 
   delegate :name, to: :sector, prefix: true
   delegate :city_hall_id, to: :sector, prefix: true
+  delegate :id, to: :service_places, prefix: true
 
   # Returns json response to index service_types 
   # @return [Json] response

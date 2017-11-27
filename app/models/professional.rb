@@ -28,7 +28,9 @@ class Professional < ApplicationRecord
   delegate :cpf, to: :citizen
   delegate :phone1, to: :citizen
   delegate :email, to: :citizen
+
   delegate :name, to: :occupation, prefix: true
+  delegate :id, to: :service_places, prefix: true
 
   # Method for getting role from id
   # @param id [Integer/String] permission

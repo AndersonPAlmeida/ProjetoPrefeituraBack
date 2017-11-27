@@ -35,7 +35,6 @@ class Shift < ApplicationRecord
   # specified by self.service_amount and are defined between 
   # self.execution_start_time and self.execution_end_time
   def create_schedules
-
     # Execute shift's create method
     yield
 
