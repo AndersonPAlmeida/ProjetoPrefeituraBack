@@ -23,11 +23,23 @@ module Api::V1
         else
           resource_type_ids = []
           resource_types = ResourceType.where(city_hall_id: city_hall_id)
+
+          puts "\n\n\n--------------"
+          p resource_types
+          puts "--------------\n\n\n"
+
           resource_types.each do |rt|
             resource_type_ids << rt.id          
           end
-          @resources = Resource.where(service_place_id:resource_type_ids.uniq)
+
+          @resources = Resource.where(resource_types_id:resource_type_ids.uniq)
             .filter(params[:q], params[:page], permission)
+
+
+          puts "\n\n\n--------------"
+          p @resources
+          puts "--------------\n\n\n" 
+
         end 
 
         authorize @resources, :index?    
