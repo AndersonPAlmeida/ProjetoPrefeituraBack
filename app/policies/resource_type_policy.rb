@@ -105,14 +105,12 @@ class ResourceTypePolicy < ApplicationPolicy
       else 
         true  
       end
-    when permission == "adm_local" 
+    else
       if record.first != nil
         (city_hall_id == record.first.city_hall_id)  
       else 
         true  
       end 
-    else
-      false
     end
   end
 

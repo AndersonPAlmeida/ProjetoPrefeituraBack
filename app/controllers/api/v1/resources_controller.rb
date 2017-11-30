@@ -18,28 +18,23 @@ module Api::V1
 
         permission = Professional.get_permission(params[:permission])
 
-        if params[:permission] == "1"
+        if permission == "adm_c3sl"
           @resources = Resource.all.filter(params[:q], params[:page], permission)
         else
-          resource_type_ids = []
-          resource_types = ResourceType.where(city_hall_id: city_hall_id)
+          if permission == "adm_prefeitura"
+            resource_type_ids = []
+            resource_types = ResourceType.where(city_hall_id: city_hall_id)
 
-          puts "\n\n\n--------------"
-          p resource_types
-          puts "--------------\n\n\n"
+            resource_types.each do |rt|
+              resource_type_ids << rt.id          
+            end
 
-          resource_types.each do |rt|
-            resource_type_ids << rt.id          
+            @resources = Resource.where(resource_types_id:resource_type_ids.uniq)
+              .filter(params[:q], params[:page], permission)
+          else
+            @resources = Resource.where(service_place_id:service_place.id)
+              .filter(params[:q], params[:page], permission)
           end
-
-          @resources = Resource.where(resource_types_id:resource_type_ids.uniq)
-            .filter(params[:q], params[:page], permission)
-
-
-          puts "\n\n\n--------------"
-          p @resources
-          puts "--------------\n\n\n" 
-
         end 
 
         authorize @resources, :index?    
