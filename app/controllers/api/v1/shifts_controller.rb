@@ -18,7 +18,7 @@ module Api::V1
           errors: ["Shift #{params[:id]} does not exist."]
         }, status: 404
       else
-        render json: @shift
+        render json: @shift.complete_info_response
       end
     end
 

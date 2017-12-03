@@ -17,6 +17,12 @@ class Schedule < ApplicationRecord
   # Workaround for Pundit's lack of parameter passing
   attr_accessor :target_citizen_id
 
+  delegate :name, to: :service_place, prefix: true
+  delegate :name, to: :citizen, prefix: true, allow_nil: true
+
+  delegate :description, to: :situation, prefix: true
+
+
   # @return [Json] schedule information for showing in confirmation screen
   # (final step of scheduling process)
   def confirmation_data
