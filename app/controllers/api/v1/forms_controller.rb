@@ -422,5 +422,92 @@ module Api::V1
       render json: response.as_json
     end
 
+    def shift_index
+      citizen = current_user[0]
+      permission = Professional.get_permission(current_user[1])
+
+      city_hall = citizen.professional.professionals_service_places
+        .find(current_user[1]).service_place.city_hall
+
+      service_place = citizen.professional.professionals_service_places
+        .find(current_user[1]).service_place
+
+      response = Hash.new
+
+      case permission
+      when "adm_c3sl"
+        # Every service place
+        response[:city_halls] = CityHall.all_active.as_json(
+          only: [:id, :name]
+        )
+
+        # Every service_place
+        response[:service_places] = ServicePlace.all_active.as_json(
+          only: [:id, :name, :city_hall_id]
+        )
+
+        # Every professional
+        response[:professionals] = Professional.all_active.as_json(
+          only: [:id, :service_places], methods: %w(name service_place_ids)
+        )
+
+        # Every service type
+        response[:service_types] = ServiceType.all_active.as_json(
+          only: [:id, :description], methods: %w(service_place_ids)
+        )
+
+      when "adm_prefeitura"
+        # Local service places
+        service_places = ServicePlace.all_active.local_city_hall(city_hall.id)
+        sp_ids = service_places.pluck(:id)
+        response[:service_places] = service_places.as_json(
+          only: [:id, :name]
+        )
+
+        # Professionals registered to local service places
+        professionals = Professional.all_active.where(service_places: {id: sp_ids})
+          .includes(:service_places)
+        response[:professionals] = professionals.as_json(
+          only: [:id, :service_places], methods: %w(name service_place_ids)
+        )
+
+        # Service types registered to local service places
+        service_types = ServiceType.all_active.where(service_places: {id: sp_ids})
+          .includes(:service_places)
+        response[:service_types] = service_types.as_json(
+          only: [:id, :description], methods: %w(service_place_ids)
+        )
+
+      when "adm_local"
+        # Current service place
+        service_places = [ service_place ] 
+        sp_ids = service_place.id
+        response[:service_places] = service_places.as_json(
+          only: [:id, :name]
+        )
+
+        # Professionals registered to current service place
+        professionals = Professional.all_active.where(service_places: {id: sp_ids})
+          .includes(:service_places)
+        response[:professionals] = professionals.as_json(
+          only: [:id, :service_places], methods: %w(name service_place_ids)
+        )
+
+        # Service types registered to current service place
+        service_types = ServiceType.all_active.where(service_places: {id: sp_ids})
+          .includes(:service_places)
+        response[:service_types] = service_types.as_json(
+          only: [:id, :description], methods: %w(service_place_ids)
+        )
+
+      else
+        render json: {
+          errors: ["You're not allowed to view this form."]
+        }, status: 403
+        return
+      end
+      
+      render json: response.as_json
+    end
   end
 end

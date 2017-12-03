@@ -6,9 +6,16 @@ module Api::V1
 
     # GET /shifts
     def index
-      @shifts = Shift.all
+      @shifts = policy_scope(Shift.filter(params[:q], params[:page], 
+        Professional.get_permission(current_user[1])))
 
-      render json: @shifts
+      if @shifts.nil?
+        render json: {
+          errors: ["You don't have the permission to view shifts."]
+        }, status: 403
+      else
+        render json: @shifts.index_response
+      end
     end
 
     # GET /shifts/1

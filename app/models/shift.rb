@@ -1,11 +1,12 @@
 class Shift < ApplicationRecord
+  include Searchable
 
   # Associations #
   belongs_to :service_place
   belongs_to :service_type
   belongs_to :shift, optional: true
 
-  has_one    :shift,
+  has_one :shift,
     foreign_key: :next_shift_id,
     class_name: "Shift"
 
@@ -19,7 +20,7 @@ class Shift < ApplicationRecord
     foreign_key: :professional_performer_id,
     class_name: "Professional"
 
-  has_many    :schedules
+  has_many :schedules
 
   # Validations #
   validates_presence_of :execution_start_time,
@@ -30,7 +31,6 @@ class Shift < ApplicationRecord
   after_save :create_schedules
   before_validation :check_conflict
 
-  
   delegate :name, to: :service_place, prefix: true
   delegate :description, to: :service_type, prefix: true
 
@@ -42,9 +42,10 @@ class Shift < ApplicationRecord
 
     schedules = Schedule.where(shift_id: self.id)
 
-    return self.as_json(only: [
-       :id, :service_amount, :execution_start_time, :execution_end_time, :notes
-      ], methods: %w(service_place_name service_type_description))
+    return self.as_json(
+        only: [ :id, :service_amount, :execution_start_time, :execution_end_time, :notes], 
+        methods: %w(service_place_name service_type_description)
+      )
       .merge({ professional_responsible_name: responsible.name })
       .merge({ professional_performer_name: performer.name })
       .merge({
@@ -55,7 +56,63 @@ class Shift < ApplicationRecord
       })
   end
 
+
+  # Returns json response to index shifts
+  # @return [Json] response
+  def self.index_response
+    self.all.as_json(only: [:id, :execution_start_time],
+                     methods: %w(professional_performer_name 
+                     service_type_description service_place_name))
+  end
+
+
+  # @params params [ActionController::Parameters] Parameters for searching
+  # @params npage [String] number of page to be returned
+  # @params permission [String] Permission of current user
+  # @return [ActiveRecords] filtered shifts
+  def self.filter(params, npage, permission)
+    return search(search_params(params, permission), npage)
+  end
+
+
   private
+
+  # Translates incoming search parameters to ransack patterns
+  # @params params [ActionController::Parameters] Parameters for searching
+  # @params permission [String] Permission of current user
+  # @return [Hash] filtered and translated parameters
+  def self.search_params(params, permission)
+    case permission
+    when "adm_c3sl"
+      sortable = ["service_type_description", "service_place_name", "execution_start_time"]
+      filter = {"professional" => "professional_performer_id_eq", 
+                "service_type_id" => "service_type_id_eq", 
+                "service_place_id" => "service_place_id_eq",
+                "city_hall_id" => "service_place_city_hall_id_eq"}
+
+    when "adm_prefeitura"
+      sortable = ["service_type_description", "service_place_name", "execution_start_time"]
+      filter = {"professional" => "professional_performer_id_eq", 
+                "service_type_id" => "service_type_id_eq", 
+                "service_place_id" => "service_place_id_eq"}
+
+    when "adm_local"
+      sortable = ["service_type_description", "service_place_name", "execution_start_time"]
+      filter = {"professional" => "professional_performer_id_eq", 
+                "service_type_id" => "service_type_id_eq", 
+                "service_place_id" => "service_place_id_eq"}
+
+    end
+
+    return filter_search_params(params, filter, sortable) 
+  end
+
+
+  # @return [String] self.professional_performer's name
+  def professional_performer_name
+    return Professional.find(self.professional_performer_id).name
+  end
+
 
   # Check for time conflict with existing shifts for the same professional_performer
   def check_conflict
@@ -72,6 +129,7 @@ class Shift < ApplicationRecord
       raise ActiveRecord::Rollback
     end
   end
+
 
   # Creates schedules when a shift is created, the amount of schedules is 
   # specified by self.service_amount and are defined between 
