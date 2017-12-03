@@ -27,17 +27,28 @@ class Shift < ApplicationRecord
     :service_amount
 
 
-  around_create :create_schedules
+  #around_save :create_schedules
+  after_save :create_schedules
+
+  before_validation :check_conflict
 
   private
+
+  # Check for time conflict with existing shifts for the same professional_performer
+  def check_conflict
+    if Shift.where.not("execution_end_time <= ? OR execution_start_time >= ?", 
+                       self.execution_start_time, self.execution_end_time)
+            .where(professional_performer_id: self.professional_performer_id).count > 0
+
+      self.errors["execution_start_time"] << "Time conflict"
+      raise ActiveRecord::Rollback
+    end
+  end
 
   # Creates schedules when a shift is created, the amount of schedules is 
   # specified by self.service_amount and are defined between 
   # self.execution_start_time and self.execution_end_time
   def create_schedules
-    # Execute shift's create method
-    yield
-
     schedules = Array.new
     start_t = self.execution_start_time.utc
     end_t = self.execution_end_time.utc
@@ -58,6 +69,8 @@ class Shift < ApplicationRecord
       schedules.append(schedule_row)
       start_t = end_t  
     end
+
+    #return false
 
     # Bulk insert for schedules
     Schedule.transaction do
