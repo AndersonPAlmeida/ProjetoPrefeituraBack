@@ -24,12 +24,27 @@ module Api::V1
 
     # POST /shifts
     def create
-      @shift = Shift.new(shift_params)
+      success = false
+      error_message = nil
 
-      if @shift.save
-        render json: @shift, status: :created
+      raise_rollback = -> (error) {
+        error_message = error
+        raise ActiveRecord::Rollback
+      }
+
+      ActiveRecord::Base.transaction do
+        shift_params[:shifts].each do |s|
+          shift = Shift.new(s)
+          raise_rollback.call(shift.errors.to_hash) unless shift.save
+        end
+
+        success = true
+      end
+
+      if success
+        render json: shift_params.as_json
       else
-        render json: @shift.errors, status: :unprocessable_entity
+        render json: error_message, status: :unprocessable_entity
       end
     end
 
@@ -73,18 +88,16 @@ module Api::V1
 
     # Only allow a trusted parameter "white list" through.
     def shift_params
-      params.require(:shift).permit(
-        :id,
+      params.permit(shifts: [
         :execution_start_time,
         :execution_end_time,
-        :next_shift_id,
         :notes,
         :professional_performer_id,
         :professional_responsible_id,
         :service_amount,
         :service_place_id,
         :service_type_id
-      )
+      ])
     end
   end
 end

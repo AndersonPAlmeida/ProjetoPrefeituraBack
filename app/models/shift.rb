@@ -39,8 +39,8 @@ class Shift < ApplicationRecord
     yield
 
     schedules = Array.new
-    start_t = self.execution_start_time
-    end_t = self.execution_end_time 
+    start_t = self.execution_start_time.utc
+    end_t = self.execution_end_time.utc
 
     # Split shift execution time to fit service_amounts schedules
     # each with (schedule_t * 60) minutes
