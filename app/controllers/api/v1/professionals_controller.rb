@@ -9,7 +9,6 @@ module Api::V1
     def index
       @professionals = policy_scope(Professional.filter(params[:q], params[:page], 
         Professional.get_permission(current_user[1])))
-      #@professionals = policy_scope(Professional)
 
       if @professionals.nil?
         render json: {
@@ -241,7 +240,8 @@ module Api::V1
           end
 
           raise_rollback.call(@professional.errors) unless @professional.update(professional_params)
-          raise_rollback.call(@professional.citizen.errors) unless @professional.citizen.update(citizen_params)
+          raise_rollback
+            .call(@professional.citizen.errors) unless @professional.citizen.update(citizen_params)
         end
 
         if error_message.nil?

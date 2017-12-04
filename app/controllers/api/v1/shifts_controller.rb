@@ -7,7 +7,7 @@ module Api::V1
     # GET /shifts
     def index
       @shifts = policy_scope(Shift.filter(params[:q], params[:page], 
-        Professional.get_permission(current_user[1])))
+                                          Professional.get_permission(current_user[1])))
 
       if @shifts.nil?
         render json: {
@@ -25,6 +25,15 @@ module Api::V1
           errors: ["Shift #{params[:id]} does not exist."]
         }, status: 404
       else
+        begin
+          authorize @shift, :show?
+        rescue
+          render json: {
+            errors: ["You're not allowed to view this shift."]
+          }, status: 403
+          return
+        end
+
         render json: @shift.complete_info_response
       end
     end
@@ -42,6 +51,13 @@ module Api::V1
       ActiveRecord::Base.transaction do
         shift_params[:shifts].each do |s|
           shift = Shift.new(s)
+
+          begin 
+            authorize shift, :create?
+          rescue
+            raise_rollback.call(["You're not allowed to create this shift."])
+          end
+
           raise_rollback.call(shift.errors.to_hash) unless shift.save
         end
 
@@ -62,10 +78,31 @@ module Api::V1
           errors: ["Shift #{params[:id]} does not exist."]
         }, status: 404
       else
-        if @shift.update(shift_params)
-          render json: @shift
+        success = false
+        error_message = nil
+
+        raise_rollback = -> (error) {
+          error_message = error
+          raise ActiveRecord::Rollback
+        }
+
+        ActiveRecord::Base.transaction do
+          @shift.assign_attributes(shift_update_params)
+          @shift.update_schedules()
+
+          begin
+            authorize @shift, :update?
+          rescue
+            raise_rollback.call(["You're not allowed to update this shift."])
+          end
+
+          raise_rollback.call(@shift.error.to_hash) unless @shift.save
+        end
+
+        if success
+          render json: @shift.complete_info_response
         else
-          render json: @shift.errors, status: :unprocessable_entity
+          render json: error_message, status: :unprocessable_entity
         end
       end
     end
@@ -77,6 +114,15 @@ module Api::V1
           errors: ["Shift #{params[:id]} does not exist."]
         }, status: 404
       else
+        begin
+          authorize @shift, :destroy?
+        rescue
+          render json: {
+            errors: ["You're not allowed to view this shift."]
+          }, status: 403
+          return
+        end
+
         @shift.service_amount = 0
         @shift.save!
       end
@@ -91,6 +137,20 @@ module Api::V1
       rescue
         @shift = nil
       end
+    end
+
+    # Only allow a trusted parameter "white list" through.
+    def shift_update_params
+      params.require(:shift).permit(
+        :execution_start_time,
+        :execution_end_time,
+        :notes,
+        :professional_performer_id,
+        :professional_responsible_id,
+        :service_amount,
+        :service_place_id,
+        :service_type_id
+      )
     end
 
     # Only allow a trusted parameter "white list" through.

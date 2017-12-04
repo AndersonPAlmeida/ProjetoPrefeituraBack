@@ -27,6 +27,10 @@ class Shift < ApplicationRecord
     :execution_end_time,
     :service_amount
 
+  scope :local_city_hall, -> (city_hall_id) { 
+    where(service_places: { city_hall_id: city_hall_id })
+      .includes(:service_place)
+  }
 
   after_save :create_schedules
   before_validation :check_conflict
@@ -63,6 +67,15 @@ class Shift < ApplicationRecord
     self.all.as_json(only: [:id, :execution_start_time],
                      methods: %w(professional_performer_name 
                      service_type_description service_place_name))
+  end
+
+  # Creates new schedules when a shift is updated, the amount of schedules is 
+  # specified by self.service_amount and are defined between 
+  # self.execution_start_time and self.execution_end_time
+  def update_schedules
+    Schedule.where(shift_id: self.id).destroy_all
+
+    self.create_schedules()
   end
 
 
@@ -125,11 +138,12 @@ class Shift < ApplicationRecord
                        self.execution_start_time, self.execution_end_time)
             .where(professional_performer_id: self.professional_performer_id).count > 0
 
-      self.errors["execution_start_time"] << "Conflicting time with existing shift for the same professional"
+      self.errors["execution_start_time"] << "Conflicting time with existing \
+      shift for the same professional"
+
       raise ActiveRecord::Rollback
     end
   end
-
 
   # Creates schedules when a shift is created, the amount of schedules is 
   # specified by self.service_amount and are defined between 
