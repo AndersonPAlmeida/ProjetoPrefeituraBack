@@ -4,6 +4,30 @@ module Api::V1
     
     before_action :set_resource, only: [:show, :update, :destroy]
 
+    #GET /resource_details
+    def details
+      @resources = Resource.where(id:params[:id]).first
+      professional_name = Citizen.where(
+                            account_id:Account.where(
+                                  id:Professional.where(
+                                      id:@resources.professional_responsible_id
+                                  ).first.id
+                            ).first.id 
+                          ).first.name
+
+      service_place = ServicePlace.where(id:@resources.service_place_id).first
+      resource_type = ResourceType.where(id:@resources.resource_types_id).first
+
+      detailed_info = {
+        professional_name: professional_name,
+        service_place: service_place,
+        resource_type: resource_type,
+        resource: @resources
+      } 
+
+      render json: detailed_info
+    end
+
     # GET /resources
     def index
       if (params[:permission] != "citizen")
