@@ -10,15 +10,16 @@ module Api::V1
       @citizens = policy_scope(Citizen.filter(params[:q], params[:page],
         Professional.get_permission(current_user[1])))
 
-      response = Hash.new
-      response[:num_entries] = @citizens.nil? ? 0 : @citizens.total_count
-      response[:entries] = @citizens
 
       if @citizens.nil?
         render json: {
           errors: ["You don't have the permission to view citizens."]
         }, status: 403
       else
+        response = Hash.new
+        response[:num_entries] = @citizens.total_count
+        response[:entries] = @citizens
+
         render json: response.to_json
       end
     end

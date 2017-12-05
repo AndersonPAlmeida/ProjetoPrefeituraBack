@@ -14,7 +14,11 @@ module Api::V1
           errors: ["You don't have the permission to view shifts."]
         }, status: 403
       else
-        render json: @shifts.index_response
+        response = Hash.new
+        response[:num_entries] = @shifts.total_count
+        response[:entries] = @shifts.index_response
+
+        render json: response
       end
     end
 

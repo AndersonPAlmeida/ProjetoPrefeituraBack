@@ -11,9 +11,6 @@ module Api::V1
         @service_types = policy_scope(ServiceType.filter(params[:q], params[:page],
           Professional.get_permission(current_user[1])))
 
-        response = Hash.new
-        response[:num_entries] = @service_types.nil? ? 0 : @service_types.total_count
-        response[:entries] = @service_types.index_response
       else
         @service_types = ServiceType.schedule_response(params[:sector_id]).to_json
 
@@ -26,6 +23,10 @@ module Api::V1
           errors: ["You don't have the permission to view service types."]
         }, status: 403
       else
+        response = Hash.new
+        response[:num_entries] = @service_types.total_count
+        response[:entries] = @service_types.index_response
+
         render json: response
       end
     end
