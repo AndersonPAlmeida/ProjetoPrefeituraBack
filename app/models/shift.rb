@@ -75,7 +75,7 @@ class Shift < ApplicationRecord
   def update_schedules
     Schedule.where(shift_id: self.id).destroy_all
 
-    self.create_schedules()
+    create_schedules()
   end
 
 
@@ -134,7 +134,8 @@ class Shift < ApplicationRecord
       raise ActiveRecord::Rollback
     end
 
-    if Shift.where.not("execution_end_time <= ? OR execution_start_time >= ?", 
+    if Shift.where.not(id: self.id)
+            .where.not("execution_end_time <= ? OR execution_start_time >= ?", 
                        self.execution_start_time, self.execution_end_time)
             .where(professional_performer_id: self.professional_performer_id).count > 0
 

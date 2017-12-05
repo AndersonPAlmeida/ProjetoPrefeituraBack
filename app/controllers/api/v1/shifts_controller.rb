@@ -67,7 +67,9 @@ module Api::V1
       if success
         render json: shift_params.as_json
       else
-        render json: error_message, status: :unprocessable_entity
+        render json: {
+          errors: error_message 
+        }, status: :unprocessable_entity
       end
     end
 
@@ -88,7 +90,6 @@ module Api::V1
 
         ActiveRecord::Base.transaction do
           @shift.assign_attributes(shift_update_params)
-          @shift.update_schedules()
 
           begin
             authorize @shift, :update?
@@ -96,7 +97,9 @@ module Api::V1
             raise_rollback.call(["You're not allowed to update this shift."])
           end
 
-          raise_rollback.call(@shift.error.to_hash) unless @shift.save
+          raise_rollback.call(@shift.errors.to_hash) unless @shift.save
+          @shift.update_schedules()
+          success = true
         end
 
         if success
