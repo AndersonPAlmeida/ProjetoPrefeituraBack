@@ -6,6 +6,17 @@ module Api::V1
 
     # GET /resource_types
     def index
+      citizen = current_user.first      
+      
+      professional = citizen.professional
+
+      service_place = professional.professionals_service_places
+      .find(params[:permission]).service_place  
+
+      city_hall_id = service_place.city_hall_id
+
+      permission = Professional.get_permission(params[:permission])
+
       if params[:permission] != "citizen"
         citizen = current_user.first
         
@@ -17,9 +28,9 @@ module Api::V1
         city_hall_id = service_place.city_hall_id
 
         if params[:permission] == "1"
-          @resource_type = ResourceType.all
+          @resource_type = ResourceType.all.filter(params[:q], params[:page], permission)
         else
-          @resource_type = ResourceType.where(city_hall_id: city_hall_id)
+          @resource_type = ResourceType.where(city_hall_id: city_hall_id).filter(params[:q], params[:page], permission)
         end 
         
         authorize @resource_type, :index?    

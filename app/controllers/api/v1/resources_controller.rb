@@ -4,6 +4,30 @@ module Api::V1
     
     before_action :set_resource, only: [:show, :update, :destroy]
 
+    #GET /resource_details
+    def details
+      @resources = Resource.where(id:params[:id]).first
+      professional_name = Citizen.where(
+                            account_id:Account.where(
+                                  id:Professional.where(
+                                      id:@resources.professional_responsible_id
+                                  ).first.id
+                            ).first.id 
+                          ).first.name
+
+      service_place = ServicePlace.where(id:@resources.service_place_id).first
+      resource_type = ResourceType.where(id:@resources.resource_types_id).first
+
+      detailed_info = {
+        professional_name: professional_name,
+        service_place: service_place,
+        resource_type: resource_type,
+        resource: @resources
+      } 
+
+      render json: detailed_info
+    end
+
     # GET /resources
     def index
       if (params[:permission] != "citizen")
@@ -16,15 +40,25 @@ module Api::V1
 
         city_hall_id = service_place.city_hall_id
 
-        if params[:permission] == "1"
-          @resources = Resource.all
+        permission = Professional.get_permission(params[:permission])
+
+        if permission == "adm_c3sl"
+          @resources = Resource.all.filter(params[:q], params[:page], permission)
         else
-          resource_type_ids = []
-          resource_types = ResourceType.where(city_hall_id: city_hall_id)
-          resource_types.each do |rt|
-            resource_type_ids << rt.id          
+          if permission == "adm_prefeitura"
+            resource_type_ids = []
+            resource_types = ResourceType.where(city_hall_id: city_hall_id)
+
+            resource_types.each do |rt|
+              resource_type_ids << rt.id          
+            end
+
+            @resources = Resource.where(resource_types_id:resource_type_ids.uniq)
+              .filter(params[:q], params[:page], permission)
+          else
+            @resources = Resource.where(service_place_id:service_place.id)
+              .filter(params[:q], params[:page], permission)
           end
-          @resources = Resource.where(resource_types_id:resource_type_ids.uniq)
         end 
 
         authorize @resources, :index?    

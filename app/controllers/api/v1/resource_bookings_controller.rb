@@ -23,13 +23,13 @@ module Api::V1
         city_hall_id = service_place.city_hall_id
         if (params[:view] == "professional")
           if permission == "adm_c3sl"
-            @resource_booking = ResourceBooking.all
+            @resource_booking = ResourceBooking.all.filter(params[:q], params[:page], permission)
           else       
             if (permission == "adm_prefeitura")
               # User can get all bookings of the city
               service_place_id = ServicePlace.where(city_hall_id: city_hall_id)
             else
-              # User can get all bookings of the street
+              # User can get all bookings of the city
               service_place_id = [service_place]         
             end
             service_place_ids = []
@@ -37,17 +37,18 @@ module Api::V1
               service_place_ids << sp.id
             end
             @resource_booking = ResourceBooking.where(service_place_id: service_place_ids.uniq)
+             .filter(params[:q], params[:page], permission)
           end 
         else 
-          @resource_booking = get_resource_booking_from_citizen
+          @resource_booking = get_resource_booking_from_citizen().filter(params[:q], params[:page], permission)
         end
 
       else
-        @resource_booking = get_resource_booking_from_citizen        
+        @resource_booking = get_resource_booking_from_citizen().filter(params[:q], params[:page], permission)        
       end
 
 
-      render json: @resource_booking
+      render json: @resource_booking.filter(params[:q], params[:page], permission) 
     end
 
     # GET /resource_bookings/1
