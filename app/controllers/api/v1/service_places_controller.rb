@@ -12,6 +12,10 @@ module Api::V1
         @service_places = policy_scope(ServicePlace.filter(params[:q], params[:page],
           Professional.get_permission(current_user[1])))
 
+
+        response = Hash.new
+        response[:num_entries] = @service_places.nil? ? 0 : @service_places.total_count
+        response[:entries] = @service_places.index_response
       else 
 
         # if service_type is specified, then request should return 
@@ -32,7 +36,7 @@ module Api::V1
           errors: ["You don't have the permission to view service places."]
         }, status: 403
       else
-        render json: @service_places.index_response
+        render json: response.to_json
       end
     end
 

@@ -14,9 +14,9 @@ module Api::V1
         .find(params[:permission]).service_place  
 
         city_hall_id = service_place.city_hall_id
-
+        permission = Professional.get_permission(params[:permission])
         if params[:permission] == "1"
-          @resource_shift = ResourceShift.all
+          @resource_shift = ResourceShift.all.filter(params[:q], params[:page], permission)
         else
           resource_type_ids = []
           resource_types = ResourceType.where(city_hall_id: city_hall_id)
@@ -29,6 +29,7 @@ module Api::V1
             resource_ids << r.id 
           end
           @resource_shift = ResourceShift.where(resource_id: resource_ids.uniq)
+          .filter(params[:q], params[:page], permission)
         end 
 
       else
@@ -45,6 +46,7 @@ module Api::V1
           resource_ids << r.id 
         end
         @resource_shift = ResourceShift.where(resource_id: resource_ids.uniq)
+        .filter(params[:q], params[:page], permission)
       end
 
 

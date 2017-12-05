@@ -60,6 +60,10 @@ Rails.application.routes.draw do
       get "forms/shift_index" => "forms#shift_index"
 
       get "check_create_professional" => "professionals#check_create_professional"
+
+
+      get "resource_details/:id" => "resources#details"
+
     end
   end
 end
