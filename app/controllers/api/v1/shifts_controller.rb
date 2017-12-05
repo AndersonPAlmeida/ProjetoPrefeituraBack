@@ -7,7 +7,7 @@ module Api::V1
     # GET /shifts
     def index
       @shifts = policy_scope(Shift.filter(params[:q], params[:page], 
-                                          Professional.get_permission(current_user[1])))
+                             Professional.get_permission(current_user[1])))
 
       if @shifts.nil?
         render json: {
