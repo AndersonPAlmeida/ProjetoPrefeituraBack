@@ -9,14 +9,17 @@ module Api::V1
     def index
       @professionals = policy_scope(Professional.filter(params[:q], params[:page], 
         Professional.get_permission(current_user[1])))
-      #@professionals = policy_scope(Professional)
+
+      response = Hash.new
+      response[:num_entries] = @professionals.nil? ? 0 : @professionals.total_count
+      response[:entries] = @professionals.index_response.to_json
 
       if @professionals.nil?
         render json: {
           errors: ["You don't have the permission to view professionals."]
         }, status: 403
       else
-        render json: @professionals.index_response.to_json
+        render json: response.to_json
       end
     end
 

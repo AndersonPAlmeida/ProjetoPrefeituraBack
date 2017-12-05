@@ -25,9 +25,15 @@ module Api::V1
         authorize @citizen, :schedule?
 
         @sectors = Sector.schedule_response(@citizen).to_json
+        response = @sectors
       else
         @sectors = policy_scope(Sector.filter(params[:q], params[:page],
           Professional.get_permission(current_user[1])))
+
+
+        response = Hash.new
+        response[:num_entries] = @sectors.nil? ? 0 : @sectors.total_count
+        response[:entries] = @sectors
       end
 
       if @sectors.nil?
@@ -35,7 +41,7 @@ module Api::V1
           errors: ["You're not allowed to view sectors"]
         }, status: 403
       else
-        render json: @sectors
+        render json: response.to_json
       end
     end
 
