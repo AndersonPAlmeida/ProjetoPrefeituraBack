@@ -244,7 +244,8 @@ module Api::V1
           end
 
           raise_rollback.call(@professional.errors) unless @professional.update(professional_params)
-          raise_rollback.call(@professional.citizen.errors) unless @professional.citizen.update(citizen_params)
+          raise_rollback
+            .call(@professional.citizen.errors) unless @professional.citizen.update(citizen_params)
         end
 
         if error_message.nil?

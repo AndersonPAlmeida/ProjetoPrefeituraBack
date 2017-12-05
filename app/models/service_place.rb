@@ -36,6 +36,7 @@ class ServicePlace < ApplicationRecord
     where(city_hall_id: city_hall_id)
   }
 
+  delegate :id, to: :city_hall, prefix: true
   delegate :name, to: :city_hall, prefix: true
 
   # Get every available schedule from the current service_place given a 

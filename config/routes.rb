@@ -51,11 +51,13 @@ Rails.application.routes.draw do
       get "forms/create_service_type" => "forms#create_service_type"
       get "forms/create_service_place" => "forms#create_service_place"
       get "forms/create_professional" => "forms#create_professional"
+      get "forms/create_shift" => "forms#create_shift"
 
       get "forms/citizen_index" => "forms#citizen_index"
       get "forms/service_type_index" => "forms#service_type_index"
       get "forms/service_place_index" => "forms#service_place_index"
       get "forms/professional_index" => "forms#professional_index"
+      get "forms/shift_index" => "forms#shift_index"
 
       get "check_create_professional" => "professionals#check_create_professional"
 
