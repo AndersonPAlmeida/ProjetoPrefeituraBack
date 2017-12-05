@@ -9,14 +9,12 @@ Rails.application.routes.draw do
       }
 
       get "accounts/self" => "accounts#index"
-
       get "citizens/schedule_options" => "citizens#schedule_options"
 
       resources :citizens do
         resources :dependants
         member do
           get 'picture'
-      #    get 'schedule_options'
         end
       end
 
@@ -62,9 +60,7 @@ Rails.application.routes.draw do
       get "forms/occupation_index" => "forms#occupation_index"
 
       get "check_create_professional" => "professionals#check_create_professional"
-
       get "resource_details/:id" => "resources#details"
-
     end
   end
 end
