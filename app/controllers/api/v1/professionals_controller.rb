@@ -18,7 +18,7 @@ module Api::V1
       else
         response = Hash.new
         response[:num_entries] = @professionals.total_count
-        response[:entries] = @professionals.index_response.to_json
+        response[:entries] = @professionals.index_response
 
         render json: response.to_json
       end

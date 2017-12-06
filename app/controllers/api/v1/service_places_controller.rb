@@ -11,8 +11,6 @@ module Api::V1
 
         @service_places = policy_scope(ServicePlace.filter(params[:q], params[:page],
           Professional.get_permission(current_user[1])))
-
-
       else 
 
         # if service_type is specified, then request should return 
