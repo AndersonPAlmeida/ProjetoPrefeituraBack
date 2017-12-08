@@ -4,6 +4,60 @@ module Api::V1
     
     before_action :set_resource, only: [:show, :update, :destroy]
 
+    def all_details
+      if (params[:permission] != "citizen")
+        citizen = current_user.first
+
+        professional = citizen.professional
+
+        service_place = professional.professionals_service_places
+        .find(params[:permission]).service_place  
+
+        city_hall_id = service_place.city_hall_id
+
+        permission = Professional.get_permission(params[:permission])
+
+        if permission == "adm_c3sl"
+          @resources = Resource.all.filter(params[:q], params[:page], permission)
+        else
+          if permission == "adm_prefeitura"
+            resource_type_ids = []
+            resource_types = ResourceType.where(city_hall_id: city_hall_id)
+
+            resource_types.each do |rt|
+              resource_type_ids << rt.id          
+            end
+
+            @resources = Resource.where(resource_types_id:resource_type_ids.uniq)
+              .filter(params[:q], params[:page], permission)
+          else
+            @resources = Resource.where(service_place_id:service_place.id)
+              .filter(params[:q], params[:page], permission)
+          end
+        end
+        resources_local = {
+          service_place_id: [],
+          resource_types_id: []
+        }
+        @resources.each do | r |  
+          resources_local[:service_place_id] << r.service_place_id 
+          resources_local[:resource_types_id] << r.resource_types_id 
+        end
+
+        service_place = ServicePlace.where(id:resources_local[:service_place_id]).to_a
+        resource_type = ResourceType.where(id:resources_local[:resource_types_id]).to_a
+
+        detailed_info={
+          resource: @resources,
+          service_place: service_place,
+          resource_type: resource_type
+        }
+
+        render json: detailed_info
+      end
+    end
+
+
     #GET /resource_details
     def details
       @resources = Resource.where(id:params[:id]).first

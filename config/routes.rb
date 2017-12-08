@@ -61,6 +61,7 @@ Rails.application.routes.draw do
 
       get "check_create_professional" => "professionals#check_create_professional"
       get "resource_details/:id" => "resources#details"
+      get "resource_more_info" => "resources#all_details"
     end
   end
 end
