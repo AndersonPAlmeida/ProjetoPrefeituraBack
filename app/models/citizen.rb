@@ -46,12 +46,17 @@ class Citizen < ApplicationRecord
 
   before_validation :set_address
 
-  scope :all_active, -> { where(active: true, responsible_id: nil) }
+  scope :all_active, -> { 
+    where(active: true, responsible_id: nil) 
+  }
 
-  scope :local, ->(city_id) { where(city_id: city_id) }
+  scope :local, ->(city_id) { 
+    where(city_id: city_id) 
+  }
 
-  scope :dependants, -> { where(responsible_id: self.id) }
-
+  scope :dependants, -> { 
+    where(responsible_id: self.id) 
+  }
 
   # @return list of citizen's columns
   def self.keys
@@ -84,6 +89,13 @@ class Citizen < ApplicationRecord
       nil
     end
   end
+
+
+  # @return [Integer] number of dependants of a citizen
+  def num_of_dependants
+    return Citizen.where(responsible_id: self.id).count
+  end
+
 
   # Used when the city, state and address are necessary (sign_in, show,
   # dependant show...)

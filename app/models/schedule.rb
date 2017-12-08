@@ -19,7 +19,6 @@ class Schedule < ApplicationRecord
 
   delegate :name, to: :service_place, prefix: true
   delegate :name, to: :citizen, prefix: true, allow_nil: true
-
   delegate :description, to: :situation, prefix: true
 
 
@@ -37,6 +36,7 @@ class Schedule < ApplicationRecord
     })
   end
 
+
   # @return [Json] information for showing an individual schedule 
   # in the schedule history screen
   def show_data
@@ -52,22 +52,22 @@ class Schedule < ApplicationRecord
     })
   end
 
+
   # @params id [Integer] Citizen the schedules are being returned for 
   # @params params [ActionController::Parameters] Parameters for searching
   # @params npage [String] number of page to be returned
   # @return [Json] every schedule for each dependant from a citizen and the 
   # citizen himself for showing in the schedule history screen
   def self.citizen_history(id, params, npage)
+
     # Citizen's dependants
     citizens = Citizen.where(responsible_id: id).pluck(:id, :name)
-
     response = Hash.new.as_json
     
     schedules = Schedule.where(citizen_id: id)
     sectors = get_sectors_response(schedules.where(situation_id: 2))
-    
-    schedules = schedules.filter(params, npage)
-      .map { |i| i.show_data }
+    schedules = schedules.filter(params, npage).map { |i| i.show_data }
+
 
     # Citizen's info along with the schedules associated with him
     response["id"] = id
@@ -82,8 +82,7 @@ class Schedule < ApplicationRecord
     citizens.each do |i,name|
       schedules = Schedule.where(citizen_id: i)
       sectors = get_sectors_response(schedules.where(situation_id: 2))
-      schedules = schedules.filter(params, npage)
-        .map { |j| j.show_data }
+      schedules = schedules.filter(params, npage).map { |j| j.show_data }
 
 
       entry = Hash.new.as_json
@@ -100,12 +99,14 @@ class Schedule < ApplicationRecord
     return response
   end
 
+
   # @params params [ActionController::Parameters] Parameters for searching
   # @params npage [String] number of page to be returned
   # @return [ActiveRecords] filtered schedules
   def self.filter(params, npage)
     return search(search_params(params), npage)
   end
+
 
   private
 

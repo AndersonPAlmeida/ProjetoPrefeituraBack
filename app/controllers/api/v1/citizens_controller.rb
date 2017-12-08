@@ -18,7 +18,8 @@ module Api::V1
       else
         response = Hash.new
         response[:num_entries] = @citizens.total_count
-        response[:entries] = @citizens
+        response[:entries] = @citizens.as_json(only: [:id, :name, :birth_date, :cpf],
+                                               methods: %w(num_of_dependants))
 
         render json: response.to_json
       end
@@ -81,7 +82,6 @@ module Api::V1
       end
     end
 
-    # TODO: Check if it's really necessary to have this method (it's never used)
     # POST /citizens
     def create
       @citizen = Citizen.new(citizen_params)
