@@ -17,11 +17,11 @@ class Professional < ApplicationRecord
   }
 
   scope :local_city, -> (city_id) { 
-    joins(:service_places).where("service_places.city_id": city_id).distinct
+    includes(:service_places).where(service_places: {city_id: city_id}).distinct
   }
 
   scope :local_service_place, -> (serv_id) { 
-    joins(:service_places).where("service_places.id": serv_id).distinct
+    includes(:service_places).where(service_places: {id: serv_id}).distinct
   }
 
   delegate :name, to: :citizen
