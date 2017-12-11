@@ -84,15 +84,50 @@ module Api::V1
 
     # POST /citizens
     def create
-      @citizen = Citizen.new(citizen_params)
-      @citizen.active = true
+      success = false
+      error_message = nil
 
-      @citizen.city_id = Address.get_city_id(citizen_params[:cep])
+      raise_rollback = -> (error) {
+        error_message = error
+        raise ActiveRecord::Rollback
+      }
 
-      if @citizen.save
-        render json: @citizen, status: :created
+      ActiveRecord::Base.transaction do
+
+        # Creates citizen
+        @citizen = Citizen.new(citizen_params)
+        @citizen.active = true
+
+        # Creates account
+        begin
+          @account = Account.new({
+            uid: citizen_params[:cpf],
+            provider: "cpf",
+            password: @citizen.birth_date.strftime('%d%m%y'),
+            password_confirmation: @citizen.birth_date.strftime('%d%m%y')
+          })
+
+          @account.save
+
+        rescue ActiveRecord::RecordNotUnique
+          raise_rollback.call([I18n.t(
+            "devise_token_auth.registrations.email_already_exists", email: @citizen.cpf
+          )])
+        end
+
+        # Assign new account to new citizen
+        @citizen.account_id = @account.id
+        raise_rollback.call(@citizen.errors.to_hash) unless @citizen.save
+
+        success = true
+      end # End Transaction
+
+      if success
+        render json: @citizen.complete_info_response, status: :created
       else
-        render json: @citizen.errors, status: :unprocessable_entity
+        render json: {
+          errors: error_message 
+        }, status: 422
       end
     end
 
