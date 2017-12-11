@@ -3,7 +3,7 @@ class ProfessionalsServicePlace < ApplicationRecord
   # Associations #
   belongs_to :service_place
   belongs_to :professional
-  belongs_to :resource_shift
+  has_one :resource_shift
 
   # Validations #
   validates_presence_of :active, :role

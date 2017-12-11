@@ -62,6 +62,8 @@ Rails.application.routes.draw do
       get "check_create_professional" => "professionals#check_create_professional"
       get "resource_details/:id" => "resources#details"
       get "resource_more_info" => "resources#all_details"
+
+      get "resource_shift_professional_responsible/:id" => "resource_shifts#get_professional_resource_shift"
     end
   end
 end
