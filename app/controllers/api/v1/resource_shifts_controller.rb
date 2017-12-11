@@ -5,6 +5,20 @@ module Api::V1
     before_action :set_resource_shift, only: [:show, :update, :destroy]
 
     # GET /resource_shifts
+    def get_professional_resource_shift
+      if (params[:permission] != "citizen")
+        professional_name = Citizen.where(
+                            account_id:Account.where(
+                                  id:Professional.where(
+                                      id:params[:id]
+                                  ).first.id
+                            ).first.id 
+                          ).first.name
+        render json: {professional_name: professional_name}
+      end
+    end
+
+    # GET /resource_shifts
     def index
       citizen = current_user.first
       if (params[:permission] != "citizen")
@@ -64,6 +78,8 @@ module Api::V1
         .find(params[:permission]).service_place  
 
         city_hall_id = service_place.city_hall_id
+
+        permission = Professional.get_permission(params[:permission])
       end
 
       if @resource_shift.nil?
@@ -76,7 +92,7 @@ module Api::V1
                                       id: @resource_shift.resource_id
                                     ).first.resource_types_id
                                 )).first.city_hall_id
-        if (resource_city_hall_id == city_hall_id)
+        if (resource_city_hall_id == city_hall_id or permission=="adm_c3sl")
           render json: @resource_shift
         else 
           render json: {
