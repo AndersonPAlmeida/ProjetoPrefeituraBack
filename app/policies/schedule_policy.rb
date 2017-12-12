@@ -1,7 +1,33 @@
 class SchedulePolicy < ApplicationPolicy
   class Scope < Scope
     def resolve
-      scope
+      citizen = user[0]
+      permission = Professional.get_permission(user[1])
+
+      if permission == "citizen"
+        return nil
+      end
+
+      professional = citizen.professional
+      service_place = professional.professionals_service_places
+        .find(user[1]).service_place
+
+      city_id = service_place.city_id
+      city_hall_id = service_place.city_hall_id
+      
+      return case permission
+      when "adm_c3sl"
+        scope.all
+
+      when "adm_prefeitura"
+        scope.local_city_hall(city_hall_id)
+
+      when "adm_local"
+        scope.local_service_place(service_place.id)
+
+      else
+        nil
+      end
     end
   end
 

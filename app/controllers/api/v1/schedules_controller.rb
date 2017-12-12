@@ -11,11 +11,27 @@ module Api::V1
       if current_user[1] == "citizen"
         @schedules = Schedule.citizen_history(current_user[0].id, 
                                               params[:q], params[:page])
-      else
-        @schedules = Schedule.all
-      end
 
-      render json: @schedules
+        render json: @schedules
+        return
+      else
+        @schedules = policy_scope(Schedule.filter(params[:q], params[:page], 
+          Professional.get_permission(current_user[1])))
+        
+
+        if @schedules.nil?
+          render json: {
+            errors: ["You don't have the permission to view schedules."]
+          }, status: 403
+        else
+          response = Hash.new
+          response[:num_entries] = @schedules.total_count
+          response[:entries] = @schedules.index_response
+
+          render json: response.to_json
+        end
+        return
+      end
     end
 
     # GET /schedules/1
