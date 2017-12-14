@@ -5,7 +5,9 @@ class Dependant < ApplicationRecord
   belongs_to :citizen
   has_many   :blocks
 
-  scope :all_active, -> { where(citizens: { active: true }).includes(:citizen) }
+  scope :all_active, -> { 
+    where(citizens: { active: true }).includes(:citizen) 
+  }
 
 
   # Used when the city, state and address are necessary (show)

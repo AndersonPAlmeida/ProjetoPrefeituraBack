@@ -58,9 +58,9 @@ class Professional < ApplicationRecord
 
   # @return [Json] detailed professional's data
   def complete_info_response
-    return self.as_json(only: [:id, :registration, :active])
+    return self.as_json(only: [:id, :registration, :active, :occupation_id])
       .merge({
-        occupation: self.occupation.name,
+        occupation_name: self.occupation.name,
         citizen: self.citizen.partial_info_response,
         service_places: self.professionals_service_places.map { |i| i.info_listing }
       })
