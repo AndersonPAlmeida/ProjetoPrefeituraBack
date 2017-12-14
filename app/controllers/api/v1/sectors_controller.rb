@@ -32,14 +32,15 @@ module Api::V1
           Professional.get_permission(current_user[1])))
       end
 
+
       if @sectors.nil?
         render json: {
           errors: ["You're not allowed to view sectors"]
         }, status: 403
       else
         response = Hash.new
-        response[:num_entries] = @sectors.nil? ? 0 : @sectors.total_count
-        response[:entries] = @sectors
+        response[:num_entries] = @sectors.total_count
+        response[:entries] = @sectors.index_response
 
         render json: response.to_json
       end

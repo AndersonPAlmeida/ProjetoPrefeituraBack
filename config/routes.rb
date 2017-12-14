@@ -58,6 +58,7 @@ Rails.application.routes.draw do
       get "forms/professional_index" => "forms#professional_index"
       get "forms/shift_index" => "forms#shift_index"
       get "forms/occupation_index" => "forms#occupation_index"
+      get "forms/schedule_index" => "forms#schedule_index"
 
       get "check_create_professional" => "professionals#check_create_professional"
       get "resource_details/:id" => "resources#details"

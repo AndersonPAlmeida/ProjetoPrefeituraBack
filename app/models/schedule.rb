@@ -30,6 +30,10 @@ class Schedule < ApplicationRecord
     where(service_places: {id: sp_id}).includes(:service_place)
   }
 
+  scope :from_professional, -> (prof_id) {
+    where(shifts: {professional_performer_id: prof_id}).includes(:shift)
+  }
+
 
   delegate :name, to: :service_place, prefix: true
   delegate :professional_performer_id, to: :shift
@@ -184,6 +188,36 @@ class Schedule < ApplicationRecord
                 "s" => "s"}
 
     when "adm_local"
+      sortable = ["citizen_name", "citizen_cpf", "service_start_time", "service_place_name", 
+                  "shift_service_type_name", "situation_description"]
+
+      filter = {"citizen_name" => "citizen_name_cont", 
+                "cpf" => "citizen_cpf_eq",
+                "city_hall" => "service_place_city_hall_id_eq",
+                "professional" => "shift_professional_performer_id_eq",
+                "service_place" => "service_places_id_eq",
+                "service_type" => "shift_service_type_id_eq",
+                "situation_id" => "situation_id_eq",
+                "start_time" => "service_start_time_gteq",
+                "end_time" => "service_end_time_lteq",
+                "s" => "s"}
+
+    when "atendente_local"
+      sortable = ["citizen_name", "citizen_cpf", "service_start_time", "service_place_name", 
+                  "shift_service_type_name", "situation_description"]
+
+      filter = {"citizen_name" => "citizen_name_cont", 
+                "cpf" => "citizen_cpf_eq",
+                "city_hall" => "service_place_city_hall_id_eq",
+                "professional" => "shift_professional_performer_id_eq",
+                "service_place" => "service_places_id_eq",
+                "service_type" => "shift_service_type_id_eq",
+                "situation_id" => "situation_id_eq",
+                "start_time" => "service_start_time_gteq",
+                "end_time" => "service_end_time_lteq",
+                "s" => "s"}
+
+    when "responsavel_atendimento"
       sortable = ["citizen_name", "citizen_cpf", "service_start_time", "service_place_name", 
                   "shift_service_type_name", "situation_description"]
 

@@ -25,6 +25,12 @@ class SchedulePolicy < ApplicationPolicy
       when "adm_local"
         scope.local_service_place(service_place.id)
 
+      when "atendente_local"
+        scope.local_service_place(service_place.id)
+
+      when "responsavel_atendimento"
+        scope.local_service_place(service_place.id).from_professional(professional.id)
+
       else
         nil
       end

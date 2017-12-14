@@ -27,6 +27,19 @@ class Sector < ApplicationRecord
     where(city_halls: {city_id: city_id}).includes(:city_hall)
   }
 
+  delegate :name, to: :city_hall, prefix: true
+
+  
+  # Returns json response to index schedules 
+  # @return [Json] response
+  def self.index_response
+    return self.all.as_json(
+      only: [:id, :name, :active, :schedules_by_sector, :description],
+      methods: %w(city_hall_name)
+    )
+  end
+
+
   # In the scheduling process, the first request should return every available
   # local sector and for each of them show if it is blocked or not
   #
