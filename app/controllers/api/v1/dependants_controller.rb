@@ -18,27 +18,23 @@ module Api::V1
         # Allow request only if the citizen is reachable from current user
         authorize @citizen, :show_dependants?
 
-
         @dependants = Dependant.where(citizens: {
           responsible_id: @citizen.id
         }).includes(:citizen)
 
+
         # Filter params should be applied only if the current user is a citizen
         if current_user[1] == "citizen"
           @dependants = @dependants.filter(params[:q], params[:page])
+
+          response = Hash.new
+          response[:num_entries] = @dependants.total_count
+          response[:entries] = @dependants.index_response
+        else
+          response = @dependants.index_response
         end
 
-        dependants_response = []
-
-        @dependants.each do |item|
-          dependants_response.append(item.citizen.as_json(only: [
-            :id, :name, :rg, :cpf, :birth_date
-          ]))
-
-          dependants_response[-1]["id"] = item.id
-        end
-
-        render json: dependants_response.to_json, status: :ok
+        render json: response, status: :ok
       end
     end
 

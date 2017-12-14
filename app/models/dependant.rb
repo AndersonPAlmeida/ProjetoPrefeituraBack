@@ -10,6 +10,22 @@ class Dependant < ApplicationRecord
   }
 
 
+  # Returns json response to index dependants
+  # @return [Json] response
+  def self.index_response
+    dependants_response = []
+
+    self.all.each do |item|
+      dependants_response.append(item.citizen.as_json(only: [
+        :id, :name, :rg, :cpf, :birth_date
+      ]))
+
+      dependants_response[-1]["id"] = item.id
+    end
+
+    return dependants_response
+  end
+
   # Used when the city, state and address are necessary (show)
   #
   # @return [Json] detailed dependant's data

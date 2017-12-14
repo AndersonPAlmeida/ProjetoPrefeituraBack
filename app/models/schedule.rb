@@ -104,14 +104,15 @@ class Schedule < ApplicationRecord
     
     schedules = Schedule.where(citizen_id: id)
     sectors = get_sectors_response(schedules.where(situation_id: 2))
-    schedules = schedules.filter(params, npage, "citizen").map { |i| i.show_data }
+    schedules = schedules.filter(params, npage, "citizen")
 
 
     # Citizen's info along with the schedules associated with him
     response["id"] = id
     response["name"] = Citizen.find(id).name
     response["schedules"] = Hash.new.as_json
-    response["schedules"]["entries"] = schedules.as_json
+    response["schedules"]["num_entries"] = schedules.total_count
+    response["schedules"]["entries"] = schedules.map {|i| i.show_data}.as_json
     response["schedules"]["sectors"] = sectors
     response["dependants"] = [].as_json
 
@@ -120,7 +121,7 @@ class Schedule < ApplicationRecord
     citizens.each do |i,name|
       schedules = Schedule.where(citizen_id: i)
       sectors = get_sectors_response(schedules.where(situation_id: 2))
-      schedules = schedules.filter(params, npage, "citizen").map { |j| j.show_data }
+      schedules = schedules.filter(params, npage, "citizen")
 
 
       entry = Hash.new.as_json
@@ -128,7 +129,8 @@ class Schedule < ApplicationRecord
       entry["id"] = i
       entry["name"] = name
       entry["schedules"] = Hash.new.as_json
-      entry["schedules"]["entries"] = schedules.as_json
+      entry["schedules"]["num_entries"] = schedules.total_count
+      entry["schedules"]["entries"] = schedules.map { |j| j.show_data }.as_json
       entry["schedules"]["sectors"] = sectors
 
       response["dependants"].append(entry)
