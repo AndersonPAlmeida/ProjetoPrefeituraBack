@@ -46,7 +46,15 @@ module Api::V1
       else
         @resource_booking = get_resource_booking_from_citizen().filter(params[:q], params[:page], permission)        
       end
-
+      # TODO: Add more info when get
+      @resource_booking.each do |rb|
+        moreInfo = {}
+        moreInfo['citizen_name'] = Citizen.where(id:rb.citizen_id).first.name
+        moreInfo['resource'] = Resource.where(id: ResourceShift.where(id:rb.resource_shift_id).first.resource_id).first
+        moreInfo['resource_type_name'] = ResourceType.where(id: moreInfo['resource'].resource_id).first.name
+        p moreInfo['resource']
+        rb[:more_info] = moreInfo
+      end
 
       render json: @resource_booking.filter(params[:q], params[:page], permission) 
     end
