@@ -37,6 +37,51 @@ class SchedulePolicy < ApplicationPolicy
     end
   end
 
+
+  def update?
+    citizen = user[0]
+    permission = Professional.get_permission(user[1])
+
+    if permission != "citizen"
+      professional = citizen.professional
+
+      service_place = professional.professionals_service_places
+        .find(user[1]).service_place
+
+      city_id = service_place.city_id
+    end
+
+    return case
+    when permission == "adm_c3sl"
+      return (record.situation.description == "Disponível")
+
+    when permission == "adm_prefeitura"
+      return ((record.service_place.city_hall_id == service_place.city_hall_id) and
+              (record.situation.description == "Disponível"))
+
+    when permission == "adm_local"
+      return ((record.service_place.id == service_place.id) and
+              (record.situation.description == "Disponível"))
+
+    when permission == "atendendente_local" 
+      return ((record.service_place.id == service_place.id) and
+              (record.situation.description == "Disponível"))
+
+    when permission == "responsavel_atendimento"
+      return ((record.service_place.id == service_place.id) and
+              (record.shift.professional_performer_id == professional.id)
+              (record.situation.description == "Disponível"))
+
+    when permission == "citizen"
+      return ((record.situation.description == "Agendado") and
+              (record.citizen_id == citizen.id))
+
+    else
+      false
+    end
+  end
+
+
   # TODO: Check for permissions between schedule and citizen being scheduled.
   # It involves either the future relation between schedule and citizen or 
   # simply the location related to the shift which the schedule is related to.

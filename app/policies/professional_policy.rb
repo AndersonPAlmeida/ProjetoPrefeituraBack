@@ -66,7 +66,7 @@ class ProfessionalPolicy < ApplicationPolicy
 
     professional = citizen.professional
 
-    service_place= professional.professionals_service_places
+    service_place = professional.professionals_service_places
       .find(user[1]).service_place
 
     city_id = service_place.city_id

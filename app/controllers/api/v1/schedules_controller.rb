@@ -115,7 +115,20 @@ module Api::V1
           errors: ["Schedule #{params[:id]} does not exist."]
         }, status: 404
       else
-        if @schedule.update(schedule_params)
+        begin
+          authorize @schedule, :update?
+
+          if ((current_user[1] == "citizen") and (schedule_update_params[:situation_id].to_i != 3))
+            raise "Error"
+          end
+        rescue
+          render json: {
+            errors: ["You are not allowed to modify this schedule"]
+          }, status: 403
+          return
+        end
+
+        if @schedule.update(schedule_update_params)
           render json: @schedule
         else
           render json: @schedule.errors, status: :unprocessable_entity
@@ -173,12 +186,16 @@ module Api::V1
       )
     end
 
+    def schedule_update_params
+      params.require(:schedule).permit(
+        :situation_id
+      )
+    end
+
     # Only allow a trusted parameter "white list" through.
     def schedule_params
       params.require(:schedule).permit(
-        :id,
         :citizen_id,
-        :citizen_ajax_read,
         :note,
         :professional_ajax_read,
         :reminder_read,
