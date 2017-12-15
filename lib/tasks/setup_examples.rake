@@ -719,7 +719,7 @@ namespace :agendador do
 
     puts "Criando tipo de Recurso: Laptop - Prefeitura 2"
     ResourceType.create({
-      city_hall_id:1,
+      city_hall_id:2,
       name: "Laptop",
       mobile: true,
       description:"Notebooks para empréstimo dos funcionários",
@@ -758,7 +758,7 @@ namespace :agendador do
     Resource.create({
       resource_types_id:2,
 	    service_place_id:4,
-	    professional_responsible_id:1,
+	    professional_responsible_id:3,
 	    minimum_schedule_time:0.5,
 	    maximum_schedule_time:2,
 	    brand:"Apple",
@@ -772,7 +772,7 @@ namespace :agendador do
     Resource.create({
       resource_types_id:2,
 	    service_place_id:4,
-	    professional_responsible_id:1,
+	    professional_responsible_id:3,
 	    minimum_schedule_time:0.5,
 	    maximum_schedule_time:2,
 	    brand:"Apple",
@@ -785,7 +785,7 @@ namespace :agendador do
     puts "Criando Escala de Recurso: Notebook 1 - Prefeitura 1"
     ResourceShift.create({
       resource_id:1,
-      professional_responsible_id:2,
+      professional_responsible_id:1,
       execution_start_time: DateTime.now.beginning_of_day + 1.day + 120.hours,
       execution_end_time: DateTime.now.beginning_of_day + 1.day + 128.hours,
       notes:"Alguma nota",
@@ -796,7 +796,7 @@ namespace :agendador do
     puts "Criando Escala de Recurso: Notebook 2 - Prefeitura 1"
     ResourceShift.create({
       resource_id:2,
-      professional_responsible_id:2,
+      professional_responsible_id:1,
       execution_start_time: DateTime.now.beginning_of_day + 1.day + 120.hours,
       execution_end_time: DateTime.now.beginning_of_day + 1.day + 128.hours,
       notes:"Alguma nota",
@@ -807,7 +807,7 @@ namespace :agendador do
     puts "Criando Escala de Recurso: Laptop 1 - Prefeitura 2"
     ResourceShift.create({
       resource_id:3,
-      professional_responsible_id:7,
+      professional_responsible_id:3,
       execution_start_time: DateTime.now.beginning_of_day + 1.day + 120.hours,
       execution_end_time: DateTime.now.beginning_of_day + 1.day + 128.hours,
       notes:"Alguma nota",
@@ -818,7 +818,7 @@ namespace :agendador do
     puts "Criando Escala de Recurso: Laptop 2 - Prefeitura 2"
     ResourceShift.create({
       resource_id:4,
-      professional_responsible_id:7,
+      professional_responsible_id:3,
       execution_start_time: DateTime.now.beginning_of_day + 1.day + 120.hours,
       execution_end_time: DateTime.now.beginning_of_day + 1.day + 128.hours,
       notes:"Alguma nota",

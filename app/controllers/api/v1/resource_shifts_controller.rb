@@ -10,7 +10,7 @@ module Api::V1
         professional_name = Citizen.where(
                             account_id:Account.where(
                                   id:Professional.where(
-                                      id:params[:id]
+                                      id: params[:id]
                                   ).first.id
                             ).first.id 
                           ).first.name
