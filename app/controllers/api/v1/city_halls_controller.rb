@@ -6,10 +6,25 @@ module Api::V1
 
     # GET /city_halls
     def index
-      @city_halls = CityHall.all
+      @city_halls = policy_scope(CityHall.filter(params[:q], params[:page],
+        Professional.get_permission(current_user[1])))
 
-      render json: @city_halls
+
+      if @city_halls.nil?
+        render json: {
+          errors: ["You don't have the permission to view city halls."]
+        }, status: 403
+        return
+      else
+        response = Hash.new
+        response[:num_entries] = @city_halls.total_count
+        response[:entries] = @city_halls.index_response
+
+        render json: response.to_json
+        return
+      end
     end
+
 
     # GET /city_halls/1
     def show
@@ -18,20 +33,40 @@ module Api::V1
           errors: ["City hall #{params[:id]} does not exist."]
         }, status: 404
       else
-        render json: @city_hall
+        begin
+          authorize @city_hall, :show?
+        rescue
+          render json: {
+            errors: ["You don't have the permission to view this city hall."]
+          }, status: 403
+          return
+        end
+
+        render json: @city_hall.complete_info_response
       end
     end
+
 
     # POST /city_halls
     def create
       @city_hall = CityHall.new(city_hall_params)
 
+      begin
+        authorize @city_hall, :create?
+      rescue
+        render json: {
+          errors: ["You don't have the permission to create city halls."]
+        }, status: 403
+        return
+      end
+
       if @city_hall.save
-        render json: @city_hall, status: :created
+        render json: @city_hall.complete_info_response, status: :created
       else
         render json: @city_hall.errors, status: :unprocessable_entity
       end
     end
+
 
     # PATCH/PUT /city_halls/1
     def update
@@ -40,8 +75,17 @@ module Api::V1
           errors: ["City hall #{params[:id]} does not exist."]
         }, status: 404
       else
+        begin
+          authorize @city_hall, :update?
+        rescue
+          render json: {
+            errors: ["You don't have the permission to create city halls."]
+          }, status: 403
+          return
+        end
+
         if @city_hall.update(city_hall_params)
-          render json: @city_hall
+          render json: @city_hall.complete_info_response
         else
           render json: @city_hall.errors, status: :unprocessable_entity
         end
@@ -49,16 +93,16 @@ module Api::V1
     end
 
     # DELETE /city_halls/1
-    def destroy
-      if @city_hall.nil?
-        render json: {
-          errors: ["City hall #{params[:id]} does not exist."]
-        }, status: 404
-      else
-        @city_hall.active = false
-        @city_hall.save!
-      end
-    end
+    #def destroy
+    #  if @city_hall.nil?
+    #    render json: {
+    #      errors: ["City hall #{params[:id]} does not exist."]
+    #    }, status: 404
+    #  else
+    #    @city_hall.active = false
+    #    @city_hall.save!
+    #  end
+    #end
 
     private
 
@@ -71,25 +115,18 @@ module Api::V1
       end
     end
 
+
     # Only allow a trusted parameter "white list" through.
     def city_hall_params
       params.require(:city_hall).permit(
-        :id,
-        :active, 
+        :address_number,
         :address_complement, 
-        :address_number, 
-        :address_street, 
         :block_text, 
         :citizen_access, 
         :citizen_register, 
-        :city_id, 
         :cep, 
         :description, 
         :email, 
-        :logo_content_type, 
-        :logo_file_name, 
-        :logo_file_size, 
-        :logo_updated_at, 
         :name, 
         :neighborhood, 
         :phone1, 
