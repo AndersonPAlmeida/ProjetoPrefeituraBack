@@ -28,6 +28,13 @@ module Api::V1
     def check_create_professional
       cpf = params[:cpf]
 
+      if not CpfValidator.validate_cpf(cpf)
+        render json: {
+          errors: ["The given cpf is not valid."]
+        }, status: 422
+        return
+      end
+
       @citizen = Citizen.find_by(cpf: cpf)
 
       if @citizen.nil?
@@ -40,7 +47,7 @@ module Api::V1
         else
           render json: {
             errors: ["The citizen already is a professional."]
-          }, status: 422
+          }, status: 409
         end
       end
     end
