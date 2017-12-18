@@ -185,6 +185,7 @@ module Api::V1
         :execution_start_time,
         :execution_end_time,
         :notes,
+        :active,
         :borrowed
       )
     end
