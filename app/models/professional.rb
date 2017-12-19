@@ -9,11 +9,14 @@ class Professional < ApplicationRecord
   has_many :professionals_service_places
   has_many :service_places, through: :professionals_service_places
 
+  
   # Validations #
   validates_presence_of :occupation_id, :account_id
 
+
+  # Scopes #
   scope :all_active, -> { 
-    where(active: true) 
+    where(active: true).distinct
   }
 
   scope :local_city, -> (city_id) { 
@@ -24,6 +27,8 @@ class Professional < ApplicationRecord
     includes(:service_places).where(service_places: {id: serv_id}).distinct
   }
 
+
+  # Delegations #
   delegate :name, to: :citizen
   delegate :cpf, to: :citizen
   delegate :phone1, to: :citizen
@@ -31,6 +36,7 @@ class Professional < ApplicationRecord
 
   delegate :name, to: :occupation, prefix: true
   delegate :id, to: :service_places, prefix: true
+
 
   # Method for getting role from id
   # @param id [Integer/String] permission
@@ -43,6 +49,7 @@ class Professional < ApplicationRecord
     end
   end
 
+
   # Returns json response to index professionals 
   # @return [Json] response
   def self.index_response
@@ -50,11 +57,13 @@ class Professional < ApplicationRecord
                      methods: %w(occupation_name cpf name phone1 email roles_names ))
   end
 
+
   # Returns partial info json response to index professionals 
   # @return [Json] response
   def self.simple_index_response
     self.all.as_json(only: :id, methods: %w(name))
   end
+
 
   # @return [Json] detailed professional's data
   def complete_info_response
@@ -66,12 +75,14 @@ class Professional < ApplicationRecord
       })
   end
 
+
   # @return [Array] list of roles
   def roles_ids
     # Array containing every role that the current professional has
     array = self.professionals_service_places.pluck(:id)
     return array
   end
+
 
   # @return [Array] list of roles' names
   def roles_names
@@ -80,30 +91,36 @@ class Professional < ApplicationRecord
     return array
   end
 
+
   # @return [Boolean] professional is adm_c3sl
   def adm_c3sl?
     self.roles_names.map.include?("adm_c3sl")
   end
+
 
   # @return [Boolean] professional is adm_prefeitura
   def adm_prefeitura?
     self.roles_names.include?("adm_prefeitura")
   end
 
+
   # @return [Boolean] professional is adm_local
   def adm_local?
     self.roles_names.include?("adm_local")
   end
+
 
   # @return [Boolean] professional is atendente
   def atendente?
     self.roles_names.include?("atendente_local")
   end
 
+
   # @return [Boolean] professional is tecnico
   def tecnico?
     self.roles_names.include?("responsavel_atendimento")
   end
+
 
   # @params params [ActionController::Parameters] Parameters for searching
   # @params npage [String] number of page to be returned
@@ -113,6 +130,7 @@ class Professional < ApplicationRecord
     return search(search_params(params, permission), npage)
   end
 
+
   private
 
   # Translates incoming search parameters to ransack patterns
@@ -120,7 +138,6 @@ class Professional < ApplicationRecord
   # @params permission [String] Permission of current user
   # @return [Hash] filtered and translated parameters
   def self.search_params(params, permission)
-
     case permission
     when "adm_c3sl"
       sortable = ["citizen_name", "registration", "occupation", "citizen_cpf", 
