@@ -4,6 +4,62 @@ module Api::V1
     
     before_action :set_resource_booking, only: [:show, :update, :destroy]
 
+    def get_extra_info
+      citizen = current_user.first
+      permission = Professional.get_permission(params[:permission])
+      if (params[:permission] != "citizen")
+        if (!params[:view])
+          render json: {
+            errors: ["You must provide the view parameter"]
+          }, status: :unprocessable_entity
+        end
+        professional = citizen.professional
+        service_place = professional.professionals_service_places
+        .find(params[:permission]).service_place  
+
+        city_hall_id = service_place.city_hall_id
+        if (params[:view] == "professional")
+          if permission == "adm_c3sl"
+            @resource_booking = ResourceBooking.all.filter(params[:q], params[:page], permission)
+          else       
+            if (permission == "adm_prefeitura")
+              # User can get all bookings of the city
+              service_place_id = ServicePlace.where(city_hall_id: city_hall_id)
+            else
+              # User can get all bookings of the city
+              service_place_id = [service_place]         
+            end
+            service_place_ids = []
+            service_place_id.each do | sp | 
+              service_place_ids << sp.id
+            end
+            @resource_booking = ResourceBooking.where(service_place_id: service_place_ids.uniq)
+              .filter(params[:q], params[:page], permission)
+          end 
+        else 
+          @resource_booking = get_resource_booking_from_citizen().filter(params[:q], params[:page], permission)
+        end
+
+      else
+        @resource_booking = get_resource_booking_from_citizen().filter(params[:q], params[:page], permission)        
+      end
+
+      resource_booking = []
+
+      @resource_booking.each do |rb|
+        moreInfo = {}
+        moreInfo['citizen_name'] = Citizen.where(id:rb.citizen_id).first.name
+        moreInfo['resource'] = Resource.where(id: ResourceShift.where(id:rb.resource_shift_id).first.resource_id).first
+        moreInfo['resource_type_name'] = ResourceType.where(id: moreInfo['resource'].id).first.name
+        moreInfo['resource_type_description'] = ResourceType.where(id: moreInfo['resource'].id).first.description
+        moreInfo['resource_booking_id'] = rb.id
+        resource_booking << moreInfo
+      end
+      render json: resource_booking
+    end
+  
+
+
     # GET /resource_bookings
     # You should pass the parameter view togheter with permission:
     # localhost:3000/resource_bookings&permission=2&view=professional
@@ -46,15 +102,17 @@ module Api::V1
       else
         @resource_booking = get_resource_booking_from_citizen().filter(params[:q], params[:page], permission)        
       end
-      # TODO: Add more info when get
-      @resource_booking.each do |rb|
-        moreInfo = {}
-        moreInfo['citizen_name'] = Citizen.where(id:rb.citizen_id).first.name
-        moreInfo['resource'] = Resource.where(id: ResourceShift.where(id:rb.resource_shift_id).first.resource_id).first
-        moreInfo['resource_type_name'] = ResourceType.where(id: moreInfo['resource'].resource_id).first.name
-        p moreInfo['resource']
-        rb[:more_info] = moreInfo
-      end
+
+      resource_booking = []
+
+      # @resource_booking.each do |rb|
+      #   moreInfo = {}
+      #   moreInfo['citizen_name'] = Citizen.where(id:rb.citizen_id).first.name
+      #   moreInfo['resource'] = Resource.where(id: ResourceShift.where(id:rb.resource_shift_id).first.resource_id).first
+      #   moreInfo['resource_type_name'] = ResourceType.where(id: moreInfo['resource'].id).first.name
+      #   moreInfo['resource_booking'] = rb 
+      #   resource_booking << moreInfo
+      # end
 
       render json: @resource_booking.filter(params[:q], params[:page], permission) 
     end
