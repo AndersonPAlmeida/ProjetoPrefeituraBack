@@ -76,14 +76,14 @@ class ProfessionalPolicy < ApplicationPolicy
       return (citizen.id != record.citizen.id)
 
     when permission == "adm_prefeitura"
-      return (citizen.id != record.citizen.id) && 
-        (record.service_places.pluck(:city_id).include? city_id) && 
-        (not record.adm_c3sl?)
+      return ((citizen.id != record.citizen.id) and
+        (record.service_places.pluck(:city_id).include? city_id) and
+        (not record.adm_c3sl?))
 
     when permission == "adm_local"
-      return (citizen.id != record.citizen.id) && 
-        (record.service_places.pluck(:id).include? service_place.id) && 
-        ((not record.adm_c3sl?) and (not record.adm_prefeitura?))
+      return ((citizen.id != record.citizen.id) and
+        (record.service_places.pluck(:id).include? service_place.id) and
+        ((not record.adm_c3sl?) and (not record.adm_prefeitura?)))
 
     else
       false
