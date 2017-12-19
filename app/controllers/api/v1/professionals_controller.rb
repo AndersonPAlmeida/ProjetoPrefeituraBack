@@ -28,6 +28,13 @@ module Api::V1
     def check_create_professional
       cpf = params[:cpf]
 
+      if not CpfValidator.validate_cpf(cpf)
+        render json: {
+          errors: ["The given cpf is not valid."]
+        }, status: 422
+        return
+      end
+
       @citizen = Citizen.find_by(cpf: cpf)
 
       if @citizen.nil?
@@ -40,7 +47,7 @@ module Api::V1
         else
           render json: {
             errors: ["The citizen already is a professional."]
-          }, status: 422
+          }, status: 409
         end
       end
     end
@@ -52,7 +59,14 @@ module Api::V1
           errors: ["Professional #{params[:id]} does not exist."]
         }, status: 404
       else
-        authorize @professional, :show?
+        begin
+          authorize @professional, :show?
+        rescue
+          render json: {
+            errors: ["You're not allowed to view this professional."]
+          }, status: 403
+          return
+        end
 
         render json: @professional.complete_info_response
       end
@@ -200,7 +214,14 @@ module Api::V1
           errors: ["Professional #{params[:id]} does not exist."]
         }, status: 404
       else
-        authorize @professional, :update?
+        begin
+          authorize @professional, :update?
+        rescue
+          render json: {
+            errors: ["You're not allowed to update this professional."]
+          }, status: 403
+          return
+        end
 
         error_message = nil
 
@@ -267,7 +288,14 @@ module Api::V1
           errors: ["Professional #{params[:id]} does not exist."]
         }, status: 404
       else
-        authorize @professional, :deactivate?
+        begin
+          authorize @professional, :deactivate?
+        rescue
+          render json: {
+            errors: ["You're not allowed to delete this professional."]
+          }, status: 403
+          return
+        end
 
         @professional.active = false
         @professional.save!
@@ -283,21 +311,12 @@ module Api::V1
 
       case @policy_name
       when "show?"
-        render json: {
-          errors: ["You're not allowed to view this professional."]
-        }, status: 403
       when "create?"
         render json: {
           errors: ["You're not allowed to create this professional."]
         }, status: 403
       when "deactivate?"
-        render json: {
-          errors: ["You're not allowed to delete this professional."]
-        }, status: 403
       when "update?"
-        render json: {
-          errors: ["You're not allowed to update this professional."]
-        }, status: 403
       end
     end
 

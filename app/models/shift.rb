@@ -69,6 +69,7 @@ class Shift < ApplicationRecord
                      service_type_description service_place_name))
   end
 
+
   # Creates new schedules when a shift is updated, the amount of schedules is 
   # specified by self.service_amount and are defined between 
   # self.execution_start_time and self.execution_end_time
@@ -145,6 +146,7 @@ class Shift < ApplicationRecord
       raise ActiveRecord::Rollback
     end
   end
+
 
   # Creates schedules when a shift is created, the amount of schedules is 
   # specified by self.service_amount and are defined between 

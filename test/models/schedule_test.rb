@@ -28,11 +28,10 @@ class ScheduleTest < ActiveSupport::TestCase
                              password_confirmation: "123mudar")
 
       @city_hall = CityHall.new(name: "Prefeitura de Joinville",
-                                cep: "81530110",
+                                cep: "89218230",
                                 neighborhood: "Aasdsd",
                                 address_street: "asdasd",
                                 address_number: "100",
-                                city_id: @joinville.id,
                                 phone1: "12121212",
                                 active: true,
                                 block_text: "hello")

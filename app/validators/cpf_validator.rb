@@ -9,14 +9,14 @@ class CpfValidator < ActiveModel::EachValidator
   # @param attribute [Symbol] the attribute to be validated (cpf)
   # @param value [String] the value of the record's cpf
   def validate_each(record, attribute, value)
-    unless validate_cpf(value) 
+    unless CpfValidator.validate_cpf(value) 
       record.errors[attribute] << ("#{value} is invalid.")
     end
   end
 
   # @return [boolean] true if cpf is valid
   # @param cpf [String] the cpf to be validated
-  def validate_cpf(cpf)
+  def self.validate_cpf(cpf)
 
     # check if is in the right format
     unless CPF_REGEX.match(cpf)
@@ -43,7 +43,7 @@ class CpfValidator < ActiveModel::EachValidator
   # @return [boolean] true if last two digits are valid
   # @param aux [Fixnum] the auh-th number to be validated (10 or 11)
   # @param arr [Array] the array with individual cpf numbers
-  def check(aux, arr)
+  def self.check(aux, arr)
     sum = 0
     aux.downto(2).to_a.zip(arr.each) { |i, j| sum += j * i }
     return (((sum * 10) % 11) % 10 == arr[aux - 12])

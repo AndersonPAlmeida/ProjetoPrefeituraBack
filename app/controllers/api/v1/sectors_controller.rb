@@ -1,7 +1,6 @@
 module Api::V1
   class SectorsController < ApplicationController
     include Authenticable
-    include HasPolicies
 
     before_action :set_sector, only: [:show, :update, :destroy]
 
@@ -22,7 +21,14 @@ module Api::V1
         end
 
         # Allow request only if the citizen is reachable from current user
-        authorize @citizen, :schedule?
+        begin
+          authorize @citizen, :schedule?
+        rescue
+          render json: {
+            errors: ["You're not allowed to schedule for this citizen."]
+          }, status: 403
+          return
+        end
 
         @sectors = Sector.schedule_response(@citizen).to_json
         render json: @sectors
@@ -53,9 +59,16 @@ module Api::V1
           errors: ["Sector #{params[:id]} does not exist."]
         }, status: 404
       else
-        authorize @sector, :show?
+        begin
+          authorize @sector, :show?
+        rescue
+          render json: {
+            errors: ["You're not allowed show this sector."]
+          }, status: 403
+          return
+        end
 
-        render json: @sector
+        render json: @sector.complete_info_response
       end
     end
 
@@ -64,7 +77,14 @@ module Api::V1
       @sector = Sector.new(sector_params)
       @sector.active = true
 
-      authorize @sector, :create?
+      begin
+        authorize @sector, :create?
+      rescue
+        render json: {
+          errors: ["You're not allowed to create this sector."]
+        }, status: 403
+        return
+      end
 
       if @sector.save
         render json: @sector, status: :created
@@ -80,7 +100,14 @@ module Api::V1
           errors: ["Sector #{params[:id]} does not exist."]
         }, status: 404
       else
-        authorize @sector, :update?
+        begin
+          authorize @sector, :update?
+        rescue
+          render json: {
+            errors: ["You're not allowed update this sector."]
+          }, status: 403
+          return
+        end
 
         if @sector.update(sector_params)
           render json: @sector
@@ -97,7 +124,14 @@ module Api::V1
           errors: ["Sector #{params[:id]} does not exist."]
         }, status: 404
       else
-        authorize @sector, :destroy?
+        begin
+          authorize @sector, :destroy?
+        rescue
+          render json: {
+            errors: ["You're not allowed deactivate this sector."]
+          }, status: 403
+          return
+        end
 
         @sector.active = false
         if @sector.save
@@ -109,35 +143,6 @@ module Api::V1
     end
 
     private
-
-    # Rescue Pundit exception for providing more details in reponse
-    def policy_error_description(exception)
-      # Set @policy_name as the policy method that raised the error
-      super
-
-      case @policy_name
-      when "schedule?"
-        render json: {
-          errors: ["You're not allowed to schedule for this citizen."]
-        }, status: 403
-      when "create?"
-        render json: {
-          errors: ["You're not allowed to create this sector."]
-        }, status: 403
-      when "show?"
-        render json: {
-          errors: ["You're not allowed show this sector."]
-        }, status: 403
-      when "update?"
-        render json: {
-          errors: ["You're not allowed update this sector."]
-        }, status: 403
-      when "destroy?"
-        render json: {
-          errors: ["You're not allowed deactivate this sector."]
-        }, status: 403
-      end
-    end
 
     # Use callbacks to share common setup or constraints between actions.
     def set_sector

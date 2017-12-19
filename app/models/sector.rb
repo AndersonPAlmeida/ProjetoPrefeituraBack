@@ -33,10 +33,21 @@ class Sector < ApplicationRecord
   # Returns json response to index schedules 
   # @return [Json] response
   def self.index_response
-    return self.all.as_json(
-      only: [:id, :name, :active, :schedules_by_sector, :description],
+    return self.all.as_json(only: [
+      :id, :name, :active, :schedules_by_sector, 
+      :description],
       methods: %w(city_hall_name)
     )
+  end
+
+  # @return [Json] detailed sector's data
+  def complete_info_response
+    return self.as_json(only: [
+      :id, :absence_max, :active, 
+      :blocking_days, :cancel_limit, :description, 
+      :name, :previous_notice, :schedules_by_sector, 
+      :city_hall_id
+    ])
   end
 
 
@@ -68,6 +79,7 @@ class Sector < ApplicationRecord
     return response
   end
 
+
   # @params params [ActionController::Parameters] Parameters for searching
   # @params npage [String] number of page to be returned
   # @params permission [String] Permission of current user
@@ -75,6 +87,7 @@ class Sector < ApplicationRecord
   def self.filter(params, npage, permission)
     return search(search_params(params, permission), npage)
   end
+
 
   private
 

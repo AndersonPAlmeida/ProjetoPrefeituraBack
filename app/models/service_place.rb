@@ -39,6 +39,7 @@ class ServicePlace < ApplicationRecord
   delegate :id, to: :city_hall, prefix: true
   delegate :name, to: :city_hall, prefix: true
 
+
   # Get every available schedule from the current service_place given a 
   # service_type
   #
@@ -62,6 +63,7 @@ class ServicePlace < ApplicationRecord
     return response
   end
 
+
   # Returns json response to index service_types 
   # @return [Json] response
   def self.index_response
@@ -69,6 +71,7 @@ class ServicePlace < ApplicationRecord
                      methods: %w(city_hall_name))
   end
   
+
   # @return [Json] detailed service_type's data
   def complete_info_response
     city = City.find(self.city_id)
@@ -99,6 +102,7 @@ class ServicePlace < ApplicationRecord
       ])})
   end
 
+
   # Get every service_place and its schedules given a service_type
   #
   # @param service_type [ServiceType] specified ServiceType
@@ -118,6 +122,7 @@ class ServicePlace < ApplicationRecord
     return response
   end
 
+
   # @params params [ActionController::Parameters] Parameters for searching
   # @params npage [String] number of page to be returned
   # @params permission [String] Permission of current user
@@ -125,6 +130,7 @@ class ServicePlace < ApplicationRecord
   def self.filter(params, npage, permission)
     return search(search_params(params, permission), npage)
   end
+
 
   private
 
@@ -151,6 +157,7 @@ class ServicePlace < ApplicationRecord
 
     return filter_search_params(params, filter, sortable) 
   end
+
 
   # Method surrounding create method for ServicePlace. It associates 
   # the address to the service place given a cep

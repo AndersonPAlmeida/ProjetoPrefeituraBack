@@ -40,11 +40,10 @@ class Api::V1::ProfessionalsControllerTest < ActionDispatch::IntegrationTest
 
       @curitiba_city_hall = CityHall.new(
         name: "Prefeitura de Curitiba",
-        cep: "80530336",
+        cep: "81530110",
         neighborhood: "Test neighborhood",
         address_street: "Test street",
         address_number: "123",
-        city_id: @curitiba.id,
         phone1: "1414141414",
         active: true,
         block_text: "Test block text"
