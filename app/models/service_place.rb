@@ -2,7 +2,7 @@ class ServicePlace < ApplicationRecord
   include Searchable
 
   # Associations #
-  #belongs_to :city
+  belongs_to :city
   belongs_to :city_hall
 
   has_many :professionals_service_places
@@ -28,6 +28,7 @@ class ServicePlace < ApplicationRecord
 
   around_save :create_service_place
 
+  # Scopes #
   scope :all_active, -> {
     where(active: true)
   }
@@ -36,8 +37,11 @@ class ServicePlace < ApplicationRecord
     where(city_hall_id: city_hall_id)
   }
 
+  # Delegations #
   delegate :id, to: :city_hall, prefix: true
   delegate :name, to: :city_hall, prefix: true
+  delegate :name, to: :city, prefix: true
+  delegate :state_name, to: :city
 
 
   # Get every available schedule from the current service_place given a 
@@ -67,8 +71,9 @@ class ServicePlace < ApplicationRecord
   # Returns json response to index service_types 
   # @return [Json] response
   def self.index_response
-    self.all.as_json(only: [:id, :name, :cep, :active, :neighborhood], 
-                     methods: %w(city_hall_name))
+    self.all.as_json(only: [
+      :id, :name, :cep, :active, :neighborhood, :phone1
+    ], methods: %w(city_hall_name city_name state_name))
   end
   
 
@@ -79,7 +84,7 @@ class ServicePlace < ApplicationRecord
     address = Address.get_address(self.cep)
 
     return self.as_json(only: [
-       :id, :name, :active, :cep, :address_number, 
+       :id, :name, :active, :cep, :address_number, :address_complement,
        :phone1, :phone2, :email, :url, :created_at, :updated_at
       ])
       .merge({

@@ -27,6 +27,16 @@ class DeviseTokenAuthCreateAccounts < ActiveRecord::Migration[5.0]
       t.timestamps
     end
 
+    reversible do |direction|
+      direction.up do
+        Account.find_each do |account|
+          account.uid = account.email
+          account.tokens = nil
+          account.save!
+        end
+      end
+    end
+
     add_index :accounts, :uid,                  unique: true
     add_index :accounts, :reset_password_token, unique: true
   end

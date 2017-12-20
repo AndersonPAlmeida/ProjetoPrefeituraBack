@@ -287,7 +287,7 @@ ActiveRecord::Schema.define(version: 20171109134344) do
     t.datetime "created_at",                                   null: false
     t.datetime "updated_at",                                   null: false
     t.integer  "city_hall_id",                                 null: false
-    t.integer  "city_id"
+    t.integer  "city_id",                                      null: false
     t.index ["city_hall_id"], name: "index_service_places_on_city_hall_id", using: :btree
     t.index ["city_id"], name: "index_service_places_on_city_id", using: :btree
   end

@@ -9,6 +9,7 @@ class ServiceType < ApplicationRecord
   validates_presence_of :description
   validates_inclusion_of :active, in: [true, false]
 
+  # Scopes #
   scope :all_active, -> {
     where(active: true)
   }
@@ -17,25 +18,31 @@ class ServiceType < ApplicationRecord
     where(sectors: {city_hall_id: city_hall_id}).includes(:sector) 
   }
 
+  # Delegations #
   delegate :name, to: :sector, prefix: true
   delegate :city_hall_id, to: :sector, prefix: true
   delegate :id, to: :service_places, prefix: true
   delegate :city_hall_name, to: :sector
+  delegate :city_hall_id, to: :sector
+
 
   # Returns json response to index service_types 
   # @return [Json] response
   def self.index_response
-    self.all.as_json(only: [:id, :description, :active], 
-                     methods: %w(sector_name city_hall_name))
+    self.all.as_json(only: [
+      :id, :description, :active
+    ], methods: %w(sector_name city_hall_name))
   end
+
 
   # @return [Json] detailed service_type's data
   def complete_info_response
-    return self.as_json(only: [:id, :description, :active, :created_at, :updated_at])
-      .merge({
-        city_hall_name: self.sector.city_hall.name
-      })
+    return self.as_json(only: [
+      :id, :description, :active, 
+      :sector_id, :created_at, :updated_at
+    ], methods: %w(city_hall_name city_hall_id))
   end
+
 
   # Response used to fill the list of service_types in the scheduling process,
   # consists of all the service_type from a given sector
@@ -56,6 +63,7 @@ class ServiceType < ApplicationRecord
     return response
   end
 
+
   # @params params [ActionController::Parameters] Parameters for searching
   # @params npage [String] number of page to be returned
   # @params permission [String] Permission of current user
@@ -63,6 +71,7 @@ class ServiceType < ApplicationRecord
   def self.filter(params, npage, permission)
     return search(search_params(params, permission), npage)
   end
+
 
   private
 
