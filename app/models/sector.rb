@@ -19,6 +19,7 @@ class Sector < ApplicationRecord
   validates_numericality_of :previous_notice, greater_than: 0,
     less_than_or_equal_to: 2000000000
 
+  # Scopes #
   scope :all_active, -> { 
     where(active: true) 
   }
@@ -27,6 +28,8 @@ class Sector < ApplicationRecord
     where(city_halls: {city_id: city_id}).includes(:city_hall)
   }
 
+
+  # Delegations #
   delegate :name, to: :city_hall, prefix: true
 
   
@@ -39,6 +42,7 @@ class Sector < ApplicationRecord
       methods: %w(city_hall_name)
     )
   end
+
 
   # @return [Json] detailed sector's data
   def complete_info_response

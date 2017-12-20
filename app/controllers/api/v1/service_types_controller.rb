@@ -31,6 +31,7 @@ module Api::V1
       end
     end
 
+
     # GET /service_types/1
     def show
       if @service_type.nil?
@@ -38,17 +39,32 @@ module Api::V1
           errors: ["Service type #{params[:id]} does not exist."]
         }, status: 404
       else
-        authorize @service_type, :show?
+        begin
+          authorize @service_type, :show?
+        rescue
+          render json: {
+            errors: ["You're not allowed to view this service type."]
+          }, status: 403
+          return
+        end
 
         render json: @service_type.complete_info_response
       end
     end
 
+
     # POST /service_types
     def create
       @service_type = ServiceType.new(service_type_params)
 
-      authorize @service_type, :create?
+      begin
+        authorize @service_type, :create?
+      rescue
+        render json: {
+          errors: ["You're not allowed to create this service type."]
+        }, status: 403
+        return
+      end
 
       if @service_type.save
         render json: @service_type.complete_info_response, status: :created
@@ -56,6 +72,7 @@ module Api::V1
         render json: @service_type.errors, status: :unprocessable_entity
       end
     end
+
 
     # PATCH/PUT /service_types/1
     def update
@@ -66,7 +83,14 @@ module Api::V1
       else
         @service_type.assign_attributes(service_type_params)
 
-        authorize @service_type, :update?
+        begin
+          authorize @service_type, :update?
+        rescue
+          render json: {
+            errors: ["You're not allowed to update this service type."]
+          }, status: 403
+          return
+        end
 
         if @service_type.save 
           render json: @service_type
@@ -78,28 +102,8 @@ module Api::V1
       end
     end
 
+
     private
-
-    # Rescue Pundit exception for providing more details in reponse
-    def policy_error_description(exception)
-      # Set @policy_name as the policy method that raised the error
-      super
-
-      case @policy_name
-      when "show?"
-        render json: {
-          errors: ["You're not allowed to view this service type."]
-        }, status: 403
-      when "create?"
-        render json: {
-          errors: ["You're not allowed to create this service type."]
-        }, status: 403
-      when "update?"
-        render json: {
-          errors: ["You're not allowed to update this service type."]
-        }, status: 403
-      end
-    end
 
     # Use callbacks to share common setup or constraints between actions.
     def set_service_type
@@ -109,6 +113,7 @@ module Api::V1
         @service_type = nil
       end
     end
+
 
     # Only allow a trusted parameter "white list" through.
     def service_type_params
