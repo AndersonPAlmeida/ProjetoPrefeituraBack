@@ -79,7 +79,7 @@ class ServicePlace < ApplicationRecord
     address = Address.get_address(self.cep)
 
     return self.as_json(only: [
-       :id, :name, :active, :cep, :address_number, 
+       :id, :name, :active, :cep, :address_number, :address_complement,
        :phone1, :phone2, :email, :url, :created_at, :updated_at
       ])
       .merge({
