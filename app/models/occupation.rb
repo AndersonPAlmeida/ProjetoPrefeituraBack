@@ -24,7 +24,7 @@ class Occupation < ApplicationRecord
   # @return [Json] detailed occupation's data
   def complete_info_response
     return self.as_json(only: [
-       :id, :name, :active, :description
+       :id, :name, :active, :description, :city_hall_id
       ], methods: %w(city_hall_name))
   end
 
@@ -32,7 +32,9 @@ class Occupation < ApplicationRecord
   # Returns json response to index occupations
   # @return [Json] occupations
   def self.index_response
-    self.all.as_json(only: [:id, :name, :description, :active])
+    self.all.as_json(only: [
+      :id, :name, :description, :active
+    ], methods: %w(city_hall_name))
   end
 
 
