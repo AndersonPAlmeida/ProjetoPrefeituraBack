@@ -50,8 +50,8 @@ module Api::V1
         moreInfo = {}
         moreInfo['citizen_name'] = Citizen.where(id:rb.citizen_id).first.name
         moreInfo['resource'] = Resource.where(id: ResourceShift.where(id:rb.resource_shift_id).first.resource_id).first
-        moreInfo['resource_type_name'] = ResourceType.where(id: moreInfo['resource'].id).first.name
-        moreInfo['resource_type_description'] = ResourceType.where(id: moreInfo['resource'].id).first.description
+        moreInfo['resource_type_name'] = ResourceType.where(id: moreInfo['resource'].resource_types_id).first.name
+        moreInfo['resource_type_description'] = ResourceType.where(id: moreInfo['resource'].resource_types_id).first.description
         moreInfo['resource_booking_id'] = rb.id
         resource_booking << moreInfo
       end
