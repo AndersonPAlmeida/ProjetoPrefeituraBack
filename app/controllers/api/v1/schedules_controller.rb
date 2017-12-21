@@ -4,8 +4,6 @@ module Api::V1
 
     before_action :set_schedule, only: [:show, :update, :destroy, :confirm, :confirmation]
 
-    rescue_from Pundit::NotAuthorizedError, with: :policy_error_description
-
     # GET /schedules
     def index
       if current_user[1] == "citizen"
@@ -13,12 +11,10 @@ module Api::V1
                                               params[:q], params[:page])
 
         render json: @schedules
-        return
       else
         @schedules = policy_scope(Schedule.filter(params[:q], params[:page], 
           Professional.get_permission(current_user[1])))
         
-
         if @schedules.nil?
           render json: {
             errors: ["You don't have the permission to view schedules."]
@@ -30,9 +26,9 @@ module Api::V1
 
           render json: response.to_json
         end
-        return
       end
     end
+
 
     # GET /schedules/1
     def show
@@ -58,6 +54,7 @@ module Api::V1
       end
     end
 
+
     # GET /schedules/1/confirmation
     def confirmation
       if @schedule.nil?
@@ -70,16 +67,31 @@ module Api::V1
         @schedule.target_citizen_id = params[:citizen_id]
 
         # Check if the current citizen can schedule for the given citizen
-        authorize @schedule, :permitted?
+        begin
+          authorize @schedule, :permitted?
+        rescue
+          render json: {
+            errors: ["You're not allowed to schedule for this citizen."]
+          }, status: 422
+          return
+        end
 
         # Check if there's no conflict concerning the given citizen's schedules
-        authorize @schedule, :no_conflict?
+        begin
+          authorize @schedule, :no_conflict?
+        rescue
+          render json: {
+            errors: ["This citizen is already scheduled in the given time."]
+          }, status: 409
+          return
+        end
 
         # Return Json containing the necessary information for displaying the
         # schedule confirmation to the user
         render json: @schedule.confirmation_data
       end
     end
+
 
     # PUT /schedules/1/confirm
     def confirm
@@ -110,6 +122,8 @@ module Api::V1
       end
     end
 
+
+    # NEVER USED (TODO: Check if is save to remove)
     # POST /schedules
     def create
       @schedule = Schedule.new(schedule_params)
@@ -121,6 +135,7 @@ module Api::V1
       end
     end
 
+
     # PATCH/PUT /schedules/1
     def update
       if @schedule.nil?
@@ -131,7 +146,9 @@ module Api::V1
         begin
           authorize @schedule, :update?
 
-          if ((current_user[1] == "citizen") and (schedule_update_params[:situation_id].to_i != 3))
+          # Citizen can only update scheduled schedules (situation == Agendado) 
+          if ((current_user[1] == "citizen") and 
+              (schedule_update_params[:situation_id].to_i != 3))
             raise "Error"
           end
         rescue
@@ -149,6 +166,7 @@ module Api::V1
       end
     end
 
+
     # DELETE /schedules/1
     def destroy
       if @schedule.nil?
@@ -161,25 +179,8 @@ module Api::V1
       end
     end
 
+
     private
-
-    # Rescue Pundit exception for providing more details in reponse
-    def policy_error_description(exception)
-
-      # Get SchedulePolicy method's name responsible for raising exception 
-      policy_name = exception.message.split(' ')[3]
-
-      case policy_name
-      when "permitted?"
-        render json: {
-          errors: ["You're not allowed to schedule for this citizen."]
-        }, status: 422
-      when "no_conflict?"
-        render json: {
-          errors: ["This citizen is already scheduled in the given time."]
-        }, status: 409
-      end
-    end
 
     # Use callbacks to share common setup or constraints between actions.
     def set_schedule
@@ -190,6 +191,7 @@ module Api::V1
       end
     end
 
+
     # Only allow a trusted parameter "white list" through. (Used in confirm
     # request)
     def schedule_confirm_params
@@ -199,11 +201,14 @@ module Api::V1
       )
     end
 
+  
+    # Only allow updates on the schedule's situation
     def schedule_update_params
       params.require(:schedule).permit(
         :situation_id
       )
     end
+
 
     # Only allow a trusted parameter "white list" through.
     def schedule_params

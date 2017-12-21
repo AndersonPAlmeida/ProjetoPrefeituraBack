@@ -60,6 +60,7 @@ class Schedule < ApplicationRecord
     return response
   end
 
+
   # Used for showing receipt
   # @return [Json] detailed service_type's data
   def complete_info_response
@@ -102,37 +103,6 @@ class Schedule < ApplicationRecord
     }
   
     return response
-
-
-
-
-
-
-    #city = City.find(self.city_id)
-    #state = city.state
-
-    #return self.as_json(only: [
-    #   :id, :citizen_name, :active, :cep, :address_number, :address_complement,
-    #   :phone1, :phone2, :email, :url, :created_at, :updated_at
-    #  ])
-    #  .merge({
-    #    city_hall_name: self.city_hall.name
-    #  })
-    #  .merge({service_types: self.service_types.as_json(only: [
-    #    :id, :description
-    #  ])})
-    #  .merge({
-    #    professionals: self.professionals.simple_index_response
-    #  })
-    #  .merge({city: city.as_json(except: [
-    #    :ibge_code, :state_id, :created_at, :updated_at
-    #  ])})
-    #  .merge({state: state.as_json(except: [
-    #    :ibge_code, :created_at, :updated_at
-    #  ])})
-    #  .merge({address: address.as_json(except: [
-    #    :created_at, :updated_at, :state_id, :city_id
-    #  ])})
   end
 
 
