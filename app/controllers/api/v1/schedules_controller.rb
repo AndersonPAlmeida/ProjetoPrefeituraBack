@@ -41,7 +41,20 @@ module Api::V1
           errors: [" Schedule #{params[:id]} does not exist."]
         }, status: 404
       else
-        render json: @schedule
+        begin
+          authorize @schedule, :show?
+        rescue
+          render json: {
+            errors: ["You're not allowed to view this schedule."]
+          }, status: 422
+          return
+        end
+
+        if @schedule.citizen.nil?
+          render json: @schedule
+        else
+          render json: @schedule.complete_info_response
+        end
       end
     end
 

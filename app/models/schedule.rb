@@ -17,7 +17,7 @@ class Schedule < ApplicationRecord
   # Workaround for Pundit's lack of parameter passing
   attr_accessor :target_citizen_id
 
-
+  # Scopes #
   scope :local_city, -> (city_id) { 
     where(service_places: {city_id: city_id}).includes(:service_places)
   }
@@ -34,7 +34,7 @@ class Schedule < ApplicationRecord
     where(shifts: {professional_performer_id: prof_id}).includes(:shift)
   }
 
-
+  # Delegations #
   delegate :name, to: :service_place, prefix: true
   delegate :professional_performer_id, to: :shift
 
@@ -46,10 +46,11 @@ class Schedule < ApplicationRecord
   # Returns json response to index schedules 
   # @return [Json] response
   def self.index_response
-    response = self.all.as_json(only: [:id, :service_start_time, 
-                                       :service_end_time, :shift_id], 
-                     methods: %w(situation_description citizen_name 
-                     citizen_cpf professional_performer_id))
+    response = self.all.as_json(only: [
+      :id, :service_start_time, 
+      :service_end_time, :shift_id
+    ], methods: %w(situation_description citizen_name 
+      citizen_cpf professional_performer_id))
 
     response.map do |i| 
       i["professional_name"] = Professional.find(i["professional_performer_id"]).name
@@ -57,6 +58,81 @@ class Schedule < ApplicationRecord
     end
 
     return response
+  end
+
+  # Used for showing receipt
+  # @return [Json] detailed service_type's data
+  def complete_info_response
+    citizen = self.citizen
+    performer = Professional.find(self.professional_performer_id)
+
+    responsible_name = citizen.name
+    if (not self.citizen.nil? and not self.citizen.responsible_id.nil?)
+      responsible_name = Citizen.find(self.citizen.responsible_id).name
+    end
+
+    address = Address.get_address(self.service_place.cep)
+
+    response = {}
+    response[:citizen_data] = {
+      id: citizen.id,
+      name: citizen.name,
+      birth_date: citizen.birth_date,
+      responsible_name: responsible_name,
+      cpf: citizen.cpf,
+      rg: citizen.rg,
+      note: self.note
+    }
+
+    response[:service_place_data] = {
+      name: self.service_place.name,
+      address: address.as_json(except: [
+        :created_at, :updated_at, :state_id, :city_id
+      ]),
+      complement: self.service_place.address_complement,
+      phone1: self.service_place.phone1
+    }
+
+    response[:schedule_data] = {
+      id: self.id,
+      service_type_name: self.shift.service_type.description,
+      service_start_time: self.service_start_time,
+      professional_performer: performer.name,
+      situation: self.situation.description
+    }
+  
+    return response
+
+
+
+
+
+
+    #city = City.find(self.city_id)
+    #state = city.state
+
+    #return self.as_json(only: [
+    #   :id, :citizen_name, :active, :cep, :address_number, :address_complement,
+    #   :phone1, :phone2, :email, :url, :created_at, :updated_at
+    #  ])
+    #  .merge({
+    #    city_hall_name: self.city_hall.name
+    #  })
+    #  .merge({service_types: self.service_types.as_json(only: [
+    #    :id, :description
+    #  ])})
+    #  .merge({
+    #    professionals: self.professionals.simple_index_response
+    #  })
+    #  .merge({city: city.as_json(except: [
+    #    :ibge_code, :state_id, :created_at, :updated_at
+    #  ])})
+    #  .merge({state: state.as_json(except: [
+    #    :ibge_code, :created_at, :updated_at
+    #  ])})
+    #  .merge({address: address.as_json(except: [
+    #    :created_at, :updated_at, :state_id, :city_id
+    #  ])})
   end
 
 

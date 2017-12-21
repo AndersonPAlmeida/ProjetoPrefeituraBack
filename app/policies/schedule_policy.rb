@@ -37,6 +37,44 @@ class SchedulePolicy < ApplicationPolicy
     end
   end
 
+  
+  def show?
+    citizen = user[0]
+    permission = Professional.get_permission(user[1])
+
+    if permission == "citizen"
+      return record.citizen_id == citizen.id
+    end
+
+    professional = citizen.professional
+
+    service_place = professional.professionals_service_places
+      .find(user[1]).service_place
+
+    city_hall_id = service_place.city_hall_id
+
+    return case
+    when permission == "adm_c3sl"
+      return true
+
+    when permission == "adm_prefeitura"
+      return ((record.service_place.city_hall_id == service_place.city_hall_id))
+    
+    when permission == "adm_local"
+      return ((record.service_place.id == service_place.id))
+
+    when permission == "atendendente_local" 
+      return ((record.service_place.id == service_place.id))
+
+    when permission == "responsavel_atendimento"
+      return ((record.service_place.id == service_place.id) and
+              (record.shift.professional_performer_id == professional.id))
+
+    else
+      false
+    end
+  end
+
 
   def update?
     citizen = user[0]

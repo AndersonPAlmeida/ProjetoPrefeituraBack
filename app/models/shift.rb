@@ -27,14 +27,16 @@ class Shift < ApplicationRecord
     :execution_end_time,
     :service_amount
 
+  after_save :create_schedules
+  before_validation :check_conflict
+
+  # Scopes #
   scope :local_city_hall, -> (city_hall_id) { 
     where(service_places: { city_hall_id: city_hall_id })
       .includes(:service_place)
   }
 
-  after_save :create_schedules
-  before_validation :check_conflict
-
+  # Delegations #
   delegate :name, to: :service_place, prefix: true
   delegate :description, to: :service_type, prefix: true
 
@@ -46,17 +48,15 @@ class Shift < ApplicationRecord
 
     schedules = Schedule.where(shift_id: self.id)
 
-    return self.as_json(
-        only: [ :id, :service_amount, :execution_start_time, :execution_end_time, :notes], 
-        methods: %w(service_place_name service_type_description)
-      )
+    return self.as_json(only: [ 
+      :id, :service_amount, :execution_start_time, 
+      :execution_end_time, :notes
+    ], methods: %w(service_place_name service_type_description))
       .merge({ professional_responsible_name: responsible.name })
       .merge({ professional_performer_name: performer.name })
-      .merge({
-        schedules: schedules.as_json(
-          only: [:id, :note, :service_start_time, :service_end_time], 
-          methods: %w(situation_description citizen_name service_place_name)
-        )
+      .merge({ schedules: schedules.as_json(only: [
+          :id, :note, :service_start_time, :service_end_time
+        ], methods: %w(situation_description citizen_name service_place_name))
       })
   end
 
@@ -64,9 +64,10 @@ class Shift < ApplicationRecord
   # Returns json response to index shifts
   # @return [Json] response
   def self.index_response
-    self.all.as_json(only: [:id, :execution_start_time],
-                     methods: %w(professional_performer_name 
-                     service_type_description service_place_name))
+    self.all.as_json(only: [
+      :id, :execution_start_time
+    ], methods: %w(professional_performer_name 
+      service_type_description service_place_name))
   end
 
 
