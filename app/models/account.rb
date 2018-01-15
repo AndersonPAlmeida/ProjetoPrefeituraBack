@@ -57,7 +57,8 @@ class Account < ApplicationRecord
           'city_name' => City.find(val[3]).name,
           'city_hall_id' => val[5],
           'city_hall_name' => CityHall.find(val[5]).name,
-          'service_place' => val[4]
+          'service_place' => val[4],
+          'professional_id' => professional.id
         }.as_json
       end
 

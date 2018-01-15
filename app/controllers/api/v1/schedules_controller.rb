@@ -6,11 +6,18 @@ module Api::V1
 
     # GET /schedules
     def index
-      if current_user[1] == "citizen"
+      if not params[:history].nil?
         @schedules = Schedule.citizen_history(current_user[0].id, 
                                               params[:q], params[:page])
 
         render json: @schedules
+        return
+      elsif not params[:future].nil?
+        @schedules = Schedule.citizen_future(current_user[0].id, 
+                                             params[:q], params[:page])
+
+        render json: @schedules
+        return
       else
         @schedules = policy_scope(Schedule.filter(params[:q], params[:page], 
           Professional.get_permission(current_user[1])))

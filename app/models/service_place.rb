@@ -17,8 +17,8 @@ class ServicePlace < ApplicationRecord
   validates_presence_of :name
   validates_presence_of :cep
 
-  validates_length_of   :name, maximum: 255
-  validates_length_of   :address_number, 
+  validates_length_of :name, maximum: 255
+  validates_length_of :address_number, 
     within: 0..10,
     allow_blank: true
 
@@ -146,17 +146,39 @@ class ServicePlace < ApplicationRecord
   def self.search_params(params, permission)
     case permission
     when "adm_c3sl"
-      sortable = ["name", "cep", "city_hall_name", "active", "neighborhood"]
-      filter = {"name" => "name_cont", "active" => "active_eq", 
-                "neighborhood" => "neighborhood_cont",
-                "cep" => "cep_cont", "city_hall_id" => "city_hall_id_eq", 
-                "s" => "s"}
+      sortable = [
+        "name", 
+        "cep", 
+        "city_hall_name", 
+        "active", 
+        "neighborhood"
+      ]
+
+      filter = {
+        "name" => "name_cont", 
+        "active" => "active_eq", 
+        "neighborhood" => "neighborhood_cont",
+        "cep" => "cep_cont", 
+        "city_hall_id" => "city_hall_id_eq", 
+        "s" => "s"
+      }
 
     when "adm_prefeitura"
-      sortable = ["name", "cep", "active", "neighborhood"]
-      filter = {"name" => "name_cont", "active" => "active_eq", 
-                "neighborhood" => "neighborhood_cont",
-                "cep" => "cep_cont", "role" => "professionals_service_places_role_eq","s" => "s"}
+      sortable = [
+        "name", 
+        "cep",
+        "active", 
+        "neighborhood"
+      ]
+
+      filter = {
+        "name" => "name_cont", 
+        "active" => "active_eq", 
+        "neighborhood" => "neighborhood_cont",
+        "cep" => "cep_cont", 
+        "role" => "professionals_service_places_role_eq",
+        "s" => "s"
+      }
 
     end
 

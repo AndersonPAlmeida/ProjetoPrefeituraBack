@@ -152,7 +152,6 @@ class Schedule < ApplicationRecord
     sectors = get_sectors_response(schedules.where(situation_id: 2))
     schedules = schedules.filter(params, npage, "citizen")
 
-
     # Citizen's info along with the schedules associated with him
     response["id"] = id
     response["name"] = Citizen.find(id).name
@@ -169,7 +168,6 @@ class Schedule < ApplicationRecord
       sectors = get_sectors_response(schedules.where(situation_id: 2))
       schedules = schedules.filter(params, npage, "citizen")
 
-
       entry = Hash.new.as_json
 
       entry["id"] = i
@@ -180,6 +178,55 @@ class Schedule < ApplicationRecord
       entry["schedules"]["sectors"] = sectors
 
       response["dependants"].append(entry)
+    end
+
+    return response
+  end
+
+  # @params id [Integer] Citizen the schedules are being returned for 
+  # @params params [ActionController::Parameters] Parameters for searching
+  # @params npage [String] number of page to be returned
+  # @return [Json] every schedule for each dependant from a citizen and the 
+  # citizen himself for showing in the future schedule screen
+  def self.citizen_future(id, params, npage)
+
+    # Citizen's dependants
+    citizens = Citizen.where(responsible_id: id).pluck(:id, :name)
+    response = Hash.new.as_json
+    schedules = Schedule.where(citizen_id: id)
+      .where('service_start_time >= ?', DateTime.now)
+
+    sectors = get_sectors_response(schedules.where(situation_id: 2))
+    schedules = schedules.filter(params, npage, "citizen")
+
+    # Citizen's info along with the schedules associated with him
+    response[:id] = id
+    response[:name] = Citizen.find(id).name
+    response[:schedules] = Hash.new.as_json
+    response[:schedules][:num_entries] = schedules.total_count
+    response[:schedules][:entries] = schedules.map {|i| i.show_data}.as_json
+    response[:schedules][:sectors] = sectors
+    response[:dependants] = [].as_json
+
+
+    # Schedules assigned to each citizen's dependant
+    citizens.each do |i,name|
+      schedules = Schedule.where(citizen_id: i)
+        .where('service_start_time >= ?', DateTime.now)
+
+      sectors = get_sectors_response(schedules.where(situation_id: 2))
+      schedules = schedules.filter(params, npage, "citizen")
+
+      entry = Hash.new.as_json
+
+      entry[:id] = i
+      entry[:name] = name
+      entry[:schedules] = Hash.new.as_json
+      entry[:schedules][:num_entries] = schedules.total_count
+      entry[:schedules][:entries] = schedules.map { |j| j.show_data }.as_json
+      entry[:schedules][:sectors] = sectors
+
+      response[:dependants].append(entry)
     end
 
     return response
