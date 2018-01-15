@@ -28,12 +28,20 @@ class Account < ApplicationRecord
   # @return [Json] account information as json for token validation 
   # response on sign in
   def token_validation_response
-    response = self.as_json(except: [
-      :tokens, :created_at, :updated_at
-    ]).merge({
-      professional: self.professional.basic_info_response,
-      citizen: self.citizen.complete_info_response
-    })
+    if self.professional.nil?
+      response = self.as_json(except: [
+        :tokens, :created_at, :updated_at
+      ]).merge({
+        citizen: self.citizen.complete_info_response
+      })
+    else
+      response = self.as_json(except: [
+        :tokens, :created_at, :updated_at
+      ]).merge({
+        professional: self.professional.basic_info_response,
+        citizen: self.citizen.complete_info_response
+      })
+    end
 
     professional = Professional.find_by(account_id: self.id)
 
