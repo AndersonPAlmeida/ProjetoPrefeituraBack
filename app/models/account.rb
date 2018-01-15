@@ -31,6 +31,7 @@ class Account < ApplicationRecord
     response = self.as_json(except: [
       :tokens, :created_at, :updated_at
     ]).merge({
+      professional: self.professional.basic_info_response,
       citizen: self.citizen.complete_info_response
     })
 

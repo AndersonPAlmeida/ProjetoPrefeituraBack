@@ -100,9 +100,8 @@ module Api::V1
         return
       end
 
-
       # Update account with params except citizen's
-      if @resource.send(resource_update_method, account_update_params.except(:citizen))
+      if @resource.send(resource_update_method, account_update_params.except(:citizen, :professional))
         yield @resource if block_given?
 
         # Check if citizen's params are not empty
@@ -113,6 +112,18 @@ module Api::V1
 
         # Update citizen with account_update_params[:citizen]
         if @resource.citizen.update(account_update_params[:citizen])
+
+          # Update professional info if provided
+          if not account_update_params[:professional].nil?
+            if not @resource.citizen.professional.nil? and 
+              (not @resource.citizen.professional.update(account_update_params[:professional]))
+
+              render json: @resource.citizen.professional.errors, status: :unprocessable_entity
+              return
+            else
+              @resource.citizen.professional.save!
+            end
+          end
 
           # Update image if provided
           if params[:citizen][:image]

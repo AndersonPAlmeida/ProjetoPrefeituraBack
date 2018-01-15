@@ -13,6 +13,7 @@ class ApplicationController < ActionController::API
   protect_from_forgery with: :null_session, 
     if: Proc.new { |c| c.request.format.json? }
 
+
   # This method is useful in the rest of the application for checking permissions
   #
   # @return [Citizen, String] the current logged citizen and the permission 
@@ -22,6 +23,7 @@ class ApplicationController < ActionController::API
       return @resource.citizen, params[:permission]
     end
   end
+
 
   # It is executed in every request that requires authorization (called in 
   # authenticable concern as a before_action). It checks if the current_user
@@ -71,11 +73,14 @@ class ApplicationController < ActionController::API
     end
   end
 
+
   protected
 
   # permit parameters for devise functions
   def configure_permitted_parameters
     citizen_keys = Citizen.keys
+    professional_keys = [:registration, :occupation_id]
+
 
     # set sign_up hash to keys from citizen's registration form
     devise_parameter_sanitizer.permit(
@@ -112,10 +117,12 @@ class ApplicationController < ActionController::API
     # set account_update hash to keys required to update citizen's account
     devise_parameter_sanitizer.permit(
       :account_update, keys: [
-        citizen: citizen_keys
+        citizen: citizen_keys,
+        professional: professional_keys
       ]
     )
   end
+
 
   private
 

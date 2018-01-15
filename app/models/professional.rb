@@ -75,6 +75,12 @@ class Professional < ApplicationRecord
       })
   end
 
+  # @return [Json] basic professional's data
+  def basic_info_response
+    return self.as_json(only: [:id, :registration, :active, :occupation_id], 
+                        methods: %w(occupation_name))
+  end
+
 
   # @return [Array] list of roles
   def roles_ids
