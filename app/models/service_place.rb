@@ -26,7 +26,7 @@ class ServicePlace < ApplicationRecord
     only_integer: true,
     allow_blank: true
 
-  around_save :create_service_place
+  before_validation :create_service_place
 
   # Scopes #
   scope :all_active, -> {
@@ -194,6 +194,11 @@ class ServicePlace < ApplicationRecord
     if not address.nil?
       self.city_id = address.city_id
 
+      if self.city_hall.nil?
+        self.errors["city_hall_id"] << "City hall can't be blank."
+        return false
+      end
+
       if self.city_hall.city_id != self.city_id
         self.errors["city_hall_id"] << "City hall #{self.city_hall_id} does not "\
           "belong to the given address."
@@ -208,6 +213,6 @@ class ServicePlace < ApplicationRecord
       return false
     end
 
-    yield
+    #yield
   end
 end

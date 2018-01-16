@@ -90,13 +90,17 @@ class Schedule < ApplicationRecord
       address: address.as_json(except: [
         :created_at, :updated_at, :state_id, :city_id
       ]),
+      address_number: self.service_place.address_number,
       complement: self.service_place.address_complement,
       phone1: self.service_place.phone1
     }
 
     response[:schedule_data] = {
       id: self.id,
+      service_type_id: self.shift.service_type.id,
       service_type_name: self.shift.service_type.description,
+      sector_id: self.shift.service_type.sector.id,
+      sector_name: self.shift.service_type.sector.name,
       service_start_time: self.service_start_time,
       professional_performer: performer.name,
       situation: self.situation.description

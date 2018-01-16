@@ -43,7 +43,8 @@ class SchedulePolicy < ApplicationPolicy
     permission = Professional.get_permission(user[1])
 
     if permission == "citizen"
-      return record.citizen_id == citizen.id
+      return ((record.citizen_id == citizen.id) or 
+              (record.citizen.responsible_id == citizen.id))
     end
 
     professional = citizen.professional
