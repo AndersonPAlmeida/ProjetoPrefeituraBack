@@ -18,6 +18,13 @@ class ResourceShift < ApplicationRecord
         return search(search_params(params, permission), npage)
     end
 
+    ransacker :date_start do
+      Arel.sql("date(\"resource_shifts\".\"execution_start_time\")")
+    end
+    ransacker :date_end do
+      Arel.sql("date(\"resource_shifts\".\"execution_end_time\")")
+    end
+
     private
 
     # Translates incoming search parameters to ransack patterns
@@ -25,7 +32,6 @@ class ResourceShift < ApplicationRecord
     # @params permission [String] Permission of current user
     # @return [Hash] filtered and translated parameters
     def self.search_params(params, permission)
-
 
         sortable = ["resource_id",
                     "professional_responsible_id",
@@ -42,6 +48,8 @@ class ResourceShift < ApplicationRecord
                     "resource_id" => "resource_id_eq",
                     "professional_responsible_id" => "professional_responsible_id_eq",
                     "borrowed" => "borrowed_eq",
+                    "execution_start_time" => "date_start_eq" ,
+                    "execution_end_time" => "date_end_eq",
                     "notes" => "notes_cont",
                     "s" => "s" 
                  }
