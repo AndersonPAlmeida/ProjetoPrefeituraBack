@@ -84,10 +84,10 @@ class ScheduleTest < ActiveSupport::TestCase
 
       @service_place = ServicePlace.new(active: true,
                                         address_number: "123",
+                                        city_hall_id: @city_hall.id,
                                         name: "Example SP",
-                                        cep: "89221005")
+                                        cep: "89218230")
 
-      @service_place.city_hall = @city_hall
       @service_place.save!
       @service_type.save!
 
