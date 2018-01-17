@@ -144,9 +144,11 @@ class Schedule < ApplicationRecord
   # @params id [Integer] Citizen the schedules are being returned for 
   # @params params [ActionController::Parameters] Parameters for searching
   # @params npage [String] number of page to be returned
+  # @params dep_page_id [Integer] id of the dependant where the page is being specified
+  # @params dep_page_num [Integer] page number for the dep_page_id's schedules
   # @return [Json] every schedule for each dependant from a citizen and the 
   # citizen himself for showing in the schedule history screen
-  def self.citizen_history(id, params, npage)
+  def self.citizen_history(id, params, npage, dep_page_id, dep_page_num)
 
     # Citizen's dependants
     citizens = Citizen.where(responsible_id: id).pluck(:id, :name)
@@ -170,7 +172,12 @@ class Schedule < ApplicationRecord
     citizens.each do |i,name|
       schedules = Schedule.where(citizen_id: i)
       sectors = get_sectors_response(schedules.where(situation_id: 2))
-      schedules = schedules.filter(params, npage, "citizen")
+
+      if i == dep_page_id.to_i and not dep_page_num.nil?
+        schedules = schedules.filter(params, dep_page_num, "citizen")
+      else
+        schedules = schedules.filter(params, 1, "citizen")
+      end
 
       entry = Hash.new.as_json
 

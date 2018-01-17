@@ -177,8 +177,6 @@ class Shift < ApplicationRecord
       start_t = end_t  
     end
 
-    #return false
-
     # Bulk insert for schedules
     Schedule.transaction do
       columns = [:shift_id, :situation_id, :service_place_id, 

@@ -7,7 +7,7 @@ module Searchable
     # @params npage [String] number of page to be returned
     # @return [Array] result of search given the parameters and page
     def self.search(params, npage)
-      return self.ransack(params).result.page(npage).per(25)
+      return self.ransack(params).result.page(npage).per(2)
     end
 
     # @params params [ActionController::Parameters] Unfiltered parameters

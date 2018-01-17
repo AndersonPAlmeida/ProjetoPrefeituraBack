@@ -7,8 +7,13 @@ module Api::V1
     # GET /schedules
     def index
       if not params[:history].nil?
-        @schedules = Schedule.citizen_history(current_user[0].id, 
-                                              params[:q], params[:page])
+        @schedules = Schedule.citizen_history(
+          current_user[0].id, 
+          params[:q], 
+          params[:page],
+          params[:dependant_citizen_id],
+          params[:dependant_page]
+        )
 
         render json: @schedules
         return
@@ -107,6 +112,14 @@ module Api::V1
           errors: [" Schedule #{params[:id]} does not exist."]
         }, status: 404
       else
+        # Check if schedule's situation is available
+        if @schedule.situation.id != 1
+          render json: {
+            errors: ["This schedule is not available."]
+          }, status: 409
+          return
+        end
+
         # schedule_confirm_params contains information provided in the last step
         # of scheduling process (note and remider_time)
         update_params = schedule_confirm_params
@@ -130,7 +143,7 @@ module Api::V1
     end
 
 
-    # NEVER USED (TODO: Check if is save to remove)
+    # NEVER USED (TODO: Check if is save to remove - definitely not safe to leave it there)
     # POST /schedules
     def create
       @schedule = Schedule.new(schedule_params)
