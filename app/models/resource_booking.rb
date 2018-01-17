@@ -20,6 +20,13 @@ class ResourceBooking < ApplicationRecord
         return search(search_params(params, permission), npage)
     end
 
+    ransacker :date_start_booking do
+      Arel.sql("date(\"resource_bookings\".\"booking_start_time\")")
+    end
+    ransacker :date_end_booking do
+      Arel.sql("date(\"resource_bookings\".\"booking_en_time\")")
+    end
+
     private
 
     # Translates incoming search parameters to ransack patterns
@@ -37,6 +44,7 @@ class ResourceBooking < ApplicationRecord
                     "booking_reason",
                     "booking_start_time",
                     "booking_end_time",
+                    "execution_start_time",
                     "status"
                     ]
         filter = {
@@ -45,8 +53,8 @@ class ResourceBooking < ApplicationRecord
                     "citizen_id" => "citizen_id_eq",
                     "brand" => "brand_cont",
                     "booking_reason" => "booking_reason_cont",
-                    "booking_start_time" => "booking_start_time_cont",
-                    "booking_end_time" => "booking_end_time_cont", 
+                    "booking_start_time" => "date_start_booking_eq",
+                    "booking_end_time" => "date_end_booking_eq", 
                     "status" => "status_cont",
                     "s" => "s" 
                  }
