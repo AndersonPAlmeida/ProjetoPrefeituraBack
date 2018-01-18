@@ -76,7 +76,7 @@ class Citizen < ApplicationRecord
       :pcd,
       :phone1,
       :phone2,
-      :avatar,
+      #:avatar,
       :rg
     ]
   end

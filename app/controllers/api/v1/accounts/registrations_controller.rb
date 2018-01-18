@@ -32,6 +32,16 @@ module Api::V1
 
       # honor devise configuration for case_insensitive_keys
       @citizen.email = citizen_params[:email].try :downcase
+      
+      if params[:image]
+        begin
+          params[:image] = Agendador::Image::Parser.parse(params[:image])
+          #@citizen.update_attribute(:avatar, params[:image])
+          @citizen.avatar = params[:image]
+        ensure
+          Agendador::Image::Parser.clean_tempfile
+        end
+      end
 
       # set uid to corresponding citizen's cpf
       if !@citizen.cpf.nil?

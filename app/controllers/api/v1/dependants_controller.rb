@@ -16,7 +16,14 @@ module Api::V1
         }, status: :not_found
       else
         # Allow request only if the citizen is reachable from current user
-        authorize @citizen, :show_dependants?
+        begin
+          authorize @citizen, :show_dependants?
+        rescue
+          render json: {
+            errors: ["You're not allowed to view this dependant."]
+          }, status: 403
+          return
+        end
 
         @dependants = Dependant.where(citizens: {
           responsible_id: @citizen.id
@@ -38,6 +45,7 @@ module Api::V1
       end
     end
 
+
     # GET citizens/1/dependants/2
     def show
       if @citizen.nil?
@@ -55,12 +63,20 @@ module Api::V1
           }, status: :forbidden
         else
           # Allow request only if the citizen is reachable from current user
-          authorize @citizen, :show_dependants?
+          begin
+            authorize @citizen, :show_dependants?
+          rescue
+            render json: {
+              errors: ["You're not allowed to view this dependant."]
+            }, status: 403
+            return
+          end
 
           render json: @dependant.complete_info_response, status: :ok
         end
       end
     end
+
 
     # POST citizens/1/dependants
     def create
@@ -70,7 +86,14 @@ module Api::V1
         }, status: :not_found
       else
         # Allow request only if the citizen is reachable from current user
-        authorize @citizen, :create_dependants?
+        begin
+          authorize @citizen, :create_dependants?
+        rescue
+          render json: {
+            errors: ["You're not allowed to create dependants."]
+          }, status: 403
+          return
+        end
 
         new_params = dependant_params
         new_params[:responsible_id] = @citizen.id
@@ -108,6 +131,7 @@ module Api::V1
       end
     end
 
+
     # PATCH/PUT citizens/1/dependants/2
     def update
       if @citizen.nil?
@@ -125,7 +149,14 @@ module Api::V1
           }, status: :forbidden
         else
           # Allow request only if the citizen is reachable from current user
-          authorize @citizen, :create_dependants?
+          begin
+            authorize @citizen, :create_dependants?
+          rescue
+            render json: {
+              errors: ["You're not allowed to create dependants."]
+            }, status: 403
+            return
+          end
 
           new_params = dependant_params
 
@@ -160,6 +191,7 @@ module Api::V1
       end
     end
 
+
     # DELETE citizens/1/dependants/2
     def destroy
       if @dependant.nil?
@@ -177,23 +209,6 @@ module Api::V1
 
     private
 
-    # Rescue Pundit exception for providing more details in reponse
-    def policy_error_description(exception)
-      # Set @policy_name as the policy method that raised the error
-      super
-
-      case @policy_name
-      when "show_dependants?"
-        render json: {
-          errors: ["You're not allowed to view this dependant."]
-        }, status: 403
-      when "create_dependants?"
-        render json: {
-          errors: ["You're not allowed to create dependants."]
-        }, status: 403
-      end
-    end
-
     # Use callbacks to share common setup or constraints between actions.
     def set_dependant
       begin
@@ -203,6 +218,7 @@ module Api::V1
       end
     end
 
+
     # Use callbacks to share common setup or constraints between actions.
     def set_citizen
       begin
@@ -211,6 +227,7 @@ module Api::V1
         @citizen = nil
       end
     end
+
 
     # Only allow a trusted parameter "white list" through.
     def dependant_params

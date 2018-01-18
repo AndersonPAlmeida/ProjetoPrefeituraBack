@@ -25,6 +25,7 @@ module Api::V1
       end
     end
 
+
     # GET /citizens/1/picture
     def picture
       if @citizen.nil?
@@ -32,6 +33,16 @@ module Api::V1
           errors: ["User #{params[:id]} does not exist."]
         }, status: 404
       else
+        # Allow request only if the citizen is reachable from current user
+        begin
+          authorize @citizen, :show_picture?
+        rescue
+          render json: {
+            errors: ["You're not allowed to view this citizen."]
+          }, status: 403
+          return
+        end
+
         path = @citizen.avatar.path
 
         if path.nil?
@@ -50,6 +61,7 @@ module Api::V1
       end
     end
 
+
     # GET /citizen/1/schedule_options
     def schedule_options
       @citizen = Citizen.find_by(cpf: params[:cpf])
@@ -60,13 +72,21 @@ module Api::V1
         }, status: 404
       else
         # Allow request only if the citizen is reachable from current user
-        authorize @citizen, :schedule?
+        begin
+          authorize @citizen, :schedule?
+        rescue
+          render json: {
+            errors: ["You're not allowed to schedule for this citizen."]
+          }, status: 403
+          return
+        end
 
         schedule_response = @citizen.schedule_response
 
         render json: schedule_response.to_json
       end
     end
+
 
     # GET /citizens/1
     def show
@@ -76,11 +96,19 @@ module Api::V1
         }, status: 404
       else
         # Allow request only if the citizen is reachable from current user
-        authorize @citizen, :show?
+        begin
+          authorize @citizen, :show?
+        rescue
+          render json: {
+            errors: ["You're not allowed to view this citizen."]
+          }, status: 403
+          return
+        end
 
         render json: @citizen
       end
     end
+
 
     # POST /citizens
     def create
@@ -131,6 +159,7 @@ module Api::V1
       end
     end
 
+
     # PATCH/PUT /citizens/1
     def update
       if @citizen.nil?
@@ -146,6 +175,7 @@ module Api::V1
       end
     end
 
+
     # DELETE /citizens/1
     def destroy
       if @citizen.nil?
@@ -154,7 +184,14 @@ module Api::V1
         }, status: 404
       else
         # Allow request only if the citizen is reachable from current user
-        authorize @citizen, :deactivate?
+        begin
+          authorize @citizen, :deactivate?
+        rescue
+          render json: {
+            errors: ["You're not allowed to deativate this citizen."]
+          }, status: 403
+          return
+        end
 
         # Deactivate citizen, this will keep the citizen in the database, but 
         # it will not be displayed in future requests
@@ -179,27 +216,7 @@ module Api::V1
       end
     end
 
-    # Rescue Pundit exception for providing more details in reponse
-    def policy_error_description(exception)
-      # Set @policy_name as the policy method that raised the error
-      super
-
-      case @policy_name
-      when "schedule?"
-        render json: {
-          errors: ["You're not allowed to schedule for this citizen."]
-        }, status: 403
-      when "deactivate?"
-        render json: {
-          errors: ["You're not allowed to deativate this citizen."]
-        }, status: 403
-      when "show?"
-        render json: {
-          errors: ["You're not allowed to view this citizen."]
-        }, status: 403
-      end
-    end
-
+    
     # Only allow a trusted parameter "white list" through.
     def citizen_params
       params.require(:citizen).permit(

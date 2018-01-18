@@ -3,6 +3,8 @@ module Api::V1
     include Authenticable
     include HasPolicies
 
+    require "#{Rails.root}/lib/image_parser.rb"
+
     before_action :set_professional, only: [:show, :update, :destroy]
 
     # GET /professionals
@@ -23,6 +25,7 @@ module Api::V1
         render json: response.to_json
       end
     end
+
 
     # GET professionals/check_citizen
     def check_create_professional
@@ -52,6 +55,7 @@ module Api::V1
       end
     end
 
+
     # GET /professionals/1
     def show
       if @professional.nil?
@@ -71,6 +75,7 @@ module Api::V1
         render json: @professional.complete_info_response
       end
     end
+
 
     # POST /professionals
     def create
@@ -104,6 +109,15 @@ module Api::V1
             )])
           end
 
+          # Add avatar if provided
+          if params[:image]
+            begin
+              params[:image] = Agendador::Image::Parser.parse(params[:image])
+              @citizen.avatar = params[:image]
+            ensure
+              Agendador::Image::Parser.clean_tempfile
+            end
+          end
 
           # Assign new account to new citizen
           @citizen.account_id = @account.id
@@ -207,6 +221,7 @@ module Api::V1
       end
     end
 
+
     # PATCH/PUT /professionals/1
     def update
       if @professional.nil?
@@ -281,6 +296,7 @@ module Api::V1
       end
     end
 
+
     # DELETE /professionals/1
     def destroy
       if @professional.nil?
@@ -320,6 +336,7 @@ module Api::V1
       end
     end
 
+
     # Use callbacks to share common setup or constraints between actions.
     def set_professional
       begin
@@ -328,6 +345,7 @@ module Api::V1
         @professional = nil
       end
     end
+
 
     def citizen_params
       params.require(:professional).permit(
@@ -348,6 +366,7 @@ module Api::V1
         :rg
       )
     end
+
 
     # Only allow a trusted parameter "white list" through.
     def professional_params

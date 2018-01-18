@@ -84,6 +84,37 @@ class CitizenPolicy < ApplicationPolicy
                                 (record.responsible_id == user[0].id)))
   end
 
+  def show_picture?
+    citizen = user[0]
+    permission = Professional.get_permission(user[1])
+
+    if permission == "citizen"
+      return ((citizen.id == record.id) or (record.responsible_id == citizen.id))
+    end
+
+    professional = citizen.professional
+
+    city_id = professional.professionals_service_places
+      .find(user[1]).service_place.city_id
+
+    return case
+    when permission == "adm_c3sl"
+      return true 
+
+    when permission == "adm_prefeitura"
+      return ((citizen.id == record.id) or (city_id == record.city_id))
+
+    when permission == "adm_local"
+      return ((citizen.id == record.id) or (city_id == record.city_id))
+
+    when permission == "atendente_local"
+      return ((citizen.id == record.id) or (city_id == record.city_id))
+
+    else
+      return (citizen.id == record.id)
+    end
+  end
+
   private
   
   # Generic method for checking permissions when show/accessing/modifying 
