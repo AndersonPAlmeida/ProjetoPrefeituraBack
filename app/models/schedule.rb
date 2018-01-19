@@ -243,7 +243,10 @@ class Schedule < ApplicationRecord
     return response
   end
 
-  def self.schedule_by_type(city_hall_id, startt, endt)
+  # Returns json containing amount of schedule per professional, per service_type
+  # and per service_place
+  # @return [Json] response to be used as report
+  def self.schedule_per_type(city_hall_id, startt, endt)
     schedules = Schedule.where(situation: Situation.compareceu)
       .where('service_start_time >= ?', startt)
       .where('service_start_time <= ?', endt)

@@ -143,8 +143,8 @@ module Api::V1
     end
 
 
-    # GET /schedules/schedule_by_type
-    def schedule_by_type
+    # GET /schedules/schedule_per_type
+    def schedule_per_type
       permission = Professional.get_permission(current_user[1])
 
       if permission == 'adm_c3sl'
@@ -163,7 +163,7 @@ module Api::V1
       startt = params[:start_time]
       endt = params[:end_time]
 
-      @schedules = Schedule.schedule_by_type(city_hall_id, startt, endt)
+      @schedules = Schedule.schedule_per_type(city_hall_id, startt, endt)
 
       render json: @schedules
     end

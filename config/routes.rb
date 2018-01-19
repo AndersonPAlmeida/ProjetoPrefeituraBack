@@ -59,8 +59,9 @@ Rails.application.routes.draw do
       get "forms/shift_index" => "forms#shift_index"
       get "forms/occupation_index" => "forms#occupation_index"
       get "forms/schedule_index" => "forms#schedule_index"
+      get "forms/schedule_per_type_index" => "forms#schedule_per_type_index"
 
-      get "schedule_by_type_report" => "schedules#schedule_by_type"
+      get "schedule_per_type_report" => "schedules#schedule_per_type"
       get "check_create_professional" => "professionals#check_create_professional"
       get "resource_details/:id" => "resources#details"
       get "resource_more_info" => "resources#all_details"
