@@ -92,24 +92,24 @@ class SchedulePolicy < ApplicationPolicy
 
     return case
     when permission == "adm_c3sl"
-      return (record.situation.description == "Disponível")
+      return (record.situation.description == "Agendado")
 
     when permission == "adm_prefeitura"
       return ((record.service_place.city_hall_id == service_place.city_hall_id) and
-              (record.situation.description == "Disponível"))
+              (record.situation.description == "Agendado"))
 
     when permission == "adm_local"
       return ((record.service_place.id == service_place.id) and
-              (record.situation.description == "Disponível"))
+              (record.situation.description == "Agendado"))
 
     when permission == "atendendente_local" 
       return ((record.service_place.id == service_place.id) and
-              (record.situation.description == "Disponível"))
+              (record.situation.description == "Agendado"))
 
     when permission == "responsavel_atendimento"
       return ((record.service_place.id == service_place.id) and
               (record.shift.professional_performer_id == professional.id)
-              (record.situation.description == "Disponível"))
+              (record.situation.description == "Agendado"))
 
     when permission == "citizen"
       return ((record.situation.description == "Agendado") and

@@ -143,6 +143,32 @@ module Api::V1
     end
 
 
+    # GET /schedules/schedule_by_type
+    def schedule_by_type
+      permission = Professional.get_permission(current_user[1])
+
+      if permission == 'adm_c3sl'
+        city_hall_id = params[:city_hall_id]
+      elsif permission == 'adm_prefeitura' or permission == 'adm_local'
+        professional = current_user[0].professional
+        city_hall_id = professional.professionals_service_places
+          .find(current_user[1]).service_place.city_hall_id
+      else
+        render json: {
+          errors: ["You're not allowed to view this report."]
+        }, status: 422
+        return
+      end
+
+      startt = params[:start_time]
+      endt = params[:end_time]
+
+      @schedules = Schedule.schedule_by_type(city_hall_id, startt, endt)
+
+      render json: @schedules
+    end
+
+
     # NEVER USED (TODO: Check if is save to remove - definitely not safe to leave it there)
     # POST /schedules
     def create

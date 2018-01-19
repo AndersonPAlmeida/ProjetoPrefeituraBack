@@ -646,5 +646,47 @@ module Api::V1
       
       render json: response.as_json
     end
+    
+    # GET /forms/schedule_per_type_index
+    def schedule_per_type_index
+      citizen = current_user[0]
+      permission = Professional.get_permission(current_user[1])
+      response = Hash.new
+
+      case permission
+      when "adm_c3sl"
+        city_halls = CityHall.all_active
+        response[:city_halls] = city_halls.as_json(only: [:id, :name, :city_id])
+
+      else
+        render json: {
+          errors: ["You're not allowed to view this form."]
+        }, status: 403
+        return
+      end
+
+      render json: response.as_json
+    end
+
+    # GET /forms/schedule_per_type
+    def schedule_per_type
+      citizen = current_user[0]
+      permission = Professional.get_permission(current_user[1])
+      response = Hash.new
+
+      case permission
+      when "adm_c3sl"
+        city_halls = CityHall.all_active
+        response[:city_halls] = city_halls.as_json(only: [:id, :name, :city_id])
+
+      else
+        render json: {
+          errors: ["You're not allowed to view this form."]
+        }, status: 403
+        return
+      end
+
+      render json: response.as_json
+    end
   end
 end

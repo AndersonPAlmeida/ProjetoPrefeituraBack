@@ -243,6 +243,52 @@ class Schedule < ApplicationRecord
     return response
   end
 
+  def self.schedule_by_type(city_hall_id, startt, endt)
+    schedules = Schedule.where(situation: Situation.compareceu)
+      .where('service_start_time >= ?', startt)
+      .where('service_start_time <= ?', endt)
+      .where(service_places: {city_hall_id: city_hall_id})
+      .includes(:service_place)
+
+    sps = schedules.pluck(:service_place_id)
+    service_places = ServicePlace.where(id: sps)
+
+    response = Array.new
+    service_places.each do |sp|
+      entry = Hash.new
+
+      entry[:service_place_id] = sp.id
+      entry[:service_place_name] = sp.name
+      entry[:professionals] = Professional
+        .where(professionals_service_places: {service_place_id: sp.id})
+        .includes(:professionals_service_places).simple_index_response
+
+      entry[:service_types] = []
+      service_types = sp.service_types
+
+      for i in service_types
+        st = Hash.new
+        st[:id] = i.id
+        st[:description] = i.description
+        st[:schedules] = []
+
+        for j in entry[:professionals]
+          st[:schedules].append(
+            schedules.where(shifts: {professional_performer_id: j["id"]})
+                     .includes(:shift)
+                     .where(shifts: {service_type_id: i.id}).includes(:shift).count
+          )
+        end
+
+        entry[:service_types].append(st)
+      end
+
+      response.append(entry)
+    end
+
+    return response.as_json
+  end
+
 
   # @params params [ActionController::Parameters] Parameters for searching
   # @params npage [String] number of page to be returned
