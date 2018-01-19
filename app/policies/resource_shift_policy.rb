@@ -34,7 +34,7 @@ class ResourceShiftPolicy < ApplicationPolicy
   end
 
   def update?
-    return access_policy_professional(user) 
+    return true 
   end
 
   def destroy?
