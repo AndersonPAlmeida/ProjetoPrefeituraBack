@@ -34,7 +34,7 @@ Rails.application.routes.draw do
       resources :service_places
       resources :service_types, except: :destroy
       resources :shifts
-      resources :solicitations
+      resources :solicitations, only: [:create, :index, :show]
 
       resources :notifications 
       
@@ -60,6 +60,7 @@ Rails.application.routes.draw do
       get "forms/occupation_index" => "forms#occupation_index"
       get "forms/schedule_index" => "forms#schedule_index"
       get "forms/schedule_per_type_index" => "forms#schedule_per_type_index"
+      get "forms/solicitation_index" => "forms#solicitation_index"
 
       get "schedule_per_type_report" => "schedules#schedule_per_type"
       get "check_create_professional" => "professionals#check_create_professional"
