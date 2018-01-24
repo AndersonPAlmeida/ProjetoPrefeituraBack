@@ -186,7 +186,7 @@ class ServicePlace < ApplicationRecord
   end
 
 
-  # Method surrounding create method for ServicePlace. It associates 
+  # Method called when creating a service_place. It associates 
   # the address to the service place given a cep
   def create_service_place
     address = Address.get_address(self.cep)
@@ -212,7 +212,5 @@ class ServicePlace < ApplicationRecord
       self.errors["cep"] << "#{self.cep} is invalid."
       return false
     end
-
-    #yield
   end
 end
