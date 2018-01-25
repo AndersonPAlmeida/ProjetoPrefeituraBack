@@ -5,6 +5,7 @@ class Notification < ApplicationRecord
 
   validates_presence_of :account_id, 
     :reminder_time,
-    :read,
     :content
+
+  validates_inclusion_of :read, in: [true, false]
 end
