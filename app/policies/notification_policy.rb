@@ -42,13 +42,13 @@ class NotificationPolicy < ApplicationPolicy
 
     private
     
-    # Check if the account that is trying to access a notification is the same account of the notification
+    # Check if the account that is trying to access a notification is the 
+    # same account of the notification
     def access_policy(user)
       citizen = user[0]
-      notification_account_id = record.account_id
       permission = Professional.get_permission(user[1])
 
-      return ((notification_account_id == citizen.account_id) or (permission != "citizen"))
+      return ((record.account_id == citizen.account_id) or (permission != "citizen"))
     end
   end
   

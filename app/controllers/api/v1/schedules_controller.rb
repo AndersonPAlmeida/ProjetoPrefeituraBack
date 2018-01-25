@@ -169,7 +169,38 @@ module Api::V1
           update_params[:citizen_id] = params[:citizen_id]
         end
 
+
+        if not params[:notification].nil?
+
+          # Get notification params
+          notification = notification_params
+
+          # Associates notification to account being schedule for
+          notification["account_id"] = Citizen.find(update_params[:citizen_id]).account_id
+          notification["schedule_id"] = @schedule.id
+          notification["read"] = false
+
+          # Create notification
+          @notification = Notification.new(notification)
+
+          begin
+            authorize @notification, :create?
+          rescue
+            render json: {
+              errors: ["You are not authorized to create this notification."]
+            }, status: 403
+            return
+          end
+        end
+
+
+        # This request is successful if both schedule and notification 
+        # operations are successful
         if @schedule.update(update_params)
+          if not params[:notification].nil?
+            @notification.save
+          end
+
           render json: @schedule
         else
           render json: @schedule.errors, status: :unprocessable_entity
@@ -287,6 +318,21 @@ module Api::V1
     def schedule_update_params
       params.require(:schedule).permit(
         :situation_id
+      )
+    end
+
+
+    # Only allow a trusted parameter "white list" through.
+    def notification_params
+      params.require(:notification).permit(
+          :account_id,
+          :schedule_id,
+          :resource_schedule_id,
+          :reminder_time,
+          :read,
+          :content,
+          :reminder_email,
+          :reminder_email_sent          
       )
     end
 
