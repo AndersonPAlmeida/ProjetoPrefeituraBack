@@ -5,7 +5,7 @@ class CreateNotifications < ActiveRecord::Migration[5.0]
       t.integer :account_id, foreign_key: true, null: false
       t.integer :schedule_id, foreign_key: true 
       t.integer :resource_schedule_id, foreign_key: true 
-      t.integer :read
+      t.boolean :read
       t.string :content
       t.datetime :reminder_time
       t.integer :reminder_email_sent

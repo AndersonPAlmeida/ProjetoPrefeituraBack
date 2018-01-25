@@ -145,7 +145,7 @@ ActiveRecord::Schema.define(version: 20171109134344) do
     t.integer  "account_id",           null: false
     t.integer  "schedule_id"
     t.integer  "resource_schedule_id"
-    t.integer  "read"
+    t.boolean  "read"
     t.string   "content"
     t.datetime "reminder_time"
     t.integer  "reminder_email_sent"

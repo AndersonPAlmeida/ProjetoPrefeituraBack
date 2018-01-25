@@ -6,20 +6,30 @@ module Api::V1
     # GET /notifications 
     def index
       @notifications = Notification.where(account_id: current_user.first.account_id)
+        .where(read: false)
+      
       render json: @notifications
     end
 
     # POST /notifications 
     def create
       notification = notification_params
+
       if notification["account_id"] == nil 
         notification["account_id"] = current_user.first.account_id
       else         
         notification["account_id"] = Citizen.where(account_id:notification["account_id"]).first.id
       end   
-      @notification = Notification.create!(notification)   
+
+      @notification = Notification.new(notification)
+
       authorize @notification, :create?
-      render json: @notification, status: :created            
+
+      if @notification.save
+        render json: @notification, status: :created            
+      else
+        render json: @notification.errors, status: :unprocessable_entity
+      end
     end
   
     # GET /notifications/:id 
@@ -30,6 +40,7 @@ module Api::V1
         }, status: 404
       else
         authorize @notification, :show?        
+
         render json: @notification
       end
     end
@@ -41,8 +52,9 @@ module Api::V1
         errors: ["Notification #{params[:id]} does not exist."]
         }, status: 404
       else
+        authorize @notification, :update?
+
         if @notification.update(notification_params)
-          authorize @notification, :update?
           render json: @notification
         else
           render json: @notification.errors, status: :unprocessable_entity
