@@ -2,6 +2,7 @@ module Api::V1
   class CitizensController < ApplicationController 
     include Authenticable
     include HasPolicies
+    require 'csv'
 
     before_action :set_citizen, only: [:picture, :show, :update, :destroy]
 
@@ -156,6 +157,92 @@ module Api::V1
         render json: {
           errors: error_message 
         }, status: 422
+      end
+    end
+
+
+    # POST /citizens/upload
+    def upload
+      citizens = params["data"]
+
+      columns = [:name, :cpf, :rg, :birth_date, :cep, 
+                 :address_number, :address_complement, 
+                 :phone1, :phone2, :email, :pcd, :note, :active]
+
+      complete = [:name, :cpf, :rg, :birth_date, :cep, :address_street, 
+                  :address_number, :neighborhood, :address_complement, :city_id,
+                  :phone1, :phone2, :email, :pcd, :note, :active]
+
+      account_columns = [:uid, :provider, :encrypted_password]
+
+      line_number = 1
+      errors = Hash.new
+      to_create = Array.new
+      account_to_create = Array.new
+
+      citizens.each do |c|
+        upload_params = Hash[columns.zip(c)]
+        citizen = Citizen.new(upload_params)
+
+        account = Account.new({
+          uid: citizen.cpf,
+          provider: "cpf"
+        })
+
+        account.password = citizen.birth_date.strftime('%d%m%y')
+
+        # Citizen remaining info is added when .valid? method is called
+        if citizen.valid? and account.valid?
+
+          # Add valid citizen with complete info to to_create array
+          inst = [
+            citizen.name,
+            citizen.cpf,
+            citizen.rg,
+            citizen.birth_date,
+            citizen.cep,
+            citizen.address_street,
+            citizen.address_number,
+            citizen.neighborhood,
+            citizen.address_complement,
+            citizen.city_id,
+            citizen.phone1,
+            citizen.phone2,
+            citizen.email,
+            citizen.pcd,
+            citizen.note,
+            citizen.active
+          ]
+
+          acc_inst = [
+            account.uid,
+            account.provider,
+            account.encrypted_password
+          ]
+
+          to_create.append(inst)
+          account_to_create.append(acc_inst)
+        else
+          errors[line_number.to_s] = citizen.errors.to_hash
+        end
+
+        line_number += 1
+      end
+
+      Citizen.transaction do
+        Citizen.import complete, to_create, validate: true
+      end
+
+      Account.transaction do
+        Account.import account_columns, account_to_create, validate: true
+      end
+
+      if errors.size == 0
+        render json: {
+          errors: ["Citizens uploaded successfully."]
+        }, status: 201
+      else
+        render json: errors.as_json, status: 422
       end
     end
 

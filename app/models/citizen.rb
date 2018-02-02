@@ -11,6 +11,8 @@ class Citizen < ApplicationRecord
   # Validations #
   validates :cpf, cpf: true, if: :cpf_required?
   validates :email, email: true, allow_blank: true
+  validates :address_street, presence: true, allow_blank: false
+  validates :address_number, presence: true, allow_blank: false
 
   validates_presence_of :cpf, if: :cpf_required?
   validates_presence_of :name
@@ -46,6 +48,7 @@ class Citizen < ApplicationRecord
 
   before_validation :set_address
 
+  # Scopes #
   scope :all_active, -> { 
     where(active: true, responsible_id: nil) 
   }
@@ -57,6 +60,7 @@ class Citizen < ApplicationRecord
   scope :dependants, -> { 
     where(responsible_id: self.id) 
   }
+
 
   # @return list of citizen's columns
   def self.keys
@@ -81,6 +85,7 @@ class Citizen < ApplicationRecord
     ]
   end
 
+
   # @return citizen's professional data
   def professional
     if self.account
@@ -104,7 +109,12 @@ class Citizen < ApplicationRecord
     city = self.city
     state = city.state
 
-    address = Address.get_address(self.cep)
+    address = {
+      zipcode: self.cep,
+      address: self.address_street,
+      neighborhood: self.neighborhood,
+      complement: self.address_complement
+    }
 
     return self.as_json(except: [:city_id, :created_at, :updated_at])
       .merge({city: city.as_json(except: [
@@ -113,10 +123,9 @@ class Citizen < ApplicationRecord
       .merge({state: state.as_json(except: [
         :ibge_code, :created_at, :updated_at
       ])})
-      .merge({address: address.as_json(except: [
-        :created_at, :updated_at, :state_id, :city_id
-      ])})
+      .merge({address: address})
   end
+
 
   # @return [Json] detailed citizen's data
   def partial_info_response
@@ -134,12 +143,14 @@ class Citizen < ApplicationRecord
       ])})
   end
 
+
   # Used in menu to choose citizen to schedule for in the scheduling process
   # @return [ActiveRecord_Relation] citizen's dependants and himself
   def schedule_response
     Citizen.where('id = ? OR responsible_id = ?', self.id, self.id)
       .as_json(only: [:id, :name, :birth_date, :cpf, :rg])
   end
+
 
   # @params params [ActionController::Parameters] Parameters for searching
   # @params npage [String] number of page to be returned
@@ -148,6 +159,7 @@ class Citizen < ApplicationRecord
   def self.filter(params, npage, permission)
     return search(search_params(params, permission), npage)
   end
+
 
   private
 
@@ -168,12 +180,16 @@ class Citizen < ApplicationRecord
     return filter_search_params(params, filter, sortable) 
   end
 
+
   # @return [Boolean] true if cpf is required (isn't a dependant) false if it is
   # not (is a dependant)
   def cpf_required?
     self.responsible_id.nil?
   end
 
+
+  # Callback method for attributing correct address to citizen given CEP
+  # @return [Boolean] true if provided CEP is correct, false otherwise
   def set_address
     if self.cep.nil? or self.cep.empty?
       self.errors["cep"] << "Cep can't be blank."
@@ -184,6 +200,14 @@ class Citizen < ApplicationRecord
 
     if not address.nil?
       self.city_id = address.city_id
+
+      if not address.address.empty?
+        self.address_street = address.address
+      end
+
+      if not address.neighborhood.empty?
+        self.neighborhood = address.neighborhood
+      end
     else
       self.errors["cep"] << "#{self.cep} is invalid."
       return false

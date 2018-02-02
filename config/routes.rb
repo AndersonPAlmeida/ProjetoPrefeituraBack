@@ -18,6 +18,8 @@ Rails.application.routes.draw do
         end
       end
 
+      post "citizens/upload" => "citizens#upload"
+
       resources :schedules do
         member do
           put 'confirm'
