@@ -44,8 +44,9 @@ module Agendador
       end
 
       def self.get_postmon(zipcode)
-        http = Curl.get("http://api.postmon.com.br/v1/cep/#{zipcode}?format=xml")
-        doc = Nokogiri::XML(http.body_str)
+        #http = Curl.get("http://api.postmon.com.br/v1/cep/#{zipcode}?format=xml")
+        uri = URI("http://api.postmon.com.br/v1/cep/#{zipcode}?format=xml")
+        doc = Nokogiri::XML(Net::HTTP.get(uri))
         doc.encoding = 'UTF-8'
 
         address = Hash.new
