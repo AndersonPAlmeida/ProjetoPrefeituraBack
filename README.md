@@ -10,6 +10,27 @@ Informações
 * Versão ruby: 2.3.1
 * Versão PostgreSQL: 9.x
 
+## Docker
+{::options parse_block_html="true" /}
+<style>
+.alert-info {
+  color: rgb(49,112,143) !important;
+}
+</style>
+<div class="panel panel-warning">
+**Aviso**
+{: .panel-heading}
+<div class="panel-body">
+Este Dockerfile deve ser apenas usado em development
+</div>
+</div>
+
+{::options parse_block_html="false" /}
+```bash
+  $ git clone git@gitlab.c3sl.ufpr.br:agendador/Back-end-server.git
+  $ sudo docker-compose up
+```
+
 ## Instalação
 PostgreSQL:
 ```bash
@@ -72,7 +93,7 @@ https://www.getpostman.com/collections/0f51e86e6e65c15baf9d
 3. Criar teste para a atividade
 4. Rodar o teste criado sobre a atividade desenvolvida
   1. Se estiver errado:
-     Voltar para o passo 2 
+     Voltar para o passo 2
   2. Se estiver certo:  
      bin/retab  
      git commit -sm “Explain (the first word must be an infinitive verb) what this commit does”  
