@@ -1,3 +1,4 @@
+{::options parse_block_html="true" /}
 Agendador
 =========
 
@@ -11,21 +12,20 @@ Informações
 * Versão PostgreSQL: 9.x
 
 ## Docker
-{::options parse_block_html="true" /}
+
 <style>
 .alert-info {
   color: rgb(49,112,143) !important;
 }
 </style>
-<div class="panel panel-warning">
+<div class="panel panel-warning ">
 **Aviso**
-{: .panel-heading}
+
 <div class="panel-body">
 Este Dockerfile deve ser apenas usado em development
 </div>
 </div>
 
-{::options parse_block_html="false" /}
 ```bash
   $ git clone git@gitlab.c3sl.ufpr.br:agendador/Back-end-server.git
   $ sudo docker-compose up
