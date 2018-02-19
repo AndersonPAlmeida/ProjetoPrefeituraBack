@@ -33,17 +33,15 @@ COPY . .
 RUN gem install rails -v 5.0.0 && \
          gem install bundler && \
          bundle install -j 4
-         # rake db:migrate && \
-         # rake agendador:setup
 
-# Expose a volume so that apache2 will be able to read in assets in production.
+# Create a script to run as  a command and reset database every time
 RUN echo "#! /bin/bash" > /exec.sh &&\
 echo "rm -f /app/tmp/pids/server.pid && " >> /exec.sh  && \
-# echo "/app/bin/rails db:environment:set RAILS_ENV=development" >> /exec.sh && \
 echo "RAILS_ENV=development /app/bin/rake agendador:setup" >> /exec.sh && \
 echo "RAILS_ENV=development bundle exec rails s -p 3000 -b '0.0.0.0'" >> /exec.sh  && \
 chmod +x /exec.sh
 
+# Expose a volume so that apache2 will be able to read in assets in production.
 VOLUME ["$INSTALL_PATH/public"]
 EXPOSE 3000
 
