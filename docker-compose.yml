@@ -8,7 +8,7 @@ agendador-postgres:
 
 agendador-backend:
   build: .
-  # volumes:
-  #   - .:/app/
+  volumes:
+    - .:/app/
   ports:
     - '3000:3000'
