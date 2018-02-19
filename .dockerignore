@@ -2,3 +2,4 @@
 .dockerignore
 Gemfile.lock
 Dockerfile
+docker-compose.yml

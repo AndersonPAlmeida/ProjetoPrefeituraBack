@@ -1,4 +1,4 @@
-postgres:
+agendador-postgres:
   image: postgres:9.6
   environment:
     POSTGRES_USER: agendador
@@ -6,11 +6,9 @@ postgres:
   ports:
     - '5432:5432'
 
-agendador:
+agendador-backend:
   build: .
   # volumes:
   #   - .:/app/
   ports:
     - '3000:3000'
-  environment:
-    PGHOST: bojack

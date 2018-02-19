@@ -46,6 +46,8 @@ chmod +x /app/exec.sh
 
 VOLUME ["$INSTALL_PATH/public"]
 
+ENV  PGHOST bojack
+
 EXPOSE 3000
 
 CMD ["/bin/bash", "-c", "/app/exec.sh"]
