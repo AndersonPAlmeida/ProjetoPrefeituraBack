@@ -10,5 +10,11 @@ agendador-backend:
   build: .
   volumes:
     - .:/app/
+  environment:
+     # PGHOST: ${HOSTNAME}
+   # PGHOST: ${hostname}
+    PGHOST: bojack
   ports:
     - '3000:3000'
+     # depends_on:
+     #    - 'agendador-postgres'

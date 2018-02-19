@@ -30,7 +30,6 @@ WORKDIR $INSTALL_PATH
 
 COPY . .
 
-
 RUN gem install rails -v 5.0.0 && \
          gem install bundler && \
          bundle install -j 4
@@ -38,16 +37,15 @@ RUN gem install rails -v 5.0.0 && \
          # rake agendador:setup
 
 # Expose a volume so that apache2 will be able to read in assets in production.
-RUN echo "#! /bin/bash" > /app/exec.sh &&\
-echo "rake agendador:setup" >> /app/exec.sh && \
-echo "rails s -b 0.0.0.0" >> /app/exec.sh  && \
-chmod +x /app/exec.sh
-
+RUN echo "#! /bin/bash" > /exec.sh &&\
+echo "rm -f /app/tmp/pids/server.pid && " >> /exec.sh  && \
+echo "/app/bin/rails db:environment:set RAILS_ENV=development" >> /exec.sh && \
+echo "RAILS_ENV=development /app/bin/rake agendador:setup" >> /exec.sh && \
+echo "RAILS_ENV=development bundle exec rails s -p 3000 -b '0.0.0.0'" >> /exec.sh  && \
+chmod +x /exec.sh
 
 VOLUME ["$INSTALL_PATH/public"]
 
-ENV  PGHOST bojack
-
 EXPOSE 3000
 
-CMD ["/bin/bash", "-c", "/app/exec.sh"]
+CMD ["/bin/bash", "-c", "/exec.sh app/"]
