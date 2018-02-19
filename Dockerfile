@@ -39,13 +39,12 @@ RUN gem install rails -v 5.0.0 && \
 # Expose a volume so that apache2 will be able to read in assets in production.
 RUN echo "#! /bin/bash" > /exec.sh &&\
 echo "rm -f /app/tmp/pids/server.pid && " >> /exec.sh  && \
-echo "/app/bin/rails db:environment:set RAILS_ENV=development" >> /exec.sh && \
+# echo "/app/bin/rails db:environment:set RAILS_ENV=development" >> /exec.sh && \
 echo "RAILS_ENV=development /app/bin/rake agendador:setup" >> /exec.sh && \
 echo "RAILS_ENV=development bundle exec rails s -p 3000 -b '0.0.0.0'" >> /exec.sh  && \
 chmod +x /exec.sh
 
 VOLUME ["$INSTALL_PATH/public"]
-
 EXPOSE 3000
 
 CMD ["/bin/bash", "-c", "/exec.sh app/"]

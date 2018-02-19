@@ -1,20 +1,30 @@
-agendador-postgres:
-  image: postgres:9.6
-  environment:
-    POSTGRES_USER: agendador
-    POSTGRES_PASSWORD: 123mudar
-  ports:
-    - '5432:5432'
+version: "2" # version matters, see https://docs.docker.com/compose/networking/
+networks:
+  backend:
+services:
+  agendador-postgres:
+    image: postgres:9.6
+    environment:
+      POSTGRES_USER: agendador
+      POSTGRES_PASSWORD: 123mudar
+    ports:
+      - '5432:5432'
+    networks:
+            backend:
 
-agendador-backend:
-  build: .
-  volumes:
-    - .:/app/
-  environment:
+  agendador-backend:
+    build: .
+    volumes:
+      - .:/app/
+    environment:
      # PGHOST: ${HOSTNAME}
-   # PGHOST: ${hostname}
-    PGHOST: bojack
-  ports:
-    - '3000:3000'
-     # depends_on:
-     #    - 'agendador-postgres'
+      # PGHOST: 10.254.221.73
+      PGHOST: agendador-postgres
+    ports:
+      - '3000:3000'
+    depends_on:
+      - agendador-postgres
+    # restart_policy:
+    #   condition: on-failure
+    networks:
+      backend:
