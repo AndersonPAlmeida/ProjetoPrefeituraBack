@@ -11,6 +11,13 @@ Informações
 * Versão PostgreSQL: 9.x
 
 ## Docker
+Instale o [docker-ce](https://docs.docker.com/install/) e configure o dns em `/etc/docker/daemon.json`
+```
+{
+   "dns": [ "200.17.202.3"]
+}
+```
+
 ```
 Aviso
 
