@@ -21,7 +21,7 @@ Instale o [docker-ce](https://docs.docker.com/install/) e configure o dns em `/e
 ```
 Aviso
 
-Este Dockerfile deve ser apenas usado em development
+Este Dockerfile deve ser apenas usado em development. É preciso rodar 2 vezes depois do build
 
 ```
 ```bash

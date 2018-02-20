@@ -1,4 +1,4 @@
-version: "2" # version matters, see https://docs.docker.com/compose/networking/
+version: "3" # version matters, see https://docs.docker.com/compose/networking/
 networks:
   backend:
 services:
