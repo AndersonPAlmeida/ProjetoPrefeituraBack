@@ -32,6 +32,7 @@ module Api::V1
 
       # honor devise configuration for case_insensitive_keys
       @citizen.email = citizen_params[:email].try :downcase
+      @resource.email = @citizen.email
       
       if params[:image]
         begin

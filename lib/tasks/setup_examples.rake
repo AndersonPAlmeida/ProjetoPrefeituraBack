@@ -178,6 +178,7 @@ namespace :agendador do
     })
     accounts[:alan] = Account.create({
       uid: citizens[:alan].cpf,
+      email: "bruno@tissei.com.br",
       password: "123456",
       password_confirmation: "123456"
     })

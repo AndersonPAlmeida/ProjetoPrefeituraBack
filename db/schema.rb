@@ -27,6 +27,7 @@ ActiveRecord::Schema.define(version: 20171109134344) do
     t.string   "last_sign_in_ip"
     t.string   "provider",               default: "cpf", null: false
     t.string   "uid",                    default: "",    null: false
+    t.string   "email"
     t.json     "tokens"
     t.datetime "created_at",                             null: false
     t.datetime "updated_at",                             null: false

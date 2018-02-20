@@ -73,7 +73,6 @@ class ApplicationController < ActionController::API
     end
   end
 
-
   protected
 
   # permit parameters for devise functions

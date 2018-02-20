@@ -5,7 +5,8 @@ Rails.application.routes.draw do
     namespace :v1 do
       mount_devise_token_auth_for 'Account', at: 'auth', controllers: {
         registrations: 'api/v1/accounts/registrations',
-        sessions:      'api/v1/accounts/sessions'
+        sessions:      'api/v1/accounts/sessions',
+        passwords:     'api/v1/accounts/passwords'
       }
 
       get "accounts/self" => "accounts#index"

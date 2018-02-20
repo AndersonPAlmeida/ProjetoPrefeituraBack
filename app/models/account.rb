@@ -48,7 +48,7 @@ class Account < ApplicationRecord
     if not professional.nil?
       roles = professional.professionals_service_places
         .pluck(:id, :role, :service_place_id)
-      
+
       roles.each_with_index do |val, index|
         service_place = ServicePlace.find(val[2])
         val[3] = service_place.city_id
