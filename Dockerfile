@@ -1,5 +1,5 @@
 FROM ruby:2.3.1
-MAINTAINER horstmannmat <mch15@inf.ufpr.br>
+LABEL maintainer="horstmannmat <mch15@inf.ufpr.br>"
 
 ENV DEBIAN_FRONTEND noninteractive
 ENV LANG C.UTF-8
@@ -32,13 +32,14 @@ COPY . .
 
 RUN gem install rails -v 5.0.0 && \
          gem install bundler && \
-         bundle install -j 4
+         /app/bin/bundle install -j 4
 
 # Create a script to run as  a command and reset database every time
 RUN echo "#! /bin/bash" > /exec.sh &&\
 echo "rm -f /app/tmp/pids/server.pid && " >> /exec.sh  && \
 echo "RAILS_ENV=development /app/bin/rake agendador:setup" >> /exec.sh && \
-echo "RAILS_ENV=development bundle exec rails s -p 3000 -b '0.0.0.0'" >> /exec.sh  && \
+# echo "RAILS_ENV=development bundle exec rails s -p 3000 -b '0.0.0.0'" >> /exec.sh  && \
+echo "RAILS_ENV=development /app/bin/rails s -p 3000 -b '0.0.0.0'" >> /exec.sh  && \
 chmod +x /exec.sh
 
 # Expose a volume so that apache2 will be able to read in assets in production.
