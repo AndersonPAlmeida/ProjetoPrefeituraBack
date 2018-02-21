@@ -23,7 +23,7 @@ class Api::V1::Accounts::RegistrationsControllerTest < ActionDispatch::Integrati
 
         @curitiba_city_hall = CityHall.new(
           name: "Prefeitura de Curitiba",
-          cep: "1234567",
+          cep: "81530110",
           neighborhood: "Test neighborhood",
           address_street: "Test street",
           address_number: "123",
@@ -78,7 +78,7 @@ class Api::V1::Accounts::RegistrationsControllerTest < ActionDispatch::Integrati
 
         post '/v1/auth', params: {
           birth_date: "Apr 18 1997",
-          cep: "81530-110",
+          cep: "81530110",
           cpf: "12345678910",
           email: "test@example.com", 
           name: "Test Example",
@@ -152,7 +152,7 @@ class Api::V1::Accounts::RegistrationsControllerTest < ActionDispatch::Integrati
 
         post '/v1/auth', params: {
           birth_date: "Jan 1 1980",
-          cep: "1122334",
+          cep: "81530110",
           cpf: "52998224725",
           email: "john@john.com", 
           name: "John",
@@ -185,7 +185,7 @@ class Api::V1::Accounts::RegistrationsControllerTest < ActionDispatch::Integrati
         @number_of_accounts = Account.count
 
         post '/v1/auth', params: {
-          cep: "1122334",
+          cep: "81530110",
           cpf: "10845922904",
           email: "john@john.com", 
           name: "John",
@@ -223,7 +223,7 @@ class Api::V1::Accounts::RegistrationsControllerTest < ActionDispatch::Integrati
 
         post '/v1/auth', params: {
           birth_date: "Jan 1 1980",
-          cep: "1122334",
+          cep: "81530110",
           email: "john@john.com", 
           name: "John",
           phone1: "12341234", 

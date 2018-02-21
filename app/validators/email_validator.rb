@@ -10,7 +10,7 @@ class EmailValidator < ActiveModel::EachValidator
   # @param value [String] the value of the record's email
   def validate_each(record, attribute, value)
     unless EMAIL_REGEX.match(value) 
-      record.errors[attribute] << ("#{value} is not a valid email")
+      record.errors[attribute] << ("#{value} is invalid.")
     end
   end
 end

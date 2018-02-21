@@ -32,28 +32,21 @@ module Api::V1
 
       # honor devise configuration for case_insensitive_keys
       @citizen.email = citizen_params[:email].try :downcase
+      @resource.email = @citizen.email
+      
+      if params[:image]
+        begin
+          params[:image] = Agendador::Image::Parser.parse(params[:image])
+          #@citizen.update_attribute(:avatar, params[:image])
+          @citizen.avatar = params[:image]
+        ensure
+          Agendador::Image::Parser.clean_tempfile
+        end
+      end
 
       # set uid to corresponding citizen's cpf
       if !@citizen.cpf.nil?
         @resource.uid = @citizen.cpf.gsub(/[^0-9]/, '')
-      end
-
-      # give redirect value from params priority
-      @redirect_url = params[:confirm_success_url]
-
-      # fall back to default value if provided
-      @redirect_url ||= DeviseTokenAuth.default_confirm_success_url
-
-      # success redirect url is required
-      if resource_class.devise_modules.include?(:confirmable) && !@redirect_url
-        return render_create_error_missing_confirm_success_url
-      end
-
-      # if whitelist is set, validate redirect_url against whitelist
-      if DeviseTokenAuth.redirect_whitelist
-        unless DeviseTokenAuth.redirect_whitelist.include?(@redirect_url)
-          return render_create_error_redirect_url_not_allowed
-        end
       end
 
       begin
@@ -118,9 +111,8 @@ module Api::V1
         return
       end
 
-
       # Update account with params except citizen's
-      if @resource.send(resource_update_method, account_update_params.except(:citizen))
+      if @resource.send(resource_update_method, account_update_params.except(:citizen, :professional))
         yield @resource if block_given?
 
         # Check if citizen's params are not empty
@@ -132,10 +124,23 @@ module Api::V1
         # Update citizen with account_update_params[:citizen]
         if @resource.citizen.update(account_update_params[:citizen])
 
+          # Update professional info if provided
+          if not account_update_params[:professional].nil?
+            if not @resource.citizen.professional.nil? and 
+              (not @resource.citizen.professional.update(account_update_params[:professional]))
+
+              render json: @resource.citizen.professional.errors, status: :unprocessable_entity
+              return
+            else
+              @resource.citizen.professional.save!
+            end
+          end
+
           # Update image if provided
           if params[:citizen][:image]
             if params[:citizen][:image][:content_type] == "delete"
               @resource.citizen.avatar.destroy
+              @resource.citizen.save
             else
               begin
                 params[:citizen][:image] = Agendador::Image::Parser.parse(params[:citizen][:image])
@@ -149,6 +154,7 @@ module Api::V1
           # The city id has to be updated in case the cep needs change
           if not account_update_params[:citizen][:cep].nil?
             city_id = Address.get_city_id(account_update_params[:citizen][:cep])
+
             if @resource.citizen.update_attribute(:city_id, city_id)
               render_update_success
             end
@@ -204,7 +210,7 @@ module Api::V1
     # method to show @citizen.cpf
     def render_create_citizen_error
       render json: {
-        errors: @citizen.errors
+        errors: @citizen.errors.to_hash.merge(full_messages: @citizen.errors.full_messages)
       }, status: 422
     end
 

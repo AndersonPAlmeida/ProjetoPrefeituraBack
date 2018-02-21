@@ -20,11 +20,10 @@ class Api::V1::Accounts::SessionsControllerTest < ActionDispatch::IntegrationTes
 
         @curitiba_city_hall = CityHall.new(
           name: "Prefeitura de Curitiba",
-          cep: "1234567",
+          cep: "81530110",
           neighborhood: "Test neighborhood",
           address_street: "Test street",
           address_number: "123",
-          city_id: @curitiba.id,
           phone1: "1414141414",
           active: true,
           block_text: "Test block text"
@@ -64,7 +63,7 @@ class Api::V1::Accounts::SessionsControllerTest < ActionDispatch::IntegrationTes
         end
 
         it "should correspond to the current account" do
-          assert_equal @controller.current_account.citizen.id, 
+          assert_equal @controller.current_user[0].id, 
             Account.where(uid: @body["data"]["uid"]).first.citizen.id
         end
 

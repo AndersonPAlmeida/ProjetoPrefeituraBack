@@ -20,11 +20,22 @@ class DeviseTokenAuthCreateAccounts < ActiveRecord::Migration[5.0]
 
       t.string :provider, null: false, default: "cpf"
       t.string :uid, null: false, default: ""
+      t.string :email
 
       ## Tokens
       t.json :tokens
 
       t.timestamps
+    end
+
+    reversible do |direction|
+      direction.up do
+        Account.find_each do |account|
+          account.uid = account.email
+          account.tokens = nil
+          account.save!
+        end
+      end
     end
 
     add_index :accounts, :uid,                  unique: true

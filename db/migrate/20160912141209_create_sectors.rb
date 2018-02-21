@@ -6,6 +6,7 @@ class CreateSectors < ActiveRecord::Migration[5.0]
       t.integer :absence_max
       t.integer :blocking_days
       t.integer :cancel_limit
+      t.integer :previous_notice, null: false, default: 48
       t.text :description
       t.string :name
       t.integer :schedules_by_sector

@@ -16,7 +16,7 @@ class DependantTest < ActiveSupport::TestCase
       @citizen = Citizen.new(cpf: "10845922904",
                              active: true,
                              birth_date: "Apr 18 1997",
-                             cep: "1234567",
+                             cep: "89218230",
                              email: "test@example.com",
                              name: "Test Example",
                              phone1: "(12)1212-1212",

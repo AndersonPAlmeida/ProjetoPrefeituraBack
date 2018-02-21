@@ -22,9 +22,18 @@ module Api::V1
 
       # create token and sign in
       if @resource and valid_params?(field, q_value) and 
-         @resource.valid_password?(resource_params[:password]) and 
          (!@resource.respond_to?(:active_for_authentication?) or 
          @resource.active_for_authentication?)
+
+        valid_password = @resource.valid_password?(resource_params[:password])
+
+        if (@resource.respond_to?(:valid_for_authentication?) and 
+           !@resource.valid_for_authentication? { valid_password }) or 
+           !valid_password
+          
+          render_create_error_bad_credentials
+          return
+        end
 
         # create client id
         @client_id = SecureRandom.urlsafe_base64(nil, false)

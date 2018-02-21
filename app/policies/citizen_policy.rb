@@ -2,32 +2,29 @@ class CitizenPolicy < ApplicationPolicy
   class Scope < Scope
     def resolve
       citizen = user[0]
-      permission = user[1]
+      permission = Professional.get_permission(user[1])
 
-      if permission == "citizen" or citizen.professional.nil?
+      if permission == "citizen"
         return nil
-      elsif permission.nil? and not citizen.professional.nil?
-        permission = citizen.professional.roles[-1]
       end
 
       professional = citizen.professional
 
       city_id = professional.professionals_service_places
-        .find_by(role: permission)
-        .service_place.city_id
+        .find(user[1]).service_place.city_id
       
-      return case
-      when permission == "adm_c3sl" && professional.adm_c3sl?
+      return case permission
+      when "adm_c3sl"
         scope.all_active.where.not(id: citizen.id)
 
-      when permission == "adm_prefeitura" && professional.adm_prefeitura?
-        scope.local_active(city_id).where.not(id: citizen.id)
+      when "adm_prefeitura"
+        scope.all_active.local(city_id).where.not(id: citizen.id)
 
-      when permission == "adm_local" && professional.adm_local?
-        scope.local_active(city_id).where.not(id: citizen.id)
+      when "adm_local"
+        scope.all_active.local(city_id).where.not(id: citizen.id)
 
-      when permission == "atendente_local" && professional.atendente?
-        scope.local_active(city_id).where.not(id: citizen.id)
+      when "atendente_local"
+        scope.all_active.local(city_id).where.not(id: citizen.id)
 
       else
         nil
@@ -37,6 +34,37 @@ class CitizenPolicy < ApplicationPolicy
 
   def show?
     return access_policy(user, false)
+  end
+
+  def create?
+    citizen = user[0]
+    permission = Professional.get_permission(user[1])
+
+    if permission == "citizen"
+      return condition 
+    end
+
+    professional = citizen.professional
+
+    city_id = professional.professionals_service_places
+      .find(user[1]).service_place.city_id
+
+    return case
+    when permission == "adm_c3sl"
+      return (citizen.id != record.id)
+
+    when permission == "adm_prefeitura"
+      return (citizen.id != record.id)
+
+    when permission == "adm_local"
+      return (citizen.id != record.id)
+
+    when permission == "atendente_local"
+      return (citizen.id != record.id)
+
+    else
+      false
+    end
   end
 
   def deactivate?
@@ -56,6 +84,37 @@ class CitizenPolicy < ApplicationPolicy
                                 (record.responsible_id == user[0].id)))
   end
 
+  def show_picture?
+    citizen = user[0]
+    permission = Professional.get_permission(user[1])
+
+    if permission == "citizen"
+      return ((citizen.id == record.id) or (record.responsible_id == citizen.id))
+    end
+
+    professional = citizen.professional
+
+    city_id = professional.professionals_service_places
+      .find(user[1]).service_place.city_id
+
+    return case
+    when permission == "adm_c3sl"
+      return true 
+
+    when permission == "adm_prefeitura"
+      return ((citizen.id == record.id) or (city_id == record.city_id))
+
+    when permission == "adm_local"
+      return ((citizen.id == record.id) or (city_id == record.city_id))
+
+    when permission == "atendente_local"
+      return ((citizen.id == record.id) or (city_id == record.city_id))
+
+    else
+      return (citizen.id == record.id)
+    end
+  end
+
   private
   
   # Generic method for checking permissions when show/accessing/modifying 
@@ -67,31 +126,28 @@ class CitizenPolicy < ApplicationPolicy
   # @return [Boolean] true if allowed, false otherwise
   def access_policy(user, condition)
     citizen = user[0]
-    permission = user[1]
+    permission = Professional.get_permission(user[1])
 
-    if permission == "citizen" or citizen.professional.nil?
+    if permission == "citizen"
       return condition 
-    elsif permission.nil? and not citizen.professional.nil?
-      permission = citizen.professional.roles[-1]
     end
 
     professional = citizen.professional
 
     city_id = professional.professionals_service_places
-      .find_by(role: permission)
-      .service_place.city_id
+      .find(user[1]).service_place.city_id
 
     return case
-    when permission == "adm_c3sl" && professional.adm_c3sl?
+    when permission == "adm_c3sl"
       return (citizen.id != record.id)
 
-    when permission == "adm_prefeitura" && professional.adm_prefeitura?
+    when permission == "adm_prefeitura"
       return (citizen.id != record.id) && (city_id == record.city_id)
 
-    when permission == "adm_local" && professional.adm_local?
+    when permission == "adm_local"
       return (citizen.id != record.id) && (city_id == record.city_id)
 
-    when permission == "atendente_local" && professional.atendente?
+    when permission == "atendente_local"
       return (citizen.id != record.id) && (city_id == record.city_id)
 
     else

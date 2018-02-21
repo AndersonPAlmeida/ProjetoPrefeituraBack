@@ -7,6 +7,11 @@ module Agendador
       Curl::Easy
 
       def self.get(zipcode)
+        return self.get_postmon(zipcode)
+        #return self.get_correios(zipcode)
+      end  
+
+      def self.get_correios(zipcode)
         xml_text= '<?xml version="1.0" encoding="UTF-8"?>' +
           '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" ' +
           'xmlns:cli="http://cliente.bean.master.sigep.bsb.correios.com.br/">' +
@@ -35,8 +40,27 @@ module Agendador
           address[:complement2] = doc.xpath("//complemento2").text.force_encoding("ISO-8859-1").encode("UTF-8")
         end
 
-        address
-      end  
+        return address
+      end
+
+      def self.get_postmon(zipcode)
+        #http = Curl.get("http://api.postmon.com.br/v1/cep/#{zipcode}?format=xml")
+        uri = URI("http://api.postmon.com.br/v1/cep/#{zipcode}?format=xml")
+        doc = Nokogiri::XML(Net::HTTP.get(uri))
+        doc.encoding = 'UTF-8'
+
+        address = Hash.new
+
+        if doc.at_xpath("//faultstring").nil?
+          address[:zipcode] = doc.xpath("//cep").text
+          address[:address] =  doc.xpath("//logradouro").text
+          address[:neighborhood] = doc.xpath("//bairro").text
+          address[:city] =  doc.xpath("//cidade").text
+          address[:state] = doc.xpath("//estado").text
+        end
+
+        return address
+      end
     end  
   end  
 end
