@@ -85,6 +85,21 @@ Bundler:
 ## Requests (Postman)
 https://www.getpostman.com/collections/0f51e86e6e65c15baf9d
 
+## Instruções para recuperar a senha
+1. Definir um email que será usado para enviar o link para recuperar a senha (em production será o email do agendador)
+```bash
+  $ export MAIL\_USERNAME=username
+  $ export MAIL\_PASSWORD=password
+  $ rails s
+```
+
+2. Requisição Postman (localhost:3000/v1/auth/password), onde "cpf" é cpf do usuário que está tentando recuperar a senha e "redirect\_url" deve ser substituído por um link para front-end (página com campos password e password\_confirmation)
+
+3. Abrir email associado ao usuário com o cpf fornecido
+
+4. Ao abrir o link que está no email, você será redirecionado para o "redirect\_url" e nos parâmetros estarão client\_id, token e uid. Com isso, através página do front-end com os campos da senha, pode ser feita uma requisição de update somente na senha do usuário (password e password\_confirmation), usando o client\_id como client, token como access-token e uid como uid.
+              
+
 ## Workflow de cada atividade
 1. Criar branch da atividade: Issue\_x, onde x corresponde ao ID da issue no projeto AGILE
 2. Desenvolver a atividade
