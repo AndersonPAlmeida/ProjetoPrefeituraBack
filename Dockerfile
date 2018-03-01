@@ -37,7 +37,6 @@ RUN gem install rails -v 5.0.0 && \
 
 # Create a script to run as  a command and reset database every time
 RUN echo "#! /bin/bash" > /exec.sh &&\
->> Gemfile.lock && \
 echo "rm -f /app/tmp/pids/server.pid && " >> /exec.sh  && \
 echo "RAILS_ENV=development /app/bin/rake agendador:setup" >> /exec.sh && \
 echo "RAILS_ENV=development /app/bin/bundle exec rails s -p 3000 -b '0.0.0.0'" >> /exec.sh  && \
@@ -48,3 +47,4 @@ VOLUME ["$INSTALL_PATH/public"]
 EXPOSE 3000
 
 CMD ["/bin/bash", "-c", "/exec.sh app/"]
+# CMD /bin/bash
