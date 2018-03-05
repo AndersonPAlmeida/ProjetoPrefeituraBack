@@ -1,14 +1,14 @@
 version: "3" # version matters, see https://docs.docker.com/compose/networking/
-networks:
-  backend:
+# networks:
+#   backend:
 services:
   agendador-postgres:
     image: postgres:9.6
     environment:
       POSTGRES_USER: agendador
       POSTGRES_PASSWORD: 123mudar
-    networks:
-            backend:
+    # networks:
+    #         backend:
 
   agendador-backend:
     build: .
@@ -20,5 +20,5 @@ services:
       - '3000:3000'
     depends_on:
       - agendador-postgres
-    networks:
-      backend:
+    # networks:
+    #   backend:
