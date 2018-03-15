@@ -30,6 +30,8 @@ WORKDIR $INSTALL_PATH
 
 COPY . .
 
+RUN rm -f Gemfile.lock
+
 RUN gem install rails -v 5.0.0 && \
          gem install bundler && \
          /app/bin/bundle install -j 4
