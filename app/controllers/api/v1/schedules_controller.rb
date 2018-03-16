@@ -47,54 +47,56 @@ module Api::V1
         end
 
         return
-      elsif not params[:service].nil?
-        @schedules = policy_scope(
-          Schedule.where.not(situation_id: [1, 2, 3])
-          .filter(params[:q], params[:page], 
-        Professional.get_permission(current_user[1])))
-
-
-        if @schedules.empty?
-          render json: {
-            errors: ["No schedules found."]
-          }, status: 404
-        elsif @schedules.nil?
-          render json: {
-            errors: ["You don't have the permission to view schedules."]
-          }, status: 403
-        else
-          response = Hash.new
-          response[:num_entries] = @schedules.total_count
-          response[:entries] = @schedules.index_response
-
-          render json: response.to_json
-        end
-
-        return
       else
-        @schedules = policy_scope(
-          Schedule.where(situation_id: [1, 2, 3])
-          .filter(params[:q], params[:page], 
-        Professional.get_permission(current_user[1])))
+        if not params[:service].nil?
+          @schedules = policy_scope(
+            Schedule.where.not(situation_id: [1, 2, 3])
+            .filter(params[:q], params[:page], 
+          Professional.get_permission(current_user[1])))
 
 
-        if @schedules.empty?
-          render json: {
-            errors: ["No schedules found."]
-          }, status: 404
-        elsif @schedules.nil?
-          render json: {
-            errors: ["You don't have the permission to view schedules."]
-          }, status: 403
+          if @schedules.empty?
+            render json: {
+              errors: ["No schedules found."]
+            }, status: 404
+          elsif @schedules.nil?
+            render json: {
+              errors: ["You don't have the permission to view schedules."]
+            }, status: 403
+          else
+            response = Hash.new
+            response[:num_entries] = @schedules.total_count
+            response[:entries] = @schedules.index_response
+
+            render json: response.to_json
+          end
+
+          return
         else
-          response = Hash.new
-          response[:num_entries] = @schedules.total_count
-          response[:entries] = @schedules.index_response
+          @schedules = policy_scope(
+            Schedule.where(situation_id: [1, 2, 3])
+            .filter(params[:q], params[:page], 
+          Professional.get_permission(current_user[1])))
 
-          render json: response.to_json
+
+          if @schedules.empty?
+            render json: {
+              errors: ["No schedules found."]
+            }, status: 404
+          elsif @schedules.nil?
+            render json: {
+              errors: ["You don't have the permission to view schedules."]
+            }, status: 403
+          else
+            response = Hash.new
+            response[:num_entries] = @schedules.total_count
+            response[:entries] = @schedules.index_response
+
+            render json: response.to_json
+          end
+
+          return
         end
-
-        return
       end
     end
 
