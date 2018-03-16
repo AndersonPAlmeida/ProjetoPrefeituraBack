@@ -13,7 +13,7 @@ RUN apt-get -y update -qq && apt-get install -y -qq apt-utils
 # - libpq-dev: Communicate with postgres through the postgres gem
 # - wget curl and gnupg is used to get newest postgres client
 # - software-properties-common to use the command lsb_release
-RUN apt-get install -y -qq libpq-dev wget gnupg software-properties-common curl build-essential --fix-missing --no-install-recommends
+RUN apt-get install -y -qq libpq-dev wget gnupg software-properties-common curl build-essential vim --fix-missing --no-install-recommends
 
 #Get newest postgres client
 RUN echo "deb http://apt.postgresql.org/pub/repos/apt/ `lsb_release -cs`-pgdg main" > /etc/apt/sources.list.d/pgdg.list
@@ -30,6 +30,8 @@ WORKDIR $INSTALL_PATH
 
 COPY . .
 
+# RUN rm -f Gemfile.lock
+
 RUN gem install rails -v 5.0.0 && \
          gem install bundler && \
          /app/bin/bundle install -j 4
@@ -45,6 +47,6 @@ chmod +x /exec.sh
 # Expose a volume so that apache2 will be able to read in assets in production.
 VOLUME ["$INSTALL_PATH/public"]
 EXPOSE 3000
-
-CMD ["/bin/bash", "-c", "/exec.sh app/"]
+#
+CMD ["/bin/bash", "-c", "/exec.sh /app/"]
 # CMD /bin/bash
