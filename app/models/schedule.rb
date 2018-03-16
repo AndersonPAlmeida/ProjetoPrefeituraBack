@@ -133,7 +133,7 @@ class Schedule < ApplicationRecord
     ]).merge({
       sector_name: self.shift.service_type.sector.name,
       service_type_name: self.shift.service_type.description,
-      service_place_name: self.service_place.name,
+     service_place_name: self.service_place.name,
       service_place_address_street: self.service_place.address_street,
       service_place_address_number: self.service_place.address_number,
       situation: self.situation.description
