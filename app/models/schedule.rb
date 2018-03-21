@@ -53,8 +53,10 @@ class Schedule < ApplicationRecord
       citizen_cpf professional_performer_id))
 
     response.map do |i| 
+      shift = Shift.find(i["shift_id"])
       i["professional_name"] = Professional.find(i["professional_performer_id"]).name
-      i["service_type"] = Shift.find(i["shift_id"]).service_type.description
+      i["service_type"] = shift.service_type.description
+      i["service_place"] = shift.service_place.name
     end
 
     return response
