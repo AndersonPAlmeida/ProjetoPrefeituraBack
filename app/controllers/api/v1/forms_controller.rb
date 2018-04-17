@@ -12,7 +12,7 @@ module Api::V1
 
       sector_ids = sectors.map { |row| row["id"] }
 
-      
+
       # ======================== Service Types ========================
       service_types_resp = ServiceType.where(sector_id: sector_ids, active: true)
         .as_json(only: [:description, :id, :sector_id])
@@ -33,7 +33,7 @@ module Api::V1
         st_ids[i.id.to_s] = i.service_type_ids
       end
 
-      for i in service_places_resp 
+      for i in service_places_resp
         i["service_types"] = st_ids[i["id"].to_s]
       end
 
@@ -49,7 +49,7 @@ module Api::V1
       response[:service_place] = service_places_resp
       response[:situation]     = situations
 
-      render json: response.as_json 
+      render json: response.as_json
     end
 
     # GET /forms/citizen_index
@@ -246,7 +246,7 @@ module Api::V1
 
         response[:service_places] = ServicePlace.all.as_json(only: [:id, :name])
 
-        response[:permissions] = roles.as_json 
+        response[:permissions] = roles.as_json
 
       when "adm_prefeitura"
         response[:occupations] = Occupation.where(city_hall_id: city_hall.id)
@@ -255,16 +255,16 @@ module Api::V1
         response[:service_places] = ServicePlace.where(city_hall_id: city_hall.id)
           .as_json(only: [:id, :name])
 
-        response[:permissions] = roles.as_json[1..-1] 
+        response[:permissions] = roles.as_json[1..-1]
 
       when "adm_local"
         response[:occupations] = Occupation.where(city_hall_id: city_hall.id)
           .as_json(only: [:id, :name])
 
         response[:service_places] = ProfessionalsServicePlace.find(current_user[1])
-          .service_place.as_json(only: [:id, :name]) 
+          .service_place.as_json(only: [:id, :name])
 
-        response[:permissions] = roles.as_json[1..-2] 
+        response[:permissions] = roles.as_json[1..-2]
 
       else
         render json: {
@@ -272,7 +272,7 @@ module Api::V1
         }, status: 403
         return
       end
-      
+
       render json: response.as_json
     end
 
@@ -327,7 +327,7 @@ module Api::V1
 
         response[:service_places] = ServicePlace.all_active.local_city_hall(city_hall.id)
           .as_json(only: [:id, :name])
-      
+
 
       else
         render json: {
@@ -355,7 +355,7 @@ module Api::V1
       when "adm_c3sl"
         # Every service place
         response[:service_places] = ServicePlace.all_active.as_json(
-          only: [:id, :name]
+          only: [:id, :name, :city_hall_id]
         )
 
         # Every professional
@@ -392,7 +392,7 @@ module Api::V1
 
       when "adm_local"
         # Current service place
-        service_places = [ service_place ] 
+        service_places = [ service_place ]
         sp_ids = service_place.id
         response[:service_places] = service_places.as_json(
           only: [:id, :name]
@@ -418,7 +418,7 @@ module Api::V1
         }, status: 403
         return
       end
-      
+
       render json: response.as_json
     end
 
@@ -480,7 +480,7 @@ module Api::V1
 
       when "adm_local"
         # Current service place
-        service_places = [ service_place ] 
+        service_places = [ service_place ]
         sp_ids = service_place.id
         response[:service_places] = service_places.as_json(
           only: [:id, :name]
@@ -506,7 +506,7 @@ module Api::V1
         }, status: 403
         return
       end
-      
+
       render json: response.as_json
     end
 
@@ -615,7 +615,7 @@ module Api::V1
 
       when "adm_local"
         # Current service place
-        service_places = [ service_place ] 
+        service_places = [ service_place ]
         sp_ids = service_place.id
         response[:service_places] = service_places.as_json(
           only: [:id, :name]
@@ -643,10 +643,10 @@ module Api::V1
         }, status: 403
         return
       end
-      
+
       render json: response.as_json
     end
-    
+
     # GET /forms/schedule_per_type_index
     def schedule_per_type_index
       citizen = current_user[0]

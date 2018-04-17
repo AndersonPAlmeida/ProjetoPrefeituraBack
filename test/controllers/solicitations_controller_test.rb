@@ -19,12 +19,14 @@ class SolicitationsControllerTest < ActionDispatch::IntegrationTest
 
       @citizen = Citizen.new(
         active: true,
-        cpf: "10845922904", 
-        birth_date: "Apr 18 1997", 
-        cep: "81530110", 
+        cpf: "10845922904",
+        birth_date: "Apr 18 1997",
+        cep: "81530110",
         email: "test@example.com",
-        name: "Test Example", 
+        name: "Test Example",
         phone1: "(12)1212-1212",
+        address_street: "Street from Curitiba",
+        address_number: "4121",
         city_id: @curitiba.id,
         rg: "1234567"
       )

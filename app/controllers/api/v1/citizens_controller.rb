@@ -1,5 +1,5 @@
 module Api::V1
-  class CitizensController < ApplicationController 
+  class CitizensController < ApplicationController
     include Authenticable
     include HasPolicies
     require 'csv'
@@ -48,20 +48,19 @@ module Api::V1
 
         if path.nil?
           render json: {
-            errors: ["User #{params[:id]} does have a picture."]
+            errors: ["User #{params[:id]} does not have a picture."]
           }, status: 404
         else
           if not params[:size].nil?
             path.sub!('original', params[:size])
           end
 
-          send_file path, 
-            type: @citizen.avatar_content_type, 
+          send_file path,
+            type: @citizen.avatar_content_type,
             disposition: 'inline'
         end
       end
     end
-
 
     # GET /citizen/1/schedule_options
     def schedule_options
@@ -155,94 +154,86 @@ module Api::V1
         render json: @citizen.complete_info_response, status: :created
       else
         render json: {
-          errors: error_message 
+          errors: error_message
         }, status: 422
       end
     end
 
 
+    # GET /citizens/upload_log/1
+    def get_upload_log
+      # Find uploads for current citizen
+      @upload = CitizenUpload.find(params[:upload_id])
+
+      if @upload.nil?
+        render json: {
+          errors: ["Upload task #{params[:upload_id]} does not exist."]
+        }, status: 404
+
+      else
+        # Upload log path
+        path = @upload.log.path
+
+        # If log not found, displays not found message
+        if path.nil?
+          render json: {
+            errors: ["Log not found for current task."]
+          }, status: 404
+
+        # Otherwise, send file
+        else
+          send_file path,
+            type: @upload.log_content_type,
+            disposition: 'inline'
+        end
+      end
+    end
+
+    # GET /citizens/upload
+    def get_uploads
+      # Current citizen id
+      citizen_id = current_user[0][:id]
+
+      # Find uploads for current citizen
+      @uploads = CitizenUpload.where(citizen_id: citizen_id)
+                              .order("created_at DESC")
+
+      # Render uploads in JSON format
+      render json: @uploads
+    end
+
     # POST /citizens/upload
     def upload
-      citizens = params["data"]
+      # Current citizen id
+      citizen_id = current_user[0][:id]
 
-      columns = [:name, :cpf, :rg, :birth_date, :cep, 
-                 :address_number, :address_complement, 
-                 :phone1, :phone2, :email, :pcd, :note, :active]
+      # Data must be defined in the parameters
+      if params.has_key?(:data) and params[:data].present?
+        # Number of citizens to upload
+        upload_size = params[:data].size
 
-      complete = [:name, :cpf, :rg, :birth_date, :cep, :address_street, 
-                  :address_number, :neighborhood, :address_complement, :city_id,
-                  :phone1, :phone2, :email, :pcd, :note, :active]
-
-      account_columns = [:uid, :provider, :encrypted_password]
-
-      line_number = 1
-      errors = Hash.new
-      to_create = Array.new
-      account_to_create = Array.new
-
-      citizens.each do |c|
-        upload_params = Hash[columns.zip(c)]
-        citizen = Citizen.new(upload_params)
-
-        account = Account.new({
-          uid: citizen.cpf,
-          provider: "cpf"
+        # Create upload object
+        upload_object = CitizenUpload.new({
+          citizen_id: citizen_id,
+          status: 0, # ready to start
+          amount: upload_size,
+          progress: 0.0
         })
 
-        account.password = citizen.birth_date.strftime('%d%m%y')
+        # Save upload object in the database
+        upload_object.save()
 
-        # Citizen remaining info is added when .valid? method is called
-        if citizen.valid? and account.valid?
+        # Create sidekiq job for uploading the citizens
+        CitizenUploadWorker.perform_async(
+          upload_object.id, upload_size, params[:data])
 
-          # Add valid citizen with complete info to to_create array
-          inst = [
-            citizen.name,
-            citizen.cpf,
-            citizen.rg,
-            citizen.birth_date,
-            citizen.cep,
-            citizen.address_street,
-            citizen.address_number,
-            citizen.neighborhood,
-            citizen.address_complement,
-            citizen.city_id,
-            citizen.phone1,
-            citizen.phone2,
-            citizen.email,
-            citizen.pcd,
-            citizen.note,
-            citizen.active
-          ]
-
-          acc_inst = [
-            account.uid,
-            account.provider,
-            account.encrypted_password
-          ]
-
-          to_create.append(inst)
-          account_to_create.append(acc_inst)
-        else
-          errors[line_number.to_s] = citizen.errors.to_hash
-        end
-
-        line_number += 1
-      end
-
-      Citizen.transaction do
-        Citizen.import complete, to_create, validate: true
-      end
-
-      Account.transaction do
-        Account.import account_columns, account_to_create, validate: true
-      end
-
-      if errors.size == 0
         render json: {
-          errors: ["Citizens uploaded successfully."]
+          errors: ["Citizens scheduled to be imported!"]
         }, status: 201
       else
-        render json: errors.as_json, status: 422
+        render json: {
+          errors: ["Undefined citizens to import."]
+        }, status: 404
       end
     end
 
@@ -280,7 +271,7 @@ module Api::V1
           return
         end
 
-        # Deactivate citizen, this will keep the citizen in the database, but 
+        # Deactivate citizen, this will keep the citizen in the database, but
         # it will not be displayed in future requests
         @citizen.active = false
 
@@ -303,7 +294,7 @@ module Api::V1
       end
     end
 
-    
+
     # Only allow a trusted parameter "white list" through.
     def citizen_params
       params.require(:citizen).permit(

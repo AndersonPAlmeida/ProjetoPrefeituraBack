@@ -1,6 +1,9 @@
 Rails.application.routes.draw do
   devise_for :accounts
 
+#  require 'sidekiq/web'
+#  mount Sidekiq::Web => '/sidekiq'
+
   scope module: 'api' do
     namespace :v1 do
       mount_devise_token_auth_for 'Account', at: 'auth', controllers: {
@@ -11,6 +14,9 @@ Rails.application.routes.draw do
 
       get "accounts/self" => "accounts#index"
       get "citizens/schedule_options" => "citizens#schedule_options"
+      get "citizens/upload" => "citizens#get_uploads"
+      get "citizens/upload_log/:upload_id" => "citizens#get_upload_log"
+      post "citizens/upload" => "citizens#upload"
 
       resources :citizens do
         resources :dependants
@@ -18,8 +24,6 @@ Rails.application.routes.draw do
           get 'picture'
         end
       end
-
-      post "citizens/upload" => "citizens#upload"
 
       resources :schedules do
         member do
@@ -39,13 +43,13 @@ Rails.application.routes.draw do
       resources :shifts
       resources :solicitations, only: [:create, :index, :show]
 
-      resources :notifications 
-      
+      resources :notifications
+
       resources :resources
       resources :resource_bookings
       resources :resource_types
       resources :resource_shifts
-      
+
       post "validate_cep" => "cep#validate"
 
       get "forms/schedule_history" => "forms#schedule_history"

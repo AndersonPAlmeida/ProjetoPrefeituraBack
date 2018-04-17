@@ -24,6 +24,8 @@ class OccupationsControllerTest < ActionDispatch::IntegrationTest
         email: "test@example.com",
         name: "Test Example",
         phone1: "(12)1212-1212",
+        address_street: "Street from Curitiba",
+        address_number: "421",
         city_id: @curitiba.id,
         rg: "1234567"
       )

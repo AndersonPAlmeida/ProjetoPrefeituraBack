@@ -18,13 +18,15 @@ class ServiceTypesControllerTest < ActionDispatch::IntegrationTest
       @curitiba.save!
 
       @citizen = Citizen.new(
-        cpf: "10845922904", 
+        cpf: "10845922904",
         active: true,
-        birth_date: "Apr 18 1997", 
-        cep: "81530110", 
+        birth_date: "Apr 18 1997",
+        cep: "81530110",
         email: "test@example.com",
-        name: "Test Example", 
+        name: "Test Example",
         phone1: "(12)1212-1212",
+        address_street: "Street from Curitiba",
+        address_number: "4121",
         city_id: @curitiba.id,
         rg: "1234567"
       )
@@ -52,12 +54,12 @@ class ServiceTypesControllerTest < ActionDispatch::IntegrationTest
       @city_hall.save!
 
       @sector = Sector.new(
-        active: true, 
-        name: "Setor 1", 
-        absence_max: 1, 
-        blocking_days: 2, 
-        cancel_limit: 3, 
-        description: "number one", 
+        active: true,
+        name: "Setor 1",
+        absence_max: 1,
+        blocking_days: 2,
+        cancel_limit: 3,
+        description: "number one",
         schedules_by_sector: 3
       )
       @sector.city_hall = @city_hall
