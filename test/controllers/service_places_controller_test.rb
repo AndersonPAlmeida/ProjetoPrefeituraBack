@@ -19,24 +19,26 @@ class Api::V1::ServicePlacesControllerTest < ActionDispatch::IntegrationTest
 
       @citizen= Citizen.new(
         active: true,
-        cpf: "10845922904",  
-        birth_date: "Apr 18 1997",  
-        cep: "81530110",  
-        email: "test@example.com", 
-        name: "Test Example",  
-        phone1: "(12)1212-1212", 
+        cpf: "10845922904",
+        birth_date: "Apr 18 1997",
+        cep: "81530110",
+        email: "test@example.com",
+        name: "Test Example",
+        phone1: "(12)1212-1212",
+        address_street: "Street from Curitiba",
+        address_number: "4121",
         city_id: @curitiba.id,
         rg: "1234567"
       )
 
       @account = Account.new(
-        uid: @citizen.cpf, 
-        password: "123mudar", 
+        uid: @citizen.cpf,
+        password: "123mudar",
         password_confirmation: "123mudar"
       )
-      @account.save! 
-      @citizen.account_id = @account.id 
-      @citizen.save! 
+      @account.save!
+      @citizen.account_id = @account.id
+      @citizen.save!
 
       @city_hall = CityHall.new(
         name: "Prefeitura de Curitiba",
@@ -60,19 +62,19 @@ class Api::V1::ServicePlacesControllerTest < ActionDispatch::IntegrationTest
       @occupation.save!
 
       @professional = Professional.new(
-        active: true, 
+        active: true,
         registration: "123",
         occupation_id: @occupation.id
       )
-      @professional.account_id = @account.id 
+      @professional.account_id = @account.id
       @professional.save!
 
-      @auth_headers = @account.create_new_auth_token 
-      @token     = @auth_headers['access-token'] 
-      @client_id = @auth_headers['client'] 
-      @expiry    = @auth_headers['expiry'] 
+      @auth_headers = @account.create_new_auth_token
+      @token     = @auth_headers['access-token']
+      @client_id = @auth_headers['client']
+      @expiry    = @auth_headers['expiry']
     end
 
-    
+
   end
 end

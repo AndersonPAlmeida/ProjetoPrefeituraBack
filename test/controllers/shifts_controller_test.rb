@@ -26,6 +26,8 @@ class Api::V1::ShiftsControllerTest < ActionDispatch::IntegrationTest
         name: "Test Example",
         phone1: "(12)1212-1212",
         rg: "1234567",
+        address_street: "Street from Joinville",
+        address_number: "444",
         city_id: @joinville.id
       )
 
@@ -116,10 +118,10 @@ class Api::V1::ShiftsControllerTest < ActionDispatch::IntegrationTest
       )
       @shift.save!
 
-      @auth_headers = @account.create_new_auth_token 
-      @token     = @auth_headers['access-token'] 
-      @client_id = @auth_headers['client'] 
-      @expiry    = @auth_headers['expiry'] 
+      @auth_headers = @account.create_new_auth_token
+      @token     = @auth_headers['access-token']
+      @client_id = @auth_headers['client']
+      @expiry    = @auth_headers['expiry']
     end
   end
 end

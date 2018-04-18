@@ -19,13 +19,15 @@ class Api::V1::ProfessionalsControllerTest < ActionDispatch::IntegrationTest
 
       @citizen= Citizen.new(
         active: true,
-        cpf: "10845922904", 
-        birth_date: "18/04/1997", 
+        cpf: "10845922904",
+        birth_date: "18/04/1997",
         cep: "81530110", 
         email: "test@example.com",
-        name: "Test Example", 
+        name: "Test Example",
         phone1: "(12)1212-1212",
         rg: "1234567",
+        address_street: "Street from Curitiba",
+        address_number: "4121",
         city_id: @curitiba.id
       )
 
@@ -66,7 +68,7 @@ class Api::V1::ProfessionalsControllerTest < ActionDispatch::IntegrationTest
     end
 
     describe "Unsuccessful request to create professional" do
-      before do 
+      before do
         @number_of_professionals = Professional.count
 
         post '/v1/professionals', params: {professional: {
@@ -92,8 +94,8 @@ class Api::V1::ProfessionalsControllerTest < ActionDispatch::IntegrationTest
       end
 
       describe "Unsuccessful request to show all professionals" do
-        before do 
-          get '/v1/professionals', params: {permission: "citizen"}, 
+        before do
+          get '/v1/professionals', params: {permission: "citizen"},
             headers: @auth_headers
 
           @body = JSON.parse(response.body)

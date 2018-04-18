@@ -53,6 +53,8 @@ class CityHallsControllerTest < ActionDispatch::IntegrationTest
         name: "Test Example",
         phone1: "(12)1212-1212",
         rg: "1234567",
+        address_street: "City Hall St.",
+        address_number: "412",
         city_id: @joinville.id
       )
 

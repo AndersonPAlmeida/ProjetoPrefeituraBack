@@ -19,12 +19,14 @@ class Api::V1::DependantsControllerTest < ActionDispatch::IntegrationTest
 
       @responsible = Citizen.new(
         active: true,
-        cpf: "10845922904", 
-        birth_date: "18/04/1997", 
+        cpf: "10845922904",
+        birth_date: "18/04/1997",
         cep: "89218230",
         email: "test@example.com",
-        name: "Test Example", 
+        name: "Test Example",
         phone1: "(12)1212-1212",
+        address_street: "Street from Joinville",
+        address_number: "444",
         city_id: @joinville.id,
         rg: "1234567"
       )
@@ -47,17 +49,17 @@ class Api::V1::DependantsControllerTest < ActionDispatch::IntegrationTest
     end
 
     describe "Successful request to create dependant" do
-      before do 
+      before do
         @number_of_dependants = Dependant.count
 
         post '/v1/citizens/' + @responsible.id.to_s + '/dependants', params: {
           dependant: {
             active: true,
-            cpf: "18472377628", 
-            birth_date: "16/03/2004", 
-            cep: "89218230", 
+            cpf: "18472377628",
+            birth_date: "16/03/2004",
+            cep: "89218230",
             email: "test@example.com",
-            name: "Test Example Dep", 
+            name: "Test Example Dep",
             phone1: "(12)1212-1212",
             city_id: @joinville.id,
             rg: "1234567"
@@ -69,7 +71,7 @@ class Api::V1::DependantsControllerTest < ActionDispatch::IntegrationTest
         @resp_client_id = response.headers['client']
         @resp_expiry = response.headers['expiry']
         @resp_uid = response.headers['uid']
-      end 
+      end
 
       it "should be successful" do
         assert_equal 201, response.status
@@ -83,17 +85,17 @@ class Api::V1::DependantsControllerTest < ActionDispatch::IntegrationTest
       end
 
       it "should create a dependant" do
-        assert_equal @number_of_dependants + 1, Dependant.count 
+        assert_equal @number_of_dependants + 1, Dependant.count
       end
 
       describe "Successful request to show dependant" do
-        before do 
+        before do
           @dependant = Dependant.where(citizens: {
             responsible_id: @responsible.id
           }).includes(:citizen).first
 
-          get '/v1/citizens/' + @responsible.id.to_s + '/dependants/' + @dependant.id.to_s, 
-            params: {permission: "citizen"}, 
+          get '/v1/citizens/' + @responsible.id.to_s + '/dependants/' + @dependant.id.to_s,
+            params: {permission: "citizen"},
             headers: @auth_headers
 
           @body = JSON.parse(response.body)
@@ -101,7 +103,7 @@ class Api::V1::DependantsControllerTest < ActionDispatch::IntegrationTest
           @resp_client_id = response.headers['client']
           @resp_expiry = response.headers['expiry']
           @resp_uid = response.headers['uid']
-        end 
+        end
 
         it "should be successful" do
           assert_equal 200, response.status
@@ -123,8 +125,8 @@ class Api::V1::DependantsControllerTest < ActionDispatch::IntegrationTest
             responsible_id: @responsible.id
           }).includes(:citizen).first
 
-          delete '/v1/citizens/' + @responsible.id.to_s + '/dependants/' + @dependant.id.to_s, 
-            params: {permission: "citizen"}, 
+          delete '/v1/citizens/' + @responsible.id.to_s + '/dependants/' + @dependant.id.to_s,
+            params: {permission: "citizen"},
             headers: @auth_headers
 
           @resp_token = response.headers['access-token']

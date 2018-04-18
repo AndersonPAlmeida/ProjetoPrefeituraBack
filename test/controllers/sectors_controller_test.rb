@@ -26,6 +26,8 @@ class SectorsControllerTest < ActionDispatch::IntegrationTest
         name: "Test Example",
         phone1: "(12)1212-1212",
         rg: "1234567",
+        address_street: "Some street",
+        address_number: "4321",
         city_id: @joinville.id
       )
 

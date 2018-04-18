@@ -41,6 +41,7 @@ RUN gem install rails -v 5.0.0 && \
 RUN echo "#! /bin/bash" > /exec.sh &&\
 echo "rm -f /app/tmp/pids/server.pid && " >> /exec.sh  && \
 echo "RAILS_ENV=development /app/bin/rake agendador:setup" >> /exec.sh && \
+echo "RAILS_ENV=development /app/bin/bundle exec sidekiq -C config/sidekiq.yml >> log/sidekiq.log  &" >> /exec.sh  && \
 echo "RAILS_ENV=development /app/bin/bundle exec rails s -p 3000 -b '0.0.0.0'" >> /exec.sh  && \
 chmod +x /exec.sh
 

@@ -26,6 +26,8 @@ class Api::V1::SchedulesControllerTest < ActionDispatch::IntegrationTest
         name: "Test Example",
         phone1: "(12)1212-1212",
         rg: "1234567",
+        address_street: "Street from Joinville",
+        address_number: "444",
         city_id: @joinville.id
       )
 
@@ -34,9 +36,9 @@ class Api::V1::SchedulesControllerTest < ActionDispatch::IntegrationTest
         password: "123mudar",
         password_confirmation: "123mudar"
       )
-      @account.save! 
-      @citizen.account_id = @account.id 
-      @citizen.save! 
+      @account.save!
+      @citizen.account_id = @account.id
+      @citizen.save!
 
       @city_hall = CityHall.new(
         name: "Prefeitura de Joinville",
@@ -75,7 +77,7 @@ class Api::V1::SchedulesControllerTest < ActionDispatch::IntegrationTest
         active: true,
         registration: "123"
       )
-      @professional.account_id = @account.id 
+      @professional.account_id = @account.id
       @professional.occupation_id = @occupation.id
       @professional.save!
 
@@ -86,7 +88,7 @@ class Api::V1::SchedulesControllerTest < ActionDispatch::IntegrationTest
       @service_type.sector = @sector
 
       @service_place = ServicePlace.new(
-        active: true, 
+        active: true,
         address_number: "123",
         name: "Example SP",
         cep: "89221005",
@@ -122,10 +124,10 @@ class Api::V1::SchedulesControllerTest < ActionDispatch::IntegrationTest
       @shift.save!
 
 
-      @auth_headers = @account.create_new_auth_token 
-      @token     = @auth_headers['access-token'] 
-      @client_id = @auth_headers['client'] 
-      @expiry    = @auth_headers['expiry'] 
+      @auth_headers = @account.create_new_auth_token
+      @token     = @auth_headers['access-token']
+      @client_id = @auth_headers['client']
+      @expiry    = @auth_headers['expiry']
     end
   end
 end
