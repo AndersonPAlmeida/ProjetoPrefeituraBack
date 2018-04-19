@@ -10,15 +10,15 @@ class ResourceTypePolicy < ApplicationPolicy
 
       professional = citizen.professional
 
-      city_id = professional.professionals_service_places
-        .find(user[1]).service_place.city_id
-      
+      city_id = professional.professionals_service_places.find(
+        user[1]).service_place.city_id
+
       return case
       when permission == "adm_c3sl"
         scope.all
 
       when permission == "adm_prefeitura"
-        scope.local(city_id)
+        scope.where(city_hall_id: city_id)
 
       else
         nil
@@ -27,28 +27,28 @@ class ResourceTypePolicy < ApplicationPolicy
   end
 
   def show?
-    return access_policy(user) 
+    return access_policy(user)
   end
 
   def create?
-    return access_policy(user) 
+    return access_policy(user)
   end
 
   def update?
-    return access_policy(user) 
+    return access_policy(user)
   end
 
   def destroy?
-    return access_policy(user) 
+    return access_policy(user)
   end
 
   def index?
-    return access_policy_index(user) 
+    return access_policy_index(user)
   end
 
   private
 
-  # Generic method for checking permissions when show/accessing/modifying 
+  # Generic method for checking permissions when show/accessing/modifying
   # sectors. It is used for avoiding code repetition in citizen's policy
   # methods.
   #
@@ -64,17 +64,16 @@ class ResourceTypePolicy < ApplicationPolicy
 
     professional = citizen.professional
 
-    service_place = professional.professionals_service_places
-    .find(user[1]).service_place
+    service_place = professional.professionals_service_places.find(
+      user[1]).service_place
 
     city_hall_id = service_place.city_hall_id
-
 
     return case
     when permission == "adm_c3sl"
       true
-    when permission == "adm_prefeitura" 
-      (city_hall_id == record.city_hall_id)      
+    when permission == "adm_prefeitura"
+      (city_hall_id == record.city_hall_id)
     else
       false
     end
@@ -91,26 +90,26 @@ class ResourceTypePolicy < ApplicationPolicy
 
     professional = citizen.professional
 
-    service_place = professional.professionals_service_places
-    .find(user[1]).service_place
+    service_place = professional.professionals_service_places.find(
+      user[1]).service_place
 
     city_hall_id = service_place.city_hall_id
 
     return case
     when permission == "adm_c3sl"
       true
-    when permission == "adm_prefeitura" 
+    when permission == "adm_prefeitura"
       if record.first != nil
-        (city_hall_id == record.first.city_hall_id)  
-      else 
-        true  
+        (city_hall_id == record.first.city_hall_id)
+      else
+        true
       end
     else
       if record.first != nil
-        (city_hall_id == record.first.city_hall_id)  
-      else 
-        true  
-      end 
+        (city_hall_id == record.first.city_hall_id)
+      else
+        true
+      end
     end
   end
 

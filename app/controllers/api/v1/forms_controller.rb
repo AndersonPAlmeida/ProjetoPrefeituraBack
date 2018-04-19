@@ -500,6 +500,24 @@ module Api::V1
           only: [:id, :description], methods: %w(service_place_ids)
         )
 
+      when "responsavel_atendimento"
+        # Current service place
+        service_places = [ service_place ]
+        sp_ids = service_place.id
+        response[:service_places] = service_places.as_json(
+          only: [:id, :name]
+        )
+
+        # Professionals registered to current service place
+        response[:professionals] = []
+
+        # Service types registered to current service place
+        service_types = ServiceType.all_active.where(service_places: {id: sp_ids})
+          .includes(:service_places)
+        response[:service_types] = service_types.as_json(
+          only: [:id, :description], methods: %w(service_place_ids)
+        )
+
       else
         render json: {
           errors: ["You're not allowed to view this form."]
