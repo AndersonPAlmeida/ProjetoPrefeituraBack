@@ -11,7 +11,6 @@ module Api::V1
       @citizens = policy_scope(Citizen.filter(params[:q], params[:page],
         Professional.get_permission(current_user[1])))
 
-
       if @citizens.nil?
         render json: {
           errors: ["You don't have the permission to view citizens."]

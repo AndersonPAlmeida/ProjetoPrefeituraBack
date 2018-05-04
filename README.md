@@ -83,7 +83,11 @@ Bundler:
 ```
 
 ## Requests (Postman)
+Versão antiga sem recursos:
 https://www.getpostman.com/collections/0f51e86e6e65c15baf9d
+
+Versão atual com recursos:
+https://www.getpostman.com/collections/bcad38dd3177c093ee21
 
 ## Instruções para recuperar a senha
 1. Definir um email que será usado para enviar o link para recuperar a senha (em production será o email do agendador)
