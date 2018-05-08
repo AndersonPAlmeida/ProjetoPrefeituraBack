@@ -30,14 +30,14 @@ module Api::V1
         Professional.get_permission(current_user[1])))
 
 
-        if @schedules.empty?
-          render json: {
-            errors: ["No schedules found."]
-          }, status: 404
-        elsif @schedules.nil?
+        if @schedules.nil?
           render json: {
             errors: ["You don't have the permission to view schedules."]
           }, status: 403
+        elsif @schedules.empty?
+          render json: {
+            errors: ["No schedules found."]
+          }, status: 404
         else
           response = Hash.new
           response[:num_entries] = @schedules.total_count
@@ -55,14 +55,14 @@ module Api::V1
           Professional.get_permission(current_user[1])))
 
 
-          if @schedules.empty?
-            render json: {
-              errors: ["No schedules found."]
-            }, status: 404
-          elsif @schedules.nil?
+          if @schedules.nil?
             render json: {
               errors: ["You don't have the permission to view schedules."]
             }, status: 403
+          elsif @schedules.empty?
+            render json: {
+              errors: ["No schedules found."]
+            }, status: 404
           else
             response = Hash.new
             response[:num_entries] = @schedules.total_count
@@ -79,14 +79,14 @@ module Api::V1
           Professional.get_permission(current_user[1])))
 
 
-          if @schedules.empty?
-            render json: {
-              errors: ["No schedules found."]
-            }, status: 404
-          elsif @schedules.nil?
+          if @schedules.nil?
             render json: {
               errors: ["You don't have the permission to view schedules."]
             }, status: 403
+          elsif @schedules.empty?
+            render json: {
+              errors: ["No schedules found."]
+            }, status: 404
           else
             response = Hash.new
             response[:num_entries] = @schedules.total_count
