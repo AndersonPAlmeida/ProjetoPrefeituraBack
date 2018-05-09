@@ -6,9 +6,20 @@ module Api::V1
 
     # GET /occupations
     def index
-      @occupations = Occupation.all_active
+      @occupations = policy_scope(Occupation.filter(params[:q], params[:page], 
+        Professional.get_permission(current_user[1])))
 
-      render json: @occupations
+      if @occupations.nil?
+        render json: {
+          errors: ["You don't have the permission to view occupations."]
+        }, status: 403
+      else
+        response = Hash.new
+        response[:num_entries] = @occupations.total_count
+        response[:entries] = @occupations.index_response
+
+        render json: response
+      end
     end
 
     # GET /occupations/1
@@ -18,17 +29,34 @@ module Api::V1
           errors: ["Occupation #{params[:id]} does not exist."]
         }, status: 404
       else
-        render json: @occupation
+        begin
+          authorize @occupation, :show?
+        rescue
+          render json: {
+            errors: ["You're not allow to see this occupation."]
+          }, status: 403
+          return
+        end
+
+        render json: @occupation.complete_info_response
       end
     end
 
     # POST /occupations
     def create
       @occupation = Occupation.new(occupation_params)
-      @occupation.active = true
+
+      begin
+        authorize @occupation, :create?
+      rescue
+        render json: {
+          errors: ["You're not allow to create this occupation."]
+        }, status: 403
+        return
+      end
 
       if @occupation.save
-        render json: @occupation, status: :created
+        render json: @occupation.complete_info_response, status: :created
       else
         render json: @occupation.errors, status: :unprocessable_entity
       end
@@ -41,8 +69,17 @@ module Api::V1
           errors: ["Occupation #{params[:id]} does not exist."]
         }, status: 404
       else
+        begin
+          authorize @occupation, :update?
+        rescue
+          render json: {
+            errors: ["You're not allow to update this occupation."]
+          }, status: 403
+          return
+        end
+
         if @occupation.update(occupation_params)
-          render json: @occupation
+          render json: @occupation.complete_info_response
         else
           render json: @occupation.errors, status: :unprocessable_entity
         end
@@ -62,6 +99,7 @@ module Api::V1
     end
 
     private
+
     # Use callbacks to share common setup or constraints between actions.
     def set_occupation
       begin

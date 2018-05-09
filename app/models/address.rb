@@ -1,5 +1,7 @@
 class Address < ApplicationRecord
-  require "./lib/cep_finder"
+  require "#{Rails.root}/lib/cep_finder"
+
+  has_many :resouce_booking
 
   # Search for zipcode in database, if not registered, get address from correios
   # api and insert in database to be used as cache
@@ -44,6 +46,54 @@ class Address < ApplicationRecord
     end
 
     return address
+  end
+
+  # Validates cep and render an error and return nil if invalid or
+  # return the address as a json if valid
+  # @param cep [String] cep number
+  # @return [Json, Integer] [(address info, nil) | (error message, error status)]
+  def self.get_cep_response(cep)
+    if not CepValidator.valid_format?(cep)
+      return { errors: ["Invalid CEP."] }.to_json, 422
+    end
+
+    address = Address.get_address(cep)
+
+    # Verify if cep is valid
+    if address.nil?
+      return { errors: ["Invalid CEP."] }.to_json, 422
+    else
+
+      # City may not exist due to tests without setting up cities
+      if address[:city_id].nil?
+        return { errors: ["City not registered."] }.to_json, 404
+      end
+
+      city = City.find(address[:city_id])
+      state = State.find(city.state_id)
+
+      if not city.nil?
+        city_hall = CityHall.where(city_id: city.id)
+
+        # Verify if the city obtained from cep is registered
+        if city_hall.empty?
+          return {
+            errors: ["City not registered."],
+            city_name: city.name,
+            state_name: state.abbreviation
+          }.to_json, 404
+        else
+          city = City.find(address.city_id).name
+          state = State.find(address.state_id).abbreviation
+
+          return address.as_json(except: [:created_at, :updated_at])
+            .merge({city_name: city})
+            .merge({state_name: state}), nil
+        end
+      else
+        return { errors: ["City not registered."] }.to_json, 404
+      end
+    end
   end
 
   # @return [Integer] city id corresponding to cep

@@ -39,6 +39,9 @@ gem 'rack-attack', '~> 5.0.1'
 # Use Rack CORS for handling Cross-Origin Resource Sharing (CORS), making cross-origin AJAX possible
 gem 'rack-cors', '~> 0.4.1'
 
+# Use Sidekiq for background jobs
+gem 'sidekiq'
+
 # Get Brazilian address by zipcode, directly from Correios database.
 gem 'correios-cep', '~> 0.6.4'
 
@@ -48,6 +51,10 @@ gem 'curb', '~> 0.9.3'
 gem 'activerecord-import', '~> 0.18.3'
 
 gem 'paperclip', '~> 5.0.0'
+
+gem 'ransack'
+
+gem 'kaminari'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console

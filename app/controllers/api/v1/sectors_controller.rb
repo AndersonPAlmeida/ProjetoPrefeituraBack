@@ -1,7 +1,6 @@
 module Api::V1
   class SectorsController < ApplicationController
     include Authenticable
-    include HasPolicies
 
     before_action :set_sector, only: [:show, :update, :destroy]
 
@@ -22,14 +21,35 @@ module Api::V1
         end
 
         # Allow request only if the citizen is reachable from current user
-        authorize @citizen, :schedule?
+        begin
+          authorize @citizen, :schedule?
+        rescue
+          render json: {
+            errors: ["You're not allowed to schedule for this citizen."]
+          }, status: 403
+          return
+        end
 
         @sectors = Sector.schedule_response(@citizen).to_json
+        render json: @sectors
+        return
       else
-        @sectors = policy_scope(Sector)
+        @sectors = policy_scope(Sector.filter(params[:q], params[:page],
+          Professional.get_permission(current_user[1])))
       end
 
-      render json: @sectors
+
+      if @sectors.nil?
+        render json: {
+          errors: ["You're not allowed to view sectors"]
+        }, status: 403
+      else
+        response = Hash.new
+        response[:num_entries] = @sectors.total_count
+        response[:entries] = @sectors.index_response
+
+        render json: response.to_json
+      end
     end
 
     # GET /sectors/1
@@ -39,13 +59,32 @@ module Api::V1
           errors: ["Sector #{params[:id]} does not exist."]
         }, status: 404
       else
-        render json: @sector
+        begin
+          authorize @sector, :show?
+        rescue
+          render json: {
+            errors: ["You're not allowed show this sector."]
+          }, status: 403
+          return
+        end
+
+        render json: @sector.complete_info_response
       end
     end
 
     # POST /sectors
     def create
       @sector = Sector.new(sector_params)
+      @sector.active = true
+
+      begin
+        authorize @sector, :create?
+      rescue
+        render json: {
+          errors: ["You're not allowed to create this sector."]
+        }, status: 403
+        return
+      end
 
       if @sector.save
         render json: @sector, status: :created
@@ -61,6 +100,15 @@ module Api::V1
           errors: ["Sector #{params[:id]} does not exist."]
         }, status: 404
       else
+        begin
+          authorize @sector, :update?
+        rescue
+          render json: {
+            errors: ["You're not allowed update this sector."]
+          }, status: 403
+          return
+        end
+
         if @sector.update(sector_params)
           render json: @sector
         else
@@ -76,25 +124,25 @@ module Api::V1
           errors: ["Sector #{params[:id]} does not exist."]
         }, status: 404
       else
+        begin
+          authorize @sector, :destroy?
+        rescue
+          render json: {
+            errors: ["You're not allowed deactivate this sector."]
+          }, status: 403
+          return
+        end
+
         @sector.active = false
-        @sector.save!
+        if @sector.save
+          render json: @sector, status: :ok
+        else
+          render json: @sector.errors, status: :unprocessable_entity
+        end
       end
     end
 
     private
-
-    # Rescue Pundit exception for providing more details in reponse
-    def policy_error_description(exception)
-      # Set @policy_name as the policy method that raised the error
-      super
-
-      case @policy_name
-      when "schedule?"
-        render json: {
-          errors: ["You're not allowed to schedule for this citizen."]
-        }, status: 403
-      end
-    end
 
     # Use callbacks to share common setup or constraints between actions.
     def set_sector
@@ -108,13 +156,13 @@ module Api::V1
     # Only allow a trusted parameter "white list" through.
     def sector_params
       params.require(:sector).permit(
-        :id,
-        :absence_max,
         :active,
+        :absence_max,
         :blocking_days,
         :cancel_limit,
         :city_hall_id,
         :description,
+        :previous_notice, 
         :name,
         :schedules_by_sector
       );

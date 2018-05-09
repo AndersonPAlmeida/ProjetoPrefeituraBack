@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170816124750) do
+ActiveRecord::Schema.define(version: 20180413130918) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -27,6 +27,7 @@ ActiveRecord::Schema.define(version: 20170816124750) do
     t.string   "last_sign_in_ip"
     t.string   "provider",               default: "cpf", null: false
     t.string   "uid",                    default: "",    null: false
+    t.string   "email"
     t.json     "tokens"
     t.datetime "created_at",                             null: false
     t.datetime "updated_at",                             null: false
@@ -75,6 +76,20 @@ ActiveRecord::Schema.define(version: 20170816124750) do
     t.index ["state_id"], name: "index_cities_on_state_id", using: :btree
   end
 
+  create_table "citizen_uploads", force: :cascade do |t|
+    t.integer  "citizen_id"
+    t.integer  "amount"
+    t.float    "progress"
+    t.datetime "created_at",       null: false
+    t.datetime "updated_at",       null: false
+    t.integer  "status"
+    t.string   "log_file_name"
+    t.string   "log_content_type"
+    t.integer  "log_file_size"
+    t.datetime "log_updated_at"
+    t.index ["citizen_id"], name: "index_citizen_uploads_on_citizen_id", using: :btree
+  end
+
   create_table "citizens", force: :cascade do |t|
     t.date     "birth_date",          null: false
     t.string   "name",                null: false
@@ -114,7 +129,6 @@ ActiveRecord::Schema.define(version: 20170816124750) do
     t.boolean  "citizen_register",              default: true, null: false
     t.string   "name",                                         null: false
     t.string   "neighborhood",                                 null: false
-    t.integer  "previous_notice",               default: 48,   null: false
     t.integer  "schedule_period",               default: 90,   null: false
     t.string   "address_complement"
     t.text     "description"
@@ -140,6 +154,19 @@ ActiveRecord::Schema.define(version: 20170816124750) do
     t.datetime "created_at",  null: false
     t.datetime "updated_at",  null: false
     t.index ["citizen_id"], name: "index_dependants_on_citizen_id", using: :btree
+  end
+
+  create_table "notifications", force: :cascade do |t|
+    t.integer  "account_id",           null: false
+    t.integer  "schedule_id"
+    t.integer  "resource_schedule_id"
+    t.boolean  "read"
+    t.string   "content"
+    t.datetime "reminder_time"
+    t.integer  "reminder_email_sent"
+    t.string   "reminder_email"
+    t.datetime "created_at",           null: false
+    t.datetime "updated_at",           null: false
   end
 
   create_table "occupations", force: :cascade do |t|
@@ -172,6 +199,58 @@ ActiveRecord::Schema.define(version: 20170816124750) do
     t.index ["service_place_id", "professional_id"], name: "idx_service_place_professional", using: :btree
   end
 
+  create_table "resource_bookings", force: :cascade do |t|
+    t.integer  "service_place_id",   null: false
+    t.integer  "resource_shift_id",  null: false
+    t.integer  "situation_id",       null: false
+    t.integer  "citizen_id",         null: false
+    t.integer  "active",             null: false
+    t.string   "booking_reason",     null: false
+    t.datetime "booking_start_time", null: false
+    t.datetime "booking_end_time",   null: false
+    t.datetime "created_at",         null: false
+    t.datetime "updated_at",         null: false
+    t.string   "status",             null: false
+  end
+
+  create_table "resource_shifts", force: :cascade do |t|
+    t.integer  "resource_id",                 null: false
+    t.integer  "professional_responsible_id", null: false
+    t.integer  "next_shift_id"
+    t.integer  "active",                      null: false
+    t.integer  "borrowed",                    null: false
+    t.datetime "execution_start_time",        null: false
+    t.datetime "execution_end_time",          null: false
+    t.string   "notes"
+    t.datetime "created_at",                  null: false
+    t.datetime "updated_at",                  null: false
+  end
+
+  create_table "resource_types", force: :cascade do |t|
+    t.integer  "city_hall_id", null: false
+    t.string   "name",         null: false
+    t.integer  "active",       null: false
+    t.string   "mobile",       null: false
+    t.string   "description"
+    t.datetime "created_at",   null: false
+    t.datetime "updated_at",   null: false
+  end
+
+  create_table "resources", force: :cascade do |t|
+    t.integer  "resource_types_id",           null: false
+    t.integer  "service_place_id",            null: false
+    t.integer  "professional_responsible_id"
+    t.float    "minimum_schedule_time",       null: false
+    t.float    "maximum_schedule_time",       null: false
+    t.integer  "active",                      null: false
+    t.string   "brand"
+    t.string   "model"
+    t.string   "label"
+    t.string   "note"
+    t.datetime "created_at",                  null: false
+    t.datetime "updated_at",                  null: false
+  end
+
   create_table "schedules", force: :cascade do |t|
     t.integer  "shift_id",               null: false
     t.integer  "situation_id",           null: false
@@ -194,24 +273,25 @@ ActiveRecord::Schema.define(version: 20170816124750) do
   end
 
   create_table "sectors", force: :cascade do |t|
-    t.integer  "city_hall_id",        null: false
+    t.integer  "city_hall_id",                     null: false
     t.boolean  "active"
     t.integer  "absence_max"
     t.integer  "blocking_days"
     t.integer  "cancel_limit"
+    t.integer  "previous_notice",     default: 48, null: false
     t.text     "description"
     t.string   "name"
     t.integer  "schedules_by_sector"
-    t.datetime "created_at",          null: false
-    t.datetime "updated_at",          null: false
+    t.datetime "created_at",                       null: false
+    t.datetime "updated_at",                       null: false
     t.index ["city_hall_id"], name: "index_sectors_on_city_hall_id", using: :btree
   end
 
   create_table "service_places", force: :cascade do |t|
     t.string   "name",                                         null: false
     t.string   "cep",                limit: 10
-    t.string   "neighborhood",                                 null: false
-    t.string   "address_street",                               null: false
+    t.string   "neighborhood"
+    t.string   "address_street"
     t.string   "address_number",     limit: 10,                null: false
     t.string   "address_complement"
     t.string   "phone1",             limit: 13
@@ -222,7 +302,7 @@ ActiveRecord::Schema.define(version: 20170816124750) do
     t.datetime "created_at",                                   null: false
     t.datetime "updated_at",                                   null: false
     t.integer  "city_hall_id",                                 null: false
-    t.integer  "city_id"
+    t.integer  "city_id",                                      null: false
     t.index ["city_hall_id"], name: "index_service_places_on_city_hall_id", using: :btree
     t.index ["city_id"], name: "index_service_places_on_city_id", using: :btree
   end
@@ -287,4 +367,5 @@ ActiveRecord::Schema.define(version: 20170816124750) do
     t.datetime "updated_at",             null: false
   end
 
+  add_foreign_key "citizen_uploads", "citizens"
 end

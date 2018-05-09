@@ -11,7 +11,6 @@ class CreateCityHalls < ActiveRecord::Migration[5.0]
       t.boolean :citizen_register, null: false, default: true
       t.string :name, null: false
       t.string :neighborhood, null: false
-      t.integer :previous_notice, null: false, default: 48
       t.integer :schedule_period, null: false, default: 90
       t.string :address_complement
       t.text :description

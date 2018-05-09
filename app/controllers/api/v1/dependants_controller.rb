@@ -1,6 +1,7 @@
 module Api::V1
   class DependantsController < ApplicationController 
     include Authenticable
+    include HasPolicies
 
     require "#{Rails.root}/lib/image_parser.rb"
 
@@ -15,25 +16,35 @@ module Api::V1
         }, status: :not_found
       else
         # Allow request only if the citizen is reachable from current user
-        authorize @citizen, :show_dependants?
+        begin
+          authorize @citizen, :show_dependants?
+        rescue
+          render json: {
+            errors: ["You're not allowed to view this dependant."]
+          }, status: 403
+          return
+        end
 
         @dependants = Dependant.where(citizens: {
           responsible_id: @citizen.id
         }).includes(:citizen)
 
-        dependants_response = []
 
-        @dependants.each do |item|
-          dependants_response.append(item.citizen.as_json(only: [
-            :id, :name, :rg, :cpf, :birth_date
-          ]))
+        # Filter params should be applied only if the current user is a citizen
+        if current_user[1] == "citizen"
+          @dependants = @dependants.filter(params[:q], params[:page])
 
-          dependants_response[-1]["id"] = item.id
+          response = Hash.new
+          response[:num_entries] = @dependants.total_count
+          response[:entries] = @dependants.index_response
+        else
+          response = @dependants.index_response
         end
 
-        render json: dependants_response.to_json, status: :ok
+        render json: response, status: :ok
       end
     end
+
 
     # GET citizens/1/dependants/2
     def show
@@ -52,12 +63,20 @@ module Api::V1
           }, status: :forbidden
         else
           # Allow request only if the citizen is reachable from current user
-          authorize @citizen, :show_dependants?
+          begin
+            authorize @citizen, :show_dependants?
+          rescue
+            render json: {
+              errors: ["You're not allowed to view this dependant."]
+            }, status: 403
+            return
+          end
 
           render json: @dependant.complete_info_response, status: :ok
         end
       end
     end
+
 
     # POST citizens/1/dependants
     def create
@@ -67,7 +86,14 @@ module Api::V1
         }, status: :not_found
       else
         # Allow request only if the citizen is reachable from current user
-        authorize @citizen, :create_dependants?
+        begin
+          authorize @citizen, :create_dependants?
+        rescue
+          render json: {
+            errors: ["You're not allowed to create dependants."]
+          }, status: 403
+          return
+        end
 
         new_params = dependant_params
         new_params[:responsible_id] = @citizen.id
@@ -79,8 +105,6 @@ module Api::V1
         # Create new citizen associated with new dependant
         citizen = Citizen.new(new_params)
         citizen.active = true
-        citizen.city_id = Address.get_city_id(new_params[:cep])
-
 
         # Add image to citizen if provided
         if params[:dependant][:image]
@@ -107,6 +131,7 @@ module Api::V1
       end
     end
 
+
     # PATCH/PUT citizens/1/dependants/2
     def update
       if @citizen.nil?
@@ -124,11 +149,18 @@ module Api::V1
           }, status: :forbidden
         else
           # Allow request only if the citizen is reachable from current user
-          authorize @citizen, :create_dependants?
+          begin
+            authorize @citizen, :create_dependants?
+          rescue
+            render json: {
+              errors: ["You're not allowed to create dependants."]
+            }, status: 403
+            return
+          end
 
           new_params = dependant_params
 
-          if new_params[:cep].blank?
+          if not new_params[:cep].nil? and new_params[:cep].empty?
             new_params[:cep] = @citizen.cep
           end
 
@@ -146,7 +178,11 @@ module Api::V1
             end
           end
 
-          if @dependant.citizen.update(new_params)
+          if not new_params[:cep].nil?
+            new_params[:city_id] = Address.get_city_id(new_params[:cep])
+          end
+
+          if @dependant.citizen.update(new_params) and 
             render json: @dependant.complete_info_response
           else
             render json: @dependant.citizen.errors, status: :unprocessable_entity
@@ -154,6 +190,7 @@ module Api::V1
         end
       end
     end
+
 
     # DELETE citizens/1/dependants/2
     def destroy
@@ -181,6 +218,7 @@ module Api::V1
       end
     end
 
+
     # Use callbacks to share common setup or constraints between actions.
     def set_citizen
       begin
@@ -189,6 +227,7 @@ module Api::V1
         @citizen = nil
       end
     end
+
 
     # Only allow a trusted parameter "white list" through.
     def dependant_params

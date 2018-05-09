@@ -4,18 +4,102 @@ module Api::V1
 
     before_action :set_schedule, only: [:show, :update, :destroy, :confirm, :confirmation]
 
-    rescue_from Pundit::NotAuthorizedError, with: :policy_error_description
-
     # GET /schedules
     def index
-      if current_user[1] == "citizen"
-        @schedules = Schedule.citizen_history(current_user[0].id)
-      else
-        @schedules = Schedule.all
-      end
+      if not params[:history].nil?
+        @schedules = Schedule.citizen_history(
+          current_user[0].id, 
+          params[:q], 
+          params[:page],
+          params[:dependant_citizen_id],
+          params[:dependant_page]
+        )
 
-      render json: @schedules
+        render json: @schedules
+        return
+      elsif not params[:future].nil?
+        @schedules = Schedule.citizen_future(current_user[0].id, 
+                                             params[:q], params[:page])
+
+        render json: @schedules
+        return
+      elsif not params[:not_available].nil?
+        @schedules = policy_scope(
+          Schedule.where.not(situation_id: 1)
+          .filter(params[:q], params[:page], 
+        Professional.get_permission(current_user[1])))
+
+
+        if @schedules.nil?
+          render json: {
+            errors: ["You don't have the permission to view schedules."]
+          }, status: 403
+        elsif @schedules.empty?
+          render json: {
+            errors: ["No schedules found."]
+          }, status: 404
+        else
+          response = Hash.new
+          response[:num_entries] = @schedules.total_count
+          response[:entries] = @schedules.index_response
+
+          render json: response.to_json
+        end
+
+        return
+      else
+        if not params[:service].nil?
+          @schedules = policy_scope(
+            Schedule.where.not(situation_id: [1, 2, 3])
+            .filter(params[:q], params[:page], 
+          Professional.get_permission(current_user[1])))
+
+
+          if @schedules.nil?
+            render json: {
+              errors: ["You don't have the permission to view schedules."]
+            }, status: 403
+          elsif @schedules.empty?
+            render json: {
+              errors: ["No schedules found."]
+            }, status: 404
+          else
+            response = Hash.new
+            response[:num_entries] = @schedules.total_count
+            response[:entries] = @schedules.index_response
+
+            render json: response.to_json
+          end
+
+          return
+        else
+          @schedules = policy_scope(
+            Schedule.where(situation_id: [1, 2, 3])
+            .filter(params[:q], params[:page], 
+          Professional.get_permission(current_user[1])))
+
+
+          if @schedules.nil?
+            render json: {
+              errors: ["You don't have the permission to view schedules."]
+            }, status: 403
+          elsif @schedules.empty?
+            render json: {
+              errors: ["No schedules found."]
+            }, status: 404
+          else
+            response = Hash.new
+            response[:num_entries] = @schedules.total_count
+            response[:entries] = @schedules.index_response
+
+            render json: response.to_json
+          end
+
+          return
+        end
+      end
     end
+
 
     # GET /schedules/1
     def show
@@ -24,9 +108,23 @@ module Api::V1
           errors: [" Schedule #{params[:id]} does not exist."]
         }, status: 404
       else
-        render json: @schedule
+        begin
+          authorize @schedule, :show?
+        rescue
+          render json: {
+            errors: ["You're not allowed to view this schedule."]
+          }, status: 422
+          return
+        end
+
+        if @schedule.citizen.nil?
+          render json: @schedule
+        else
+          render json: @schedule.complete_info_response
+        end
       end
     end
+
 
     # GET /schedules/1/confirmation
     def confirmation
@@ -40,16 +138,31 @@ module Api::V1
         @schedule.target_citizen_id = params[:citizen_id]
 
         # Check if the current citizen can schedule for the given citizen
-        authorize @schedule, :permitted?
+        begin
+          authorize @schedule, :permitted?
+        rescue
+          render json: {
+            errors: ["You're not allowed to schedule for this citizen."]
+          }, status: 422
+          return
+        end
 
         # Check if there's no conflict concerning the given citizen's schedules
-        authorize @schedule, :no_conflict?
+        begin
+          authorize @schedule, :no_conflict?
+        rescue
+          render json: {
+            errors: ["This citizen is already scheduled in the given time."]
+          }, status: 409
+          return
+        end
 
         # Return Json containing the necessary information for displaying the
         # schedule confirmation to the user
         render json: @schedule.confirmation_data
       end
     end
+
 
     # PUT /schedules/1/confirm
     def confirm
@@ -58,6 +171,14 @@ module Api::V1
           errors: [" Schedule #{params[:id]} does not exist."]
         }, status: 404
       else
+        # Check if schedule's situation is available
+        if @schedule.situation.id != 1
+          render json: {
+            errors: ["This schedule is not available."]
+          }, status: 409
+          return
+        end
+
         # schedule_confirm_params contains information provided in the last step
         # of scheduling process (note and remider_time)
         update_params = schedule_confirm_params
@@ -72,7 +193,38 @@ module Api::V1
           update_params[:citizen_id] = params[:citizen_id]
         end
 
+
+        if not params[:notification].nil?
+
+          # Get notification params
+          notification = notification_params
+
+          # Associates notification to account being schedule for
+          notification["account_id"] = Citizen.find(update_params[:citizen_id]).account_id
+          notification["schedule_id"] = @schedule.id
+          notification["read"] = false
+
+          # Create notification
+          @notification = Notification.new(notification)
+
+          begin
+            authorize @notification, :create?
+          rescue
+            render json: {
+              errors: ["You are not authorized to create this notification."]
+            }, status: 403
+            return
+          end
+        end
+
+
+        # This request is successful if both schedule and notification 
+        # operations are successful
         if @schedule.update(update_params)
+          if not params[:notification].nil?
+            @notification.save
+          end
+
           render json: @schedule
         else
           render json: @schedule.errors, status: :unprocessable_entity
@@ -80,6 +232,34 @@ module Api::V1
       end
     end
 
+
+    # GET /schedules/schedule_per_type
+    def schedule_per_type
+      permission = Professional.get_permission(current_user[1])
+
+      if permission == 'adm_c3sl'
+        city_hall_id = params[:city_hall_id]
+      elsif permission == 'adm_prefeitura' or permission == 'adm_local'
+        professional = current_user[0].professional
+        city_hall_id = professional.professionals_service_places
+          .find(current_user[1]).service_place.city_hall_id
+      else
+        render json: {
+          errors: ["You're not allowed to view this report."]
+        }, status: 422
+        return
+      end
+
+      startt = params[:start_time]
+      endt = params[:end_time]
+
+      @schedules = Schedule.schedule_per_type(city_hall_id, startt, endt)
+
+      render json: @schedules
+    end
+
+
+    # NEVER USED (TODO: Check if is save to remove - definitely not safe to leave it there)
     # POST /schedules
     def create
       @schedule = Schedule.new(schedule_params)
@@ -91,6 +271,7 @@ module Api::V1
       end
     end
 
+
     # PATCH/PUT /schedules/1
     def update
       if @schedule.nil?
@@ -98,13 +279,29 @@ module Api::V1
           errors: ["Schedule #{params[:id]} does not exist."]
         }, status: 404
       else
-        if @schedule.update(schedule_params)
+        begin
+          authorize @schedule, :update?
+
+          # Citizen can only update scheduled schedules (situation == Agendado) 
+          if ((current_user[1] == "citizen") and 
+              (schedule_update_params[:situation_id].to_i != 3))
+            raise "Error"
+          end
+        rescue
+          render json: {
+            errors: ["You are not allowed to modify this schedule"]
+          }, status: 403
+          return
+        end
+
+        if @schedule.update(schedule_update_params)
           render json: @schedule
         else
           render json: @schedule.errors, status: :unprocessable_entity
         end
       end
     end
+
 
     # DELETE /schedules/1
     def destroy
@@ -118,25 +315,8 @@ module Api::V1
       end
     end
 
+
     private
-
-    # Rescue Pundit exception for providing more details in reponse
-    def policy_error_description(exception)
-
-      # Get SchedulePolicy method's name responsible for raising exception 
-      policy_name = exception.message.split(' ')[3]
-
-      case policy_name
-      when "permitted?"
-        render json: {
-          errors: ["You're not allowed to schedule for this citizen."]
-        }, status: 422
-      when "no_conflict?"
-        render json: {
-          errors: ["This citizen is already scheduled in the given time."]
-        }, status: 409
-      end
-    end
 
     # Use callbacks to share common setup or constraints between actions.
     def set_schedule
@@ -147,6 +327,7 @@ module Api::V1
       end
     end
 
+
     # Only allow a trusted parameter "white list" through. (Used in confirm
     # request)
     def schedule_confirm_params
@@ -156,12 +337,34 @@ module Api::V1
       )
     end
 
+
+    # Only allow updates on the schedule's situation
+    def schedule_update_params
+      params.require(:schedule).permit(
+        :situation_id
+      )
+    end
+
+
+    # Only allow a trusted parameter "white list" through.
+    def notification_params
+      params.require(:notification).permit(
+        :account_id,
+        :schedule_id,
+        :resource_schedule_id,
+        :reminder_time,
+        :read,
+        :content,
+        :reminder_email,
+        :reminder_email_sent          
+      )
+    end
+
+
     # Only allow a trusted parameter "white list" through.
     def schedule_params
       params.require(:schedule).permit(
-        :id,
         :citizen_id,
-        :citizen_ajax_read,
         :note,
         :professional_ajax_read,
         :reminder_read,

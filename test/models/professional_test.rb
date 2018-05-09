@@ -16,11 +16,13 @@ class ShiftTest < ActiveSupport::TestCase
       @citizen = Citizen.new(cpf: "10845922904",
                              active: true,
                              birth_date: "Apr 18 1997",
-                             cep: "1234567",
+                             cep: "89218230",
                              email: "test@example.com",
                              name: "Test Example",
                              phone1: "(12)1212-1212",
                              rg: "1234567",
+                             address_street: "Some street",
+                             address_number: "1234",
                              city_id: @joinville.id)
 
       @account = Account.new(uid: @citizen.cpf,
@@ -28,11 +30,10 @@ class ShiftTest < ActiveSupport::TestCase
                              password_confirmation: "123mudar")
 
       @city_hall = CityHall.new(name: "Prefeitura de Joinville",
-                                cep: "81530110",
+                                cep: "89218230",
                                 neighborhood: "Aasdsd",
                                 address_street: "asdasd",
                                 address_number: "100",
-                                city_id: @joinville.id,
                                 phone1: "12121212",
                                 active: true,
                                 block_text: "hello")

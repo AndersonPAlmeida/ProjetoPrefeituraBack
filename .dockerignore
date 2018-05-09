@@ -1,0 +1,7 @@
+.git
+.dockerignore
+Gemfile.lock
+Dockerfile
+docker-compose.yml
+*server.pid*
+Gemfile.lock

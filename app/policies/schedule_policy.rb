@@ -1,9 +1,125 @@
 class SchedulePolicy < ApplicationPolicy
   class Scope < Scope
     def resolve
-      scope
+      citizen = user[0]
+      permission = Professional.get_permission(user[1])
+
+      if permission == "citizen"
+        return nil
+      end
+
+      professional = citizen.professional
+      service_place = professional.professionals_service_places
+        .find(user[1]).service_place
+
+      city_id = service_place.city_id
+      city_hall_id = service_place.city_hall_id
+      
+      return case permission
+      when "adm_c3sl"
+        scope.all
+
+      when "adm_prefeitura"
+        scope.local_city_hall(city_hall_id)
+
+      when "adm_local"
+        scope.local_service_place(service_place.id)
+
+      when "atendente_local"
+        scope.local_service_place(service_place.id)
+
+      when "responsavel_atendimento"
+        scope.local_service_place(service_place.id).from_professional(professional.id)
+
+      else
+        nil
+      end
     end
   end
+
+  
+  def show?
+    citizen = user[0]
+    permission = Professional.get_permission(user[1])
+
+    if permission == "citizen"
+      return ((record.citizen_id == citizen.id) or 
+              (record.citizen.responsible_id == citizen.id))
+    end
+
+    professional = citizen.professional
+
+    service_place = professional.professionals_service_places
+      .find(user[1]).service_place
+
+    city_hall_id = service_place.city_hall_id
+
+    return case
+    when permission == "adm_c3sl"
+      return true
+
+    when permission == "adm_prefeitura"
+      return ((record.service_place.city_hall_id == service_place.city_hall_id))
+    
+    when permission == "adm_local"
+      return ((record.service_place.id == service_place.id))
+
+    when permission == "atendendente_local" 
+      return ((record.service_place.id == service_place.id))
+
+    when permission == "responsavel_atendimento"
+      return ((record.service_place.id == service_place.id) and
+              (record.shift.professional_performer_id == professional.id))
+
+    else
+      false
+    end
+  end
+
+
+  def update?
+    citizen = user[0]
+    permission = Professional.get_permission(user[1])
+
+    if permission != "citizen"
+      professional = citizen.professional
+
+      service_place = professional.professionals_service_places
+        .find(user[1]).service_place
+
+      city_id = service_place.city_id
+    end
+
+    return case
+    when permission == "adm_c3sl"
+      return (record.situation.description == "Agendado")
+
+    when permission == "adm_prefeitura"
+      return ((record.service_place.city_hall_id == service_place.city_hall_id) and
+              (record.situation.description == "Agendado"))
+
+    when permission == "adm_local"
+      return ((record.service_place.id == service_place.id) and
+              (record.situation.description == "Agendado"))
+
+    when permission == "atendendente_local" 
+      return ((record.service_place.id == service_place.id) and
+              (record.situation.description == "Agendado"))
+
+    when permission == "responsavel_atendimento"
+      return ((record.service_place.id == service_place.id) and
+              (record.shift.professional_performer_id == professional.id)
+              (record.situation.description == "Agendado"))
+
+    when permission == "citizen"
+      return ((record.situation.description == "Agendado") and
+              (record.citizen_id == citizen.id))
+
+    else
+      false
+    end
+  end
+
 
   # TODO: Check for permissions between schedule and citizen being scheduled.
   # It involves either the future relation between schedule and citizen or 
@@ -13,60 +129,58 @@ class SchedulePolicy < ApplicationPolicy
   # Check if user who is confirming schedule is allowed to schedule
   # for the given citizen
   def permitted?
-    @citizen = user[0]
-    @permission = user[1]
+    citizen = user[0]
+    permission = Professional.get_permission(user[1])
 
     if record.target_citizen_id.nil?
-      record.target_citizen_id = @citizen.id
+      record.target_citizen_id = citizen.id
     end
 
     # Citizen which a schedule is being scheduled for
-    citizen = Citizen.find(record.target_citizen_id)
+    schedulee = Citizen.find(record.target_citizen_id)
 
-    if @permission == "citizen" or @citizen.professional.nil?
-      dependants_ids = Citizen.where(responsible_id: @citizen.id).pluck(:id)
+    if permission == "citizen"
+      dependants_ids = Citizen.where(responsible_id: citizen.id).pluck(:id)
 
       # Return false if the target is neither the current citizen nor one 
       # of his dependants
-      return (citizen.id == @citizen.id or (dependants_ids.include?(citizen.id)))
-
-    elsif @permission.nil? and not @citizen.professional.nil?
-      @permission = @citizen.professional.roles[-1]
+      return (schedulee.id == citizen.id or (dependants_ids.include?(schedulee.id)))
     end
 
-    case @permission
+
+    return case permission
     when "adm_c3sl"
-      return @citizen.professional.adm_c3sl?
-    when "adm_prefeitura"
-      return (@citizen.professional.adm_prefeitura? and (citizen.city_id == @citizen.city_id))
-    when "atendente_local"
-      return (@citizen.professional.atendente? and (citizen.city_id == @citizen.city_id))
-    when "responsavel_atendimento"
-      return false
-    end
+      true
 
-    return false
+    when "adm_prefeitura"
+      (schedulee.city_id == citizen.city_id)
+
+    when "atendente_local"
+      (schedulee.city_id == citizen.city_id)
+
+    else
+      false
+    end
   end
 
   # Check if the citizen which the schedule is being confirmed for has
   # no other schedule with conflicting starting/ending time
   def no_conflict?
-    @citizen = user[0]
-    @permission = user[1]
+    citizen = user[0]
 
     if record.target_citizen_id.nil?
-      record.target_citizen_id = @citizen.id
+      record.target_citizen_id = citizen.id
     end
 
-    citizen = Citizen.find(record.target_citizen_id)
+    schedulee = Citizen.find(record.target_citizen_id)
 
     # Schedules that the citizen already has
-    citizen_s_schedules = Schedule.where(citizen_id: citizen.id)
+    citizen_s_schedules = Schedule.where(citizen_id: schedulee.id)
       .where(situation_id: Situation.agendado.id)
 
     for i in citizen_s_schedules
 
-      # If there is any conflict, than the citizen shouldn't be able to schedule
+      # If there is any conflict, then the citizen shouldn't be able to schedule
       if (record.service_start_time..record.service_end_time)
         .overlaps?(i.service_start_time..i.service_end_time)
 

@@ -10,7 +10,7 @@ class CepValidator < ActiveModel::EachValidator
   # @param value [String] the value of the record's cep
   def validate_each(record, attribute, value)
     unless valid_format?(value)
-      record.errors[attribute] << ("#{value} is not a valid cep")
+      record.errors[attribute] << ("#{value} is invalid.")
     end
   end
 
