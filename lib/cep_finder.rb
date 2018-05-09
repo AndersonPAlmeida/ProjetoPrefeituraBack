@@ -9,7 +9,7 @@ module Agendador
       def self.get(zipcode)
         return self.get_postmon(zipcode)
         #return self.get_correios(zipcode)
-      end  
+      end
 
       def self.get_correios(zipcode)
         xml_text= '<?xml version="1.0" encoding="UTF-8"?>' +
@@ -44,8 +44,8 @@ module Agendador
       end
 
       def self.get_postmon(zipcode)
-        #http = Curl.get("http://api.postmon.com.br/v1/cep/#{zipcode}?format=xml")
-        uri = URI("http://api.postmon.com.br/v1/cep/#{zipcode}?format=xml")
+        # uri = URI("http://api.postmon.com.br/v1/cep/#{zipcode}?format=xml")
+        uri = URI("http://postmon.c3sl.ufpr.br/v1/cep/#{zipcode}?format=xml")
         doc = Nokogiri::XML(Net::HTTP.get(uri))
         doc.encoding = 'UTF-8'
 
@@ -61,6 +61,6 @@ module Agendador
 
         return address
       end
-    end  
-  end  
+    end
+  end
 end

@@ -62,6 +62,7 @@ class Api::V1::DependantsControllerTest < ActionDispatch::IntegrationTest
             name: "Test Example Dep",
             phone1: "(12)1212-1212",
             city_id: @joinville.id,
+            address_number: 123456,
             rg: "1234567"
           }, permission: "citizen"
         }, headers: @auth_headers

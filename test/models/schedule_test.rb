@@ -21,6 +21,7 @@ class ScheduleTest < ActiveSupport::TestCase
                              name: "Test Example",
                              phone1: "(12)1212-1212",
                              rg: "1234567",
+                             address_number: 1234,
                              city_id: @joinville.id)
 
       @account = Account.new(uid: @citizen.cpf,
