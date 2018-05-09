@@ -38,13 +38,14 @@ class Api::V1::Accounts::RegistrationsControllerTest < ActionDispatch::Integrati
           birth_date: "Apr 18 1997",
           cep: "81530110",
           cpf: "10845922904",
-          email: "test@example.com", 
+          email: "test@example.com",
           name: "Test Example",
-          phone1: "121212-1212", 
+          phone1: "121212-1212",
           rg: "1234567",
+          address_number: 1234,
           password: "123mudar",
           password_confirmation: "123mudar"
-        } 
+        }
 
         @resource = assigns(:resource)
         @data = JSON.parse(response.body)
@@ -80,13 +81,13 @@ class Api::V1::Accounts::RegistrationsControllerTest < ActionDispatch::Integrati
           birth_date: "Apr 18 1997",
           cep: "81530110",
           cpf: "12345678910",
-          email: "test@example.com", 
+          email: "test@example.com",
           name: "Test Example",
-          phone1: "121212-1212", 
+          phone1: "121212-1212",
           rg: "1234567",
           password: "123mudar",
           password_confirmation: "123mudar"
-        } 
+        }
 
         @resource = assigns(:resource)
         @data = JSON.parse(response.body)
@@ -154,9 +155,9 @@ class Api::V1::Accounts::RegistrationsControllerTest < ActionDispatch::Integrati
           birth_date: "Jan 1 1980",
           cep: "81530110",
           cpf: "52998224725",
-          email: "john@john.com", 
+          email: "john@john.com",
           name: "John",
-          phone1: "12341234", 
+          phone1: "12341234",
           rg: "1234123",
           password: "123mudar",
           password_confirmation: "123mudar"
@@ -187,9 +188,9 @@ class Api::V1::Accounts::RegistrationsControllerTest < ActionDispatch::Integrati
         post '/v1/auth', params: {
           cep: "81530110",
           cpf: "10845922904",
-          email: "john@john.com", 
+          email: "john@john.com",
           name: "John",
-          phone1: "12341234", 
+          phone1: "12341234",
           rg: "1234123",
           password: "123mudar",
           password_confirmation: "123mudar"
@@ -224,9 +225,9 @@ class Api::V1::Accounts::RegistrationsControllerTest < ActionDispatch::Integrati
         post '/v1/auth', params: {
           birth_date: "Jan 1 1980",
           cep: "81530110",
-          email: "john@john.com", 
+          email: "john@john.com",
           name: "John",
-          phone1: "12341234", 
+          phone1: "12341234",
           rg: "1234123",
           password: "123mudar",
           password_confirmation: "123mudar"

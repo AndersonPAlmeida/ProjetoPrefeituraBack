@@ -31,11 +31,11 @@ class Api::V1::CepControllerTest < ActionDispatch::IntegrationTest
     end
 
     describe "Successful cep validation" do
-      before do 
+      before do
         post '/v1/validate_cep', params: {cep: {number: "81530110"}}
 
         @body = JSON.parse(response.body)
-      end 
+      end
 
       it "should be successful" do
         assert_equal 200, response.status
@@ -47,11 +47,11 @@ class Api::V1::CepControllerTest < ActionDispatch::IntegrationTest
     end
 
     describe "Unsuccessful cep validation that doesn't exist" do
-      before do 
-        post '/v1/validate_cep', params: {cep: {number: "81530111"}}
+      before do
+        post '/v1/validate_cep', params: {cep: {number: "815301112"}}
 
         @body = JSON.parse(response.body)
-      end 
+      end
 
       it "should be successful" do
         assert_equal 422, response.status
@@ -63,11 +63,11 @@ class Api::V1::CepControllerTest < ActionDispatch::IntegrationTest
     end
 
     describe "Unsuccessful cep validation that is not registered" do
-      before do 
+      before do
         post '/v1/validate_cep', params: {cep: {number: "89218230"}}
 
         @body = JSON.parse(response.body)
-      end 
+      end
 
       it "should be successful" do
         assert_equal 404, response.status

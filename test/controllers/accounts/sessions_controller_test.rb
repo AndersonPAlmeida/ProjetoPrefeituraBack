@@ -34,13 +34,14 @@ class Api::V1::Accounts::SessionsControllerTest < ActionDispatch::IntegrationTes
           birth_date: "Apr 18 1997",
           cep: "81530110",
           cpf: "10845922904",
-          email: "test@example.com", 
+          email: "test@example.com",
           name: "Test Example",
-          phone1: "121212-1212", 
+          phone1: "121212-1212",
           rg: "1234567",
+          address_number: 1234,
           password: "123mudar",
           password_confirmation: "123mudar"
-        } 
+        }
 
         @citizen = Citizen.where(cpf: "10845922904").first
       end
@@ -48,7 +49,7 @@ class Api::V1::Accounts::SessionsControllerTest < ActionDispatch::IntegrationTes
       describe "Successful sign in" do
         before do
           post '/v1/auth/sign_in', params: {cpf: "10845922904",
-                                            password: "123mudar"}, 
+                                            password: "123mudar"},
                                             headers: @auth_headers
 
           @body = JSON.parse(response.body)
@@ -63,7 +64,7 @@ class Api::V1::Accounts::SessionsControllerTest < ActionDispatch::IntegrationTes
         end
 
         it "should correspond to the current account" do
-          assert_equal @controller.current_user[0].id, 
+          assert_equal @controller.current_user[0].id,
             Account.where(uid: @body["data"]["uid"]).first.citizen.id
         end
 
@@ -75,7 +76,7 @@ class Api::V1::Accounts::SessionsControllerTest < ActionDispatch::IntegrationTes
       describe "Unsuccessful sign in" do
         before do
           post '/v1/auth/sign_in', params: {cpf: "11111111111",
-                                            password: "123mudar"}, 
+                                            password: "123mudar"},
                                             headers: @auth_headers
 
           @body = JSON.parse(response.body)
