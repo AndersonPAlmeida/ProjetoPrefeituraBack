@@ -31,7 +31,7 @@ class Shift < ApplicationRecord
   before_validation :check_conflict
 
   # Scopes #
-  scope :local_city_hall, -> (city_hall_id) { 
+  scope :local_city_hall, -> (city_hall_id) {
     where(service_places: { city_hall_id: city_hall_id })
       .includes(:service_place)
   }
@@ -48,8 +48,8 @@ class Shift < ApplicationRecord
 
     schedules = Schedule.where(shift_id: self.id)
 
-    return self.as_json(only: [ 
-      :id, :service_amount, :execution_start_time, 
+    return self.as_json(only: [
+      :id, :service_amount, :execution_start_time,
       :execution_end_time, :notes
     ], methods: %w(service_place_name service_type_description))
       .merge({ professional_responsible_name: responsible.name })
@@ -66,13 +66,13 @@ class Shift < ApplicationRecord
   def self.index_response
     self.all.as_json(only: [
       :id, :execution_start_time
-    ], methods: %w(professional_performer_name 
+    ], methods: %w(professional_performer_name
       service_type_description service_place_name))
   end
 
 
-  # Creates new schedules when a shift is updated, the amount of schedules is 
-  # specified by self.service_amount and are defined between 
+  # Creates new schedules when a shift is updated, the amount of schedules is
+  # specified by self.service_amount and are defined between
   # self.execution_start_time and self.execution_end_time
   def update_schedules
     Schedule.where(shift_id: self.id).destroy_all
@@ -100,29 +100,36 @@ class Shift < ApplicationRecord
     case permission
     when "adm_c3sl"
       sortable = ["service_type_description", "service_place_name", "execution_start_time"]
-      filter = {"professional" => "professional_performer_id_eq", 
-                "service_type_id" => "service_type_id_eq", 
+      filter = {"professional" => "professional_performer_id_eq",
+                "service_type_id" => "service_type_id_eq",
                 "service_place_id" => "service_place_id_eq",
                 "city_hall_id" => "service_place_city_hall_id_eq",
                 "s"=>"s"}
 
     when "adm_prefeitura"
       sortable = ["service_type_description", "service_place_name", "execution_start_time"]
-      filter = {"professional" => "professional_performer_id_eq", 
-                "service_type_id" => "service_type_id_eq", 
+      filter = {"professional" => "professional_performer_id_eq",
+                "service_type_id" => "service_type_id_eq",
                 "service_place_id" => "service_place_id_eq",
                 "s"=>"s"}
 
     when "adm_local"
       sortable = ["service_type_description", "service_place_name", "execution_start_time"]
-      filter = {"professional" => "professional_performer_id_eq", 
-                "service_type_id" => "service_type_id_eq", 
+      filter = {"professional" => "professional_performer_id_eq",
+                "service_type_id" => "service_type_id_eq",
+                "service_place_id" => "service_place_id_eq",
+                "s"=>"s"}
+
+    when "responsavel_atendimento"
+      sortable = ["service_type_description", "service_place_name", "execution_start_time"]
+      filter = {"professional" => "professional_performer_id_eq",
+                "service_type_id" => "service_type_id_eq",
                 "service_place_id" => "service_place_id_eq",
                 "s"=>"s"}
 
     end
 
-    return filter_search_params(params, filter, sortable) 
+    return filter_search_params(params, filter, sortable)
   end
 
 
@@ -140,7 +147,7 @@ class Shift < ApplicationRecord
     end
 
     if Shift.where.not(id: self.id)
-            .where.not("execution_end_time <= ? OR execution_start_time >= ?", 
+            .where.not("execution_end_time <= ? OR execution_start_time >= ?",
                        self.execution_start_time, self.execution_end_time)
             .where(professional_performer_id: self.professional_performer_id).count > 0
 
@@ -152,8 +159,8 @@ class Shift < ApplicationRecord
   end
 
 
-  # Creates schedules when a shift is created, the amount of schedules is 
-  # specified by self.service_amount and are defined between 
+  # Creates schedules when a shift is created, the amount of schedules is
+  # specified by self.service_amount and are defined between
   # self.execution_start_time and self.execution_end_time
   def create_schedules
     schedules = Array.new
@@ -163,23 +170,23 @@ class Shift < ApplicationRecord
     # Split shift execution time to fit service_amounts schedules
     # each with (schedule_t * 60) minutes
     range_t = (end_t.hour * 60 + end_t.min) - (start_t.hour * 60 + start_t.min)
-    schedule_t = range_t / self.service_amount 
+    schedule_t = range_t / self.service_amount
 
     # Creates service_amount schedules
     self.service_amount.times do |i|
       end_t = start_t + (schedule_t * 60)
 
-      schedule_row = ["#{self.id}", "#{Situation.disponivel.id}", 
-                      "#{self.service_place_id}", "1", "1", "1", 
+      schedule_row = ["#{self.id}", "#{Situation.disponivel.id}",
+                      "#{self.service_place_id}", "1", "1", "1",
                       "#{start_t}", "#{end_t}"]
 
       schedules.append(schedule_row)
-      start_t = end_t  
+      start_t = end_t
     end
 
     # Bulk insert for schedules
     Schedule.transaction do
-      columns = [:shift_id, :situation_id, :service_place_id, 
+      columns = [:shift_id, :situation_id, :service_place_id,
                  :citizen_ajax_read, :professional_ajax_read,
                  :reminder_read, :service_start_time,
                  :service_end_time]
