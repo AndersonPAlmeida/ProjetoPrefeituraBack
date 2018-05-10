@@ -1,37 +1,44 @@
 version: "3" # version matters, see https://docs.docker.com/compose/networking/
-networks:
-  backend:
 services:
-  agendador-postgres:
-    image: postgres:9.6
-    environment:
-      POSTGRES_USER: agendador
-      POSTGRES_PASSWORD: 123mudar
-    networks:
+    agendador-postgres:
+        container_name: agendador-postgres
+        image: postgres:9.6
+        environment:
+            POSTGRES_USER: ${AGENDADOR_API_DB_USER}
+            POSTGRES_PASSWORD: ${AGENDADOR_API_DB_PASSWORD}
+        volumes:
+            - /var/lib/postgresql/data:/var/lib/postgresql/data
+        networks:
             backend:
 
-  agendador-redis:
-    image: redis:3.2
-    command: redis-server --requirepass ${AGENDADOR_REDIS_PASSWORD}
-    ports:
-      - '6379:6379'
-    volumes:
-      - '/redis/data'
-    networks:
-      backend:
+    agendador-redis:
+        image: redis:3.2
+        command: redis-server --requirepass ${AGENDADOR_REDIS_PASSWORD}
+        volumes:
+            - /var/redis/data:/redis/data
+        networks:
+            backend:
 
-  agendador-backend:
-    build: .
-    volumes:
-      - .:/app/
-    environment:
-      PGHOST: agendador-postgres
-      REDISHOST: agendador-redis
-      AGENDADOR_REDIS_PASSWORD: ${AGENDADOR_REDIS_PASSWORD}
-    ports:
-      - '3000:3000'
-    depends_on:
-      - agendador-postgres
-      - agendador-redis
-    networks:
-      backend:
+    agendador-backend:
+        image: marula.c3sl.ufpr.br:5000/c3sl/agendador-backend:latest
+        build: .
+        volumes:
+            - .:/app/
+        environment:
+            RAILS_ENV: ${AGENDADOR_RAILS_ENV}
+            AGENDADOR_REDIS_PASSWORD: ${AGENDADOR_REDIS_PASSWORD}
+            AGENDADOR_API_DB_PASSWORD: ${AGENDADOR_API_DB_PASSWORD}
+            AGENDADOR_API_DB_USER: ${AGENDADOR_API_DB_USER}
+            SECRET_KEY_BASE: ${AGENDADOR_SECRET_KEY_BASE}
+            PGHOST: agendador-postgres
+            REDISHOST: agendador-redis
+        ports:
+            - '3000:3000'
+        depends_on:
+            - agendador-postgres
+            - agendador-redis
+        networks:
+            backend:
+
+networks:
+    backend:

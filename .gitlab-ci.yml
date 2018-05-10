@@ -4,7 +4,6 @@ variables:
   POSTGRES_DB: agendadorAPI_test
   POSTGRES_USER: agendador
   POSTGRES_PASSWORD: 123mudar
-  POSTGRES_HOST: postgres
   AGENDADOR_URL: 'marula.c3sl.ufpr.br:5000/c3sl/agendador-backend'
   GIT_SUBMODULE_STRATEGY: recursive
 stages:
@@ -20,6 +19,9 @@ test:
     - apt-get install default-jre postgresql-client -y
     # official way to provide password to psql: http://www.postgresql.org/docs/9.3/static/libpq-envars.html
     - export PGPASSWORD=$POSTGRES_PASSWORD
+    - export AGENDADOR_API_DB_USER=$POSTGRES_USER
+    - export AGENDADOR_API_DB_PASSWORD=$POSTGRES_PASSWORD
+    - export PGHOST=postgres
     - psql -h "postgres" -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "SELECT 'OK' AS status;"
     # gems
     - gem install bundler
@@ -49,4 +51,5 @@ deploy:
         - build
     only:
         - testing
+        - develop
         - master
