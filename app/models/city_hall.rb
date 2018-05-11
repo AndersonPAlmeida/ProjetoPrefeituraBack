@@ -3,7 +3,7 @@ class CityHall < ApplicationRecord
 
   # Associations #
   has_many :service_places
-  has_many :resource_type 
+  has_many :resource_type
   belongs_to :city
 
   # Validations #
@@ -38,10 +38,20 @@ class CityHall < ApplicationRecord
 
   validates_length_of :address_number, maximum: 10, allow_blank: true
 
+  # Specify location where the picture should be stored (default is public)
+  # and the formats (large, medium, thumb)
+  has_attached_file :avatar,
+    path: "images/city_halls/:id/avatar_:style.:extension",
+    styles: { large: '500x500', medium: '300x300', thumb: '100x100' }
+
+  # Validates format of pictures
+  validates_attachment_content_type :avatar,
+    :content_type => ["image/jpg", "image/jpeg", "image/png", "image/gif"]
+
   before_validation :create_city_hall
 
-  scope :all_active, -> { 
-    where(active: true) 
+  scope :all_active, -> {
+    where(active: true)
   }
 
 
@@ -59,10 +69,10 @@ class CityHall < ApplicationRecord
     address = Address.get_address(self.cep)
 
     return self.as_json(only: [
-        :id, :active, :address_number, :block_text, 
-        :citizen_access, :citizen_register, :name, 
-        :schedule_period, :address_complement, :description, 
-        :email, :phone1, :phone2, :support_email, 
+        :id, :active, :address_number, :block_text,
+        :citizen_access, :citizen_register, :name,
+        :schedule_period, :address_complement, :description,
+        :email, :phone1, :phone2, :support_email,
         :show_professional, :url
       ])
       .merge({city: city.as_json(except: [
@@ -85,7 +95,7 @@ class CityHall < ApplicationRecord
     return search(search_params(params, permission), npage)
   end
 
-  
+
   private
 
   # Translates incoming search parameters to ransack patterns
@@ -96,11 +106,11 @@ class CityHall < ApplicationRecord
     case permission
     when "adm_c3sl"
       sortable = ["name", "cep", "active", "city_name", "city_state_name"]
-      filter = {"name" => "name_cont", "city" => "city_name_cont", 
+      filter = {"name" => "name_cont", "city" => "city_name_cont",
                 "state" => "city_state_name_cont", "s" => "s"}
     end
 
-    return filter_search_params(params, filter, sortable) 
+    return filter_search_params(params, filter, sortable)
   end
 
 
@@ -110,7 +120,7 @@ class CityHall < ApplicationRecord
   end
 
 
-  # Method surrounding create method for CityHall. It associates 
+  # Method surrounding create method for CityHall. It associates
   # the address to the city hall given a cep
   def create_city_hall
     address = Address.get_address(self.cep)

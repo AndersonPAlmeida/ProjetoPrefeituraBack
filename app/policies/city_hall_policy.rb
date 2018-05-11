@@ -14,7 +14,7 @@ class CityHallPolicy < ApplicationPolicy
         .find(user[1]).service_place
 
       city_hall_id = service_place.city_hall_id
-      
+
       return case permission
       when "adm_c3sl"
         scope.all
@@ -60,11 +60,35 @@ class CityHallPolicy < ApplicationPolicy
     end
   end
 
+  def picture?
+    return picture_access_policy(user)
+  end
+
 
   private
 
-  # Generic method for checking permissions when show/accessing/modifying 
-  # city halls. It is used for avoiding code repetition in city 
+  # Method for checking permissions when showing city hall picture
+  def picture_access_policy(user)
+    citizen = user[0]
+    permission = Professional.get_permission(user[1])
+    professional = citizen.professional
+
+    service_place = professional.professionals_service_places
+      .find(user[1]).service_place
+
+    city_hall_id = service_place.city_hall_id
+
+    return case
+    when permission == "adm_c3sl"
+      return true
+
+    else
+      return (record.id == city_hall_id)
+    end
+  end
+
+  # Generic method for checking permissions when show/accessing/modifying
+  # city halls. It is used for avoiding code repetition in city
   # hall's policy methods.
   #
   # @param user [Array] current citizen and the permission provided
