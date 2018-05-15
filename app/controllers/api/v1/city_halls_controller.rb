@@ -1,8 +1,10 @@
 module Api::V1
-  class CityHallsController < ApplicationController 
+  class CityHallsController < ApplicationController
     include Authenticable
+    require "#{Rails.root}/lib/image_parser.rb"
 
-    before_action :set_city_hall, only: [:show, :update, :destroy]
+    before_action :set_city_hall, only: [ :show, :update, :destroy, :picture,
+                                          :upload_picture ]
 
     # GET /city_halls
     def index
@@ -104,6 +106,78 @@ module Api::V1
     #  end
     #end
 
+    # GET /city_hall/1/picture
+    def picture
+      if @city_hall.nil?
+        render json: {
+          errors: ["City hall #{params[:id]} does not exist."]
+        }, status: 404
+      else
+        # Allow request only if the citizen is reachable from current user
+        begin
+          authorize @city_hall, :picture?
+        rescue
+          render json: {
+            errors: ["You're not allowed to view this city hall."]
+          }, status: 403
+          return
+        end
+
+        path = @city_hall.avatar.path
+
+        if path.nil?
+          render json: {
+            errors: ["City hall #{params[:id]} does not have a picture."]
+          }, status: 404
+        else
+          if not params[:size].nil?
+            path.sub!('original', params[:size])
+          end
+
+          send_file path,
+            type: @city_hall.avatar_content_type,
+            disposition: 'inline'
+        end
+      end
+    end
+
+    # POST /city_hall/1/upload_picture
+    def upload_picture
+      if @city_hall.nil?
+        render json: {
+          errors: ["City hall #{params[:id]} does not exist."]
+        }, status: 404
+      else
+        # Allow request only if the citizen is reachable from current user
+        begin
+          authorize @city_hall, :update?
+        rescue
+          render json: {
+            errors: ["You're not allowed to update this city hall."]
+          }, status: 403
+          return
+        end
+
+        if params[:avatar]
+          begin
+            @city_hall.avatar = Agendador::Image::Parser.parse(params[:avatar])
+          ensure
+            Agendador::Image::Parser.clean_tempfile
+          end
+
+          @city_hall.save
+
+          render json: {
+            errors: ["City hall avatar uploaded!"]
+          }, status: 201
+        else
+          render json: {
+            errors: ["Avatar parameter undefined."]
+          }, status: 400
+        end
+      end
+    end
+
     private
 
     # Use callbacks to share common setup or constraints between actions.
@@ -120,20 +194,20 @@ module Api::V1
     def city_hall_params
       params.require(:city_hall).permit(
         :address_number,
-        :address_complement, 
-        :block_text, 
-        :citizen_access, 
-        :citizen_register, 
-        :cep, 
-        :description, 
-        :email, 
-        :name, 
-        :neighborhood, 
-        :phone1, 
-        :phone2, 
-        :schedule_period, 
-        :show_professional, 
-        :support_email, 
+        :address_complement,
+        :block_text,
+        :citizen_access,
+        :citizen_register,
+        :cep,
+        :description,
+        :email,
+        :name,
+        :neighborhood,
+        :phone1,
+        :phone2,
+        :schedule_period,
+        :show_professional,
+        :support_email,
         :url
       )
     end

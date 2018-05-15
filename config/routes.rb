@@ -32,7 +32,13 @@ Rails.application.routes.draw do
         end
       end
 
-      resources :city_halls
+      resources :city_halls do
+        member do
+          get 'picture'
+          post 'picture' => 'city_halls#upload_picture'
+        end
+      end
+
       resources :occupations
 
       resources :professionals
