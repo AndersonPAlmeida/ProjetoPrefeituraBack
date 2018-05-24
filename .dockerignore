@@ -1,6 +1,6 @@
 .git
 .dockerignore
-Gemfile.lock
+#Gemfile.lock
 Dockerfile
 docker-compose.yml
 *server.pid*

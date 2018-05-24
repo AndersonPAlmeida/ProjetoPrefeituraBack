@@ -3,6 +3,8 @@ set -e
 
 # /app/bin/rails db:environment:set RAILS_ENV=$RAILS_ENV
 
+rm -f /app/tmp/pids/server.pid
+
 if [ "$1" = 'CREATE' ]; then
 /app/bin/rake agendador:setup
 fi

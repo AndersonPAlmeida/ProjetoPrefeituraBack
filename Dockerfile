@@ -31,5 +31,6 @@ RUN gem install rails -v 5.0.0 && \
          /app/bin/bundle install -j 4
 
 EXPOSE 3000
+VOLUME ["/app/images/citizens", "/app/images/city_halls", "/data/citizen_upload"]
 ENTRYPOINT ["/app/agendador-entrypoint.sh"]
 CMD ["CREATE"]

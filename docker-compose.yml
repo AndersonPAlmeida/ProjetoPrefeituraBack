@@ -23,7 +23,13 @@ services:
         image: marula.c3sl.ufpr.br:5000/c3sl/agendador-backend:latest
         build: .
         volumes:
-            - .:/app/
+#Uncomment the environment below
+#Develop            
+            - .:/app/ 
+#Production
+    #        - /root/back-end/images/citizens:/app/images/citizens
+    #        - /root/back-end/images/city_halls:/app/images/city_halls
+    #        - /root/back-end/data/citizen_upload:/app/data/citizen_upload
         environment:
             RAILS_ENV: ${AGENDADOR_RAILS_ENV}
             AGENDADOR_REDIS_PASSWORD: ${AGENDADOR_REDIS_PASSWORD}
