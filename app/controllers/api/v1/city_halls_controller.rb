@@ -134,9 +134,15 @@ module Api::V1
             path.sub!('original', params[:size])
           end
 
-          send_file path,
-            type: @city_hall.avatar_content_type,
-            disposition: 'inline'
+          begin
+            send_file path,
+              type: @city_hall.avatar_content_type,
+              disposition: 'inline'
+          rescue
+            send_file "public/missing.png",
+              type: "image/png",
+              disposition: 'inline'
+          end
         end
       end
     end
