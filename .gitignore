@@ -19,7 +19,7 @@
 # Environment variables file
 .env
 
-Gemfile.lock
+#Gemfile.lock
 public/system
 
 images
