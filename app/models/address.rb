@@ -39,7 +39,7 @@ class Address < ApplicationRecord
         address.state_id     = get_state_id(zipcode)
         address.complement   = result[:complement]
         address.complement2  = result[:complement2]
-        address.updated_at   = Date.today 
+        address.updated_at   = Date.today
       end
 
       address.save!
@@ -52,7 +52,7 @@ class Address < ApplicationRecord
   # return the address as a json if valid
   # @param cep [String] cep number
   # @return [Json, Integer] [(address info, nil) | (error message, error status)]
-  def self.get_cep_response(cep)
+  def self.get_cep_response(cep, only_registered)
     if not CepValidator.valid_format?(cep)
       return { errors: ["Invalid CEP."] }.to_json, 422
     end
@@ -76,7 +76,7 @@ class Address < ApplicationRecord
         city_hall = CityHall.where(city_id: city.id)
 
         # Verify if the city obtained from cep is registered
-        if city_hall.empty?
+        if only_registered and city_hall.empty?
           return {
             errors: ["City not registered."],
             city_name: city.name,
@@ -119,7 +119,7 @@ class Address < ApplicationRecord
   # @return [Integer] state id corresponding to cep
   def self.get_state_id(cep)
     cep = cep.gsub(/\D/, '')
-    if not CepValidator.valid_format?(cep) 
+    if not CepValidator.valid_format?(cep)
       return nil
     end
 
