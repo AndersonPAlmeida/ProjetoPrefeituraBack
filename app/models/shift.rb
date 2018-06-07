@@ -104,6 +104,7 @@ class Shift < ApplicationRecord
                 "service_type_id" => "service_type_id_eq",
                 "service_place_id" => "service_place_id_eq",
                 "city_hall_id" => "service_place_city_hall_id_eq",
+                "execution_start_time" => "execution_start_time_gteq",
                 "s"=>"s"}
 
     when "adm_prefeitura"
@@ -111,6 +112,7 @@ class Shift < ApplicationRecord
       filter = {"professional" => "professional_performer_id_eq",
                 "service_type_id" => "service_type_id_eq",
                 "service_place_id" => "service_place_id_eq",
+                "execution_start_time" => "execution_start_time_gteq",
                 "s"=>"s"}
 
     when "adm_local"
@@ -118,6 +120,15 @@ class Shift < ApplicationRecord
       filter = {"professional" => "professional_performer_id_eq",
                 "service_type_id" => "service_type_id_eq",
                 "service_place_id" => "service_place_id_eq",
+                "execution_start_time" => "execution_start_time_gteq",
+                "s"=>"s"}
+
+    when "atendente_local"
+      sortable = ["service_type_description", "service_place_name", "execution_start_time"]
+      filter = {"professional" => "professional_performer_id_eq",
+                "service_type_id" => "service_type_id_eq",
+                "service_place_id" => "service_place_id_eq",
+                "execution_start_time" => "execution_start_time_gteq",
                 "s"=>"s"}
 
     when "responsavel_atendimento"
@@ -125,6 +136,7 @@ class Shift < ApplicationRecord
       filter = {"professional" => "professional_performer_id_eq",
                 "service_type_id" => "service_type_id_eq",
                 "service_place_id" => "service_place_id_eq",
+                "execution_start_time" => "execution_start_time_gteq",
                 "s"=>"s"}
 
     end
