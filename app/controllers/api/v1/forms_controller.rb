@@ -175,7 +175,7 @@ module Api::V1
       permission = Professional.get_permission(current_user[1])
 
       response = Hash.new
-      result, status = Address.get_cep_response(params[:cep])
+      result, status = Address.get_cep_response(params[:cep], true)
 
       if not status.nil?
         render json: result, status: status
