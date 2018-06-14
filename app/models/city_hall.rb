@@ -125,7 +125,7 @@ class CityHall < ApplicationRecord
   def create_city_hall
     address = Address.get_address(self.cep)
 
-    self.active = true
+    # self.active = true
     if not address.nil?
       self.city_id = address.city_id
       self.address_street = address.address

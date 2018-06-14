@@ -64,6 +64,15 @@ class CityHallPolicy < ApplicationPolicy
     return picture_access_policy(user)
   end
 
+  def destroy?
+    permission = Professional.get_permission(user[1])
+
+    if permission == "adm_c3sl"
+      return true
+    end
+
+    return false
+  end
 
   private
 
