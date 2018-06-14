@@ -95,16 +95,30 @@ module Api::V1
     end
 
     # DELETE /city_halls/1
-    #def destroy
-    #  if @city_hall.nil?
-    #    render json: {
-    #      errors: ["City hall #{params[:id]} does not exist."]
-    #    }, status: 404
-    #  else
-    #    @city_hall.active = false
-    #    @city_hall.save!
-    #  end
-    #end
+    def destroy
+      if @city_hall.nil?
+        render json: {
+          errors: ["City hall #{params[:id]} does not exist."]
+        }, status: 404
+      else
+        begin
+          authorize @city_hall, :destroy?
+        rescue
+          render json: {
+            errors: ["You're not allowed to destroy this city hall."]
+          }, status: 403
+          return
+        end
+
+        @city_hall.active = false
+
+        if @city_hall.save!
+          render json: @city_hall, status: :ok
+        else
+          render json: @city_hall.errors, status: :unprocessable_entity
+        end
+      end
+    end
 
     # GET /city_hall/1/picture
     def picture
