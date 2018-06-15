@@ -54,11 +54,15 @@ class CityHall < ApplicationRecord
     where(active: true)
   }
 
+  # Delegations
+  delegate :state_name, to: :city
 
   # Returns json response to index city_halls
   # @return [Json] response
   def self.index_response
-    self.all.as_json(only: [:id, :name, :cep, :active, :state, :city])
+    self.all.as_json(only: [
+        :id, :name, :cep, :active
+    ], methods: %w(city state_name))
   end
 
 
