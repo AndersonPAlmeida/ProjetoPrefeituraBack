@@ -1,4 +1,4 @@
-class AddAttachmentAvatarToCityHalls < ActiveRecord::Migration
+class AddAttachmentAvatarToCityHalls < ActiveRecord::Migration[5.0]
   def self.up
     change_table :city_halls do |t|
       t.attachment :avatar
