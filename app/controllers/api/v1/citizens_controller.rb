@@ -199,12 +199,21 @@ module Api::V1
       # Current citizen id
       citizen_id = current_user[0][:id]
 
+      # Permission
+      permission = Professional.get_permission(current_user[1])
+
       # Find uploads for current citizen
       @uploads = CitizenUpload.where(citizen_id: citizen_id)
                               .order("created_at DESC")
+                              .filter(params[:q], params[:page], permission)
+
+      # Create response object
+      response = Hash.new
+      response[:num_entries] = @uploads.total_count
+      response[:entries] = @uploads.as_json
 
       # Render uploads in JSON format
-      render json: @uploads
+      render json: response.to_json
     end
 
     # POST /citizens/upload
