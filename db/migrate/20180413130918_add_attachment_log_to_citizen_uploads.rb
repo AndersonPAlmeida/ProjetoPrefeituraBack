@@ -1,4 +1,4 @@
-class AddAttachmentLogToCitizenUploads < ActiveRecord::Migration
+class AddAttachmentLogToCitizenUploads < ActiveRecord::Migration[5.0]
   def self.up
     change_table :citizen_uploads do |t|
       t.attachment :log
