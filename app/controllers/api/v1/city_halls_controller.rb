@@ -213,6 +213,7 @@ module Api::V1
     # Only allow a trusted parameter "white list" through.
     def city_hall_params
       params.require(:city_hall).permit(
+        :active,
         :address_number,
         :address_complement,
         :block_text,
