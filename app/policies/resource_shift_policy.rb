@@ -11,7 +11,7 @@ class ResourceShiftPolicy < ApplicationPolicy
         professional = citizen.professional
 
         city_hall_id = professional.professionals_service_places
-          .find(user[1]).service_place.city_id
+          .find(user[1]).service_place.city_hall_id
 
         service_place_id = professional.professionals_service_places.find(
           user[1]).service_place.id
