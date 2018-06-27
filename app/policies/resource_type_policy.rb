@@ -10,15 +10,15 @@ class ResourceTypePolicy < ApplicationPolicy
 
       professional = citizen.professional
 
-      city_id = professional.professionals_service_places.find(
-        user[1]).service_place.city_id
+      city_hall_id = professional.professionals_service_places.find(
+        user[1]).service_place.city_hall_id
 
       return case
       when permission == "adm_c3sl"
         scope.all
 
       when permission == "adm_prefeitura"
-        scope.where(city_hall_id: city_id)
+        scope.where(city_hall_id: city_hall_id)
 
       else
         nil
