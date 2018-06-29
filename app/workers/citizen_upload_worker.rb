@@ -1,8 +1,9 @@
 class CitizenUploadWorker
   include Sidekiq::Worker
+  require 'csv'
   sidekiq_options :queue => :citizens_upload
 
-  def perform(upload_id, upload_size, citizens)
+  def perform(upload_id, content, city_id)
     # Batch size for upload
     batch_size = 100
 
@@ -22,6 +23,21 @@ class CitizenUploadWorker
     # Columns for accounts
     account_columns = [:uid, :provider, :encrypted_password]
 
+    # Update task status to in progress
+    CitizenUpload.update(
+      upload_id,
+      status: 1 # parsing content
+    )
+
+    # Parse citizens from the CSV data
+    citizens = CSV.parse(content).map { |row| Hash[columns.zip(row)] }
+
+    # Remove headers
+    citizens = citizens.drop(1)
+
+    # Number of citizens to be uploaded
+    upload_size = citizens.length
+
     # Line number starts with one
     line_number = 1
     # Hash with errors
@@ -34,15 +50,16 @@ class CitizenUploadWorker
     # Update task status to in progress
     CitizenUpload.update(
       upload_id,
-      status: 1 # in progress
+      status: 2 # in progress
     )
 
     # Go through each citizen in the list
-    citizens.each do |c|
-      # Parameters for current line
-      upload_params = Hash[columns.zip(c)]
+    citizens.each do |citizen_params|
+      # Set active parameter
+      citizen_params[:active] = true
+
       # Create citizen object with defined parameters
-      citizen = Citizen.new(upload_params)
+      citizen = Citizen.new(citizen_params)
 
       # Create account object with defined parameters
       account = Account.new({
@@ -55,37 +72,43 @@ class CitizenUploadWorker
 
       # Citizen remaining info is added when .valid? method is called
       if citizen.valid? and account.valid?
-        # Add valid citizen with complete info to to_create array
-        inst = [
-          citizen.name,
-          citizen.cpf,
-          citizen.rg,
-          citizen.birth_date,
-          citizen.cep,
-          citizen.address_street,
-          citizen.address_number,
-          citizen.neighborhood,
-          citizen.address_complement,
-          citizen.city_id,
-          citizen.phone1,
-          citizen.phone2,
-          citizen.email,
-          citizen.pcd,
-          citizen.note,
-          citizen.active
-        ]
+        if citizen.city_id != city_id
+          # If there was a permission error, store it in the errors hash
+          errors[line_number.to_s] = "Permission denied for this city!"
+        else
+          # Add valid citizen with complete info to to_create array
+          inst = [
+            citizen.name,
+            citizen.cpf,
+            citizen.rg,
+            citizen.birth_date,
+            citizen.cep,
+            citizen.address_street,
+            citizen.address_number,
+            citizen.neighborhood,
+            citizen.address_complement,
+            citizen.city_id,
+            citizen.phone1,
+            citizen.phone2,
+            citizen.email,
+            citizen.pcd,
+            citizen.note,
+            citizen.active
+          ]
 
-        # Add valid account with complete info to to_create array
-        acc_inst = [
-          account.uid,
-          account.provider,
-          account.encrypted_password
-        ]
+          # Add valid account with complete info to to_create array
+          acc_inst = [
+            account.uid,
+            account.provider,
+            account.encrypted_password
+          ]
 
-        # Insert current citizen data to buffer of citizens to create
-        to_create.append(inst)
-        # Insert current account data to buffer of accounts to create
-        account_to_create.append(acc_inst)
+          # Insert current citizen data to buffer of citizens to create
+          to_create.append(inst)
+          # Insert current account data to buffer of accounts to create
+          account_to_create.append(acc_inst)
+        end
+
       else
         # If there was an error, store it in the errors hash
         errors[line_number.to_s] = citizen.errors.to_hash
@@ -138,11 +161,11 @@ class CitizenUploadWorker
     end
 
     # New status to update
-    new_status = 2 # completed with no errors
+    new_status = 3 # completed with no errors
 
     # If there were errors, change status to completed with errors
     if errors.size > 0
-      new_status = 3 # completed with errors
+      new_status = 4 # completed with errors
     end
 
     # Update upload object progress
