@@ -17,14 +17,17 @@ module Api::V1
       end
 
       @resource = Account.find_by(uid: params[:cpf]) 
-      if @resource.email.nil? or @resource.email.empty?
+      if @resource.citizen.email.nil? or @resource.citizen.email.empty?
         render json: {
           errors: ["User #{params[:cpf]} does not have an email registered."]
         }, status: 422
         return
       end
-      @email = @resource.email 
 
+      @resource.email = @resource.citizen.email 
+      @resource.save
+
+      @email = @resource.email
 
       # if whitelist is set, validate redirect_url against whitelist
       if DeviseTokenAuth.redirect_whitelist
