@@ -14,9 +14,6 @@ Rails.application.routes.draw do
 
       get "accounts/self" => "accounts#index"
       get "citizens/schedule_options" => "citizens#schedule_options"
-      get "citizens/upload" => "citizens#get_uploads"
-      get "citizens/upload_log/:upload_id" => "citizens#get_upload_log"
-      post "citizens/upload" => "citizens#upload"
 
       resources :citizens do
         resources :dependants
@@ -38,6 +35,8 @@ Rails.application.routes.draw do
           post 'picture' => 'city_halls#upload_picture'
         end
       end
+
+      resources :citizen_uploads
 
       resources :occupations
 
