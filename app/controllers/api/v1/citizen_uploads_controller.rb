@@ -84,6 +84,9 @@ module Api::V1
       # Current citizen id
       citizen_id = citizen[:id]
 
+      # Permission
+      permission = Professional.get_permission(current_user[1])
+
       # City for current permission
       city_id = citizen.professional.professionals_service_places.find(
         current_user[1]).service_place.city_id
@@ -114,7 +117,7 @@ module Api::V1
         upload_object.save()
 
         # Create sidekiq job for uploading the citizens
-        CitizenUploadWorker.perform_async(upload_object.id, content, city_id)
+        CitizenUploadWorker.perform_async(upload_object.id, content, permission, city_id)
 
         render json: {
           errors: ["Citizens scheduled to be imported!"]

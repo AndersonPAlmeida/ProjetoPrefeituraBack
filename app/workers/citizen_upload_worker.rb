@@ -3,7 +3,7 @@ class CitizenUploadWorker
   require 'csv'
   sidekiq_options :queue => :citizens_upload
 
-  def perform(upload_id, content, city_id)
+  def perform(upload_id, content, permission, city_id)
     # Batch size for upload
     batch_size = 100
 
@@ -72,7 +72,7 @@ class CitizenUploadWorker
 
       # Citizen remaining info is added when .valid? method is called
       if citizen.valid? and account.valid?
-        if citizen.city_id != city_id
+        if permission != "adm_c3sl" and citizen.city_id != city_id
           # If there was a permission error, store it in the errors hash
           errors[line_number.to_s] = "Permission denied for this city!"
         else
