@@ -24,8 +24,8 @@ services:
         build: .
         volumes:
 #Uncomment the environment below
-#Develop            
-            - .:/app/ 
+#Develop
+            - .:/app/
 #Production
     #        - /root/back-end/images/citizens:/app/images/citizens
     #        - /root/back-end/images/city_halls:/app/images/city_halls
@@ -38,6 +38,8 @@ services:
             SECRET_KEY_BASE: ${AGENDADOR_SECRET_KEY_BASE}
             PGHOST: agendador-postgres
             REDISHOST: agendador-redis
+            MAIL_USERNAME: ${MAIL_USERNAME}
+            MAIL_PASSWORD: ${MAIL_PASSWORD}
         ports:
             - '3000:3000'
         depends_on:
