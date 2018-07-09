@@ -38,6 +38,9 @@ services:
             SECRET_KEY_BASE: ${AGENDADOR_SECRET_KEY_BASE}
             PGHOST: agendador-postgres
             REDISHOST: agendador-redis
+            MAIL_USERNAME: ${MAIL_USERNAME}
+            MAIL_PASSWORD: ${MAIL_PASSWORD}
+
         ports:
             - '3000:3000'
         depends_on:
