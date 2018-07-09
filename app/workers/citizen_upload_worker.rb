@@ -1,6 +1,8 @@
 class CitizenUploadWorker
   include Sidekiq::Worker
   require 'csv'
+  require 'json'
+
   sidekiq_options :queue => :citizens_upload
 
   def perform(upload_id, content, permission, city_id)
@@ -41,7 +43,7 @@ class CitizenUploadWorker
     # Line number starts with one
     line_number = 1
     # Hash with errors
-    errors = Hash.new
+    errors = Array.new
     # Buffer containing users to create
     to_create = Array.new
     # Buffer containing accounts to create
@@ -50,6 +52,7 @@ class CitizenUploadWorker
     # Update task status to in progress
     CitizenUpload.update(
       upload_id,
+      amount: upload_size,
       status: 2 # in progress
     )
 
@@ -72,9 +75,11 @@ class CitizenUploadWorker
 
       # Citizen remaining info is added when .valid? method is called
       if citizen.valid? and account.valid?
+        # Check for permissions on the citizen to be added
         if permission != "adm_c3sl" and citizen.city_id != city_id
           # If there was a permission error, store it in the errors hash
-          errors[line_number.to_s] = "Permission denied for this city!"
+          # errors.push("%d,Permission denied for this city" % [line_number])
+          errors.push([line_number, "Permission denied for this city"])
         else
           # Add valid citizen with complete info to to_create array
           inst = [
@@ -110,8 +115,12 @@ class CitizenUploadWorker
         end
 
       else
-        # If there was an error, store it in the errors hash
-        errors[line_number.to_s] = citizen.errors.to_hash
+        # Go through error messages
+        citizen.errors.full_messages.each do |message|
+          # Add current error in the list of errors
+          # errors.push("%d,%s" % [line_number, message])
+          errors.push([line_number, message])
+        end
       end
 
       # Increase bath counter
@@ -175,17 +184,19 @@ class CitizenUploadWorker
       progress: 100.0
     )
 
-    # Initialize log content buffer
-    log_content = StringIO.new("Line,Error Message\n")
+    # Get CSV path
+    path = "#{Rails.root.to_s}/tmp/citizen_uploads/#{upload_id}.csv"
 
-    # Go through each error and write it in the log file
-    errors.each do |line, message|
-      log_content.puts "%d,%s\n" % [line, message]
+    CSV.open(path, "wb") do |csv|
+      csv << ["Line", "Error Message"]
+      errors.each do |error|
+        csv << error
+      end
     end
 
     # Create upload object to save log
     upload_object = CitizenUpload.find(upload_id)
-    upload_object.log = log_content
-    upload_object.save
+    upload_object.log = File.open(path)
+    upload_object.save!
   end
 end

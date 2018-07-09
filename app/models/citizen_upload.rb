@@ -8,13 +8,15 @@ class CitizenUpload < ApplicationRecord
     path: "/data/citizen_upload/:id/log.csv"
 
   # Validates format of logs
-  validates_attachment_content_type :log,
-    :content_type => ["text/plain", "text/csv"]
+  # validates_attachment_content_type :log,
+  #   :content_type => ['text/csv']
+
+  do_not_validate_attachment_file_type :log
 
   # @params params [ActionController::Parameters] Parameters for searching
   # @params npage [String] number of page to be returned
   # @params permission [String] Permission of current user
-  # @return [ActiveRecords] filtered citizens 
+  # @return [ActiveRecords] filtered citizens
   def self.filter(params, npage, permission)
     return search(search_params(params, permission), npage)
   end
