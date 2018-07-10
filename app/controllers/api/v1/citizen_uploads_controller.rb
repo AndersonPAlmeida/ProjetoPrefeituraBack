@@ -32,10 +32,21 @@ module Api::V1
       # Sort uploads by date in descending order
       @uploads = @uploads.order("created_at DESC")
 
+      # Uploads with professional id
+      uploads_with_professional = @uploads.as_json
+
+      # Add professional id to uploads
+      uploads_with_professional.each do |upload|
+        upload_citizen = Citizen.find(upload['citizen_id'])
+        professional = Professional.where(account_id: upload_citizen.account_id).first
+
+        upload[:professional_id] = professional.id
+      end
+
       # Create response object
       response = Hash.new
       response[:num_entries] = @uploads.total_count
-      response[:entries] = @uploads.as_json
+      response[:entries] = uploads_with_professional
 
       # Render uploads in JSON format
       render json: response.to_json
