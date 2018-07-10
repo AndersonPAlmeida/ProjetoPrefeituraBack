@@ -36,9 +36,9 @@ Rails.application.configure do
   config.action_mailer.delivery_method = :smtp
 
   config.action_mailer.smtp_settings = {
-    address: "mx.inf.ufpr.br",
-    port: 587,
-    domain: "inf.ufpr.br",
+    address: ENV["MX_SERVER"],
+    port: ENV["MX_PORT"],
+    domain: ENV["MAIL_DOMAIN"],
     authentication: "plain",
     enable_starttls_auto: true,
     user_name: ENV["MAIL_USERNAME"],
