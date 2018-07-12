@@ -75,7 +75,7 @@ module Api::V1
         @resource.skip_confirmation! if @resource.devise_modules.include?(:confirmable) && !@resource.confirmed_at
 
         # allow user to change password once without current_password
-        # @resource.allow_password_change = true;
+        @resource.allow_password_change = true;
 
         @resource.save!
         yield @resource if block_given?
