@@ -38,6 +38,9 @@ module BackEndServer
     # Configure path for custom validators
     config.autoload_paths += %W["#{config.root}/app/validators/"]
 
+    # Use devise in PT-BR
+    config.i18n.default_locale = :'pt-BR'
+
     # Configure minitest without spec and no fixture
     config.generators do |g|
       g.test_framework :minitest, fixture: false
@@ -49,8 +52,8 @@ module BackEndServer
 
         # Specify which origins should be allowed to make requests (e.g. agendador.c3sl.ufpr.br)
         origins '*'
-        resource '*', :headers => :any, 
-          :methods => [:get, :post, :put, :delete, :options], 
+        resource '*', :headers => :any,
+          :methods => [:get, :post, :put, :delete, :options],
           :expose => ['access-token', 'expiry', 'token-type', 'uid', 'client']
       end
     end

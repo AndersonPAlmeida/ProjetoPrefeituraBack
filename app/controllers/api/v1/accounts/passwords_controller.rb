@@ -75,7 +75,7 @@ module Api::V1
         @resource.skip_confirmation! if @resource.devise_modules.include?(:confirmable) && !@resource.confirmed_at
 
         # allow user to change password once without current_password
-        #@resource.allow_password_change = true;
+        # @resource.allow_password_change = true;
 
         @resource.save!
         yield @resource if block_given?
@@ -99,15 +99,11 @@ module Api::V1
 
     def gen_url(url, params = {})
       uri = URI(url)
-      puts 'uri'
-      puts uri.path
       res = "#{uri}"
-      puts 'res'
-      puts res
       query = [uri.query, params.to_query].reject(&:blank?).join('&')
       res += "?#{query}"
       res += "##{uri.fragment}" if uri.fragment
-      puts res
+
       return res
     end
 
@@ -116,6 +112,10 @@ module Api::V1
 
       recoverable.reset_password_token = token if recoverable && recoverable.reset_password_token.present?
       recoverable
+    end
+
+    def render_edit_error
+      render_error(404, "Token not found or expired!")
     end
   end
 end
