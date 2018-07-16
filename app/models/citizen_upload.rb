@@ -7,10 +7,7 @@ class CitizenUpload < ApplicationRecord
   has_attached_file :log,
     path: "/data/citizen_upload/:id/log.csv"
 
-  # Validates format of logs
-  # validates_attachment_content_type :log,
-  #   :content_type => ['text/csv']
-
+  # Do not validate format of logs
   do_not_validate_attachment_file_type :log
 
   # @params params [ActionController::Parameters] Parameters for searching
