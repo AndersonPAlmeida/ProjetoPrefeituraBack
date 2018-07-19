@@ -91,7 +91,9 @@ module Api::V1
 
         redirect_to(url)
       else
-        render_edit_error
+        url = gen_url(params[:redirect_url] + "/invalid")
+
+        redirect_to(url)
       end
     end
 
