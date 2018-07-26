@@ -144,6 +144,22 @@ module Api::V1
     def destroy
     end
 
+    # GET /citizen_uploads/example_file_xls
+    def example_xls
+      filename = "#{Rails.root.to_s}/public/citizen_upload_example.xls"
+      content_type = "application/xls"
+
+      send_file filename, :type => content_type, :x_sendfile => true
+    end
+
+    # GET /citizen_uploads/example_file_ods
+    def example_ods
+      filename = "#{Rails.root.to_s}/public/citizen_upload_example.ods"
+      content_type = "application/vnd.oasis.opendocument.spreadsheet"
+
+      send_file filename, :type => content_type, :x_sendfile => true
+    end
+
     private
 
     # Use callbacks to share common setup or constraints between actions.
