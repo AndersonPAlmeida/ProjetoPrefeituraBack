@@ -108,7 +108,6 @@ class CitizenUploadWorker
         if permission != "adm_c3sl" and citizen.city_id != city_id
           # If there was a permission error, store it in the errors hash
           errors.push([
-            line_number,
             citizen_params[:name],
             citizen_params[:cpf],
             citizen_params[:rg],
@@ -121,6 +120,7 @@ class CitizenUploadWorker
             citizen_params[:email],
             citizen_params[:pcd],
             citizen_params[:note],
+            line_number,
             "Permission denied for this city"
           ])
 
@@ -159,11 +159,22 @@ class CitizenUploadWorker
         end
 
       else
+        # Full messages string
+        full_messages_string = nil
+
         # Go through error messages
         citizen.errors.full_messages.each do |message|
-          # Add current error in the list of errors
+          if full_messages_string.present?
+            full_messages_string = "#{full_messages_string} / #{message}"
+          else
+            full_messages_string = message
+          end
+        end
+
+        # If there are errors, insert them into the log
+        if full_messages_string.present?
+          # Add current citizen in the list of errors
           errors.push([
-            line_number,
             citizen_params[:name],
             citizen_params[:cpf],
             citizen_params[:rg],
@@ -176,7 +187,8 @@ class CitizenUploadWorker
             citizen_params[:email],
             citizen_params[:pcd],
             citizen_params[:note],
-            message
+            line_number,
+            full_messages_string
           ])
         end
       end
@@ -249,9 +261,9 @@ class CitizenUploadWorker
     CSV.open(path, "wb") do |csv|
       # Add headers to log
       csv << [
-        "Linha", "Nome", "CPF", "RG", "Data de Nascimento", "CEP",
+        "Nome", "CPF", "RG", "Data de Nascimento", "CEP",
         "Numero", "Complemento", "Telefone 1", "Telefone 2", "E-mail",
-        "Deficiencia", "Observacao", "Erro"
+        "Deficiencia", "Observacao", "Linha", "Erros"
       ]
 
       # Go through the errors to add them into the log
