@@ -1,4 +1,4 @@
-module Api::V1 
+module Api::V1
   class Accounts::PasswordsController < DeviseTokenAuth::PasswordsController
 
     # this action is responsible for generating password reset tokens and
@@ -11,20 +11,20 @@ module Api::V1
       # fall back to default value if provided
       @redirect_url ||= DeviseTokenAuth.default_password_reset_url
 
-      
+
       unless @redirect_url
         return render_create_error_missing_redirect_url
       end
 
-      @resource = Account.find_by(uid: params[:cpf]) 
-      if @resource.citizen.email.nil? or @resource.citizen.email.empty?
+      @resource = Account.find_by(uid: params[:cpf])
+      if @resource.nil? or @resource.citizen.email.nil? or @resource.citizen.email.empty?
         render json: {
           errors: ["User #{params[:cpf]} does not have an email registered."]
         }, status: 422
         return
       end
 
-      @resource.email = @resource.citizen.email 
+      @resource.email = @resource.citizen.email
       @resource.save
 
       @email = @resource.email
