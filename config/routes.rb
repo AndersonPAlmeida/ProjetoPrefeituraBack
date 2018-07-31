@@ -36,6 +36,9 @@ Rails.application.routes.draw do
         end
       end
 
+      get "citizen_uploads/example_ods" => "citizen_uploads#example_ods"
+      get "citizen_uploads/example_xls" => "citizen_uploads#example_xls"
+
       resources :citizen_uploads
 
       resources :occupations
