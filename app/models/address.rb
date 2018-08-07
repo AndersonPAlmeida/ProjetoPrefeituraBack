@@ -40,6 +40,7 @@ class Address < ApplicationRecord
         address = Address.new(
           zipcode:      result[:zipcode],
           address:      result[:address],
+          number:       result[:number],
           neighborhood: result[:neighborhood],
           city_id:      get_city_id(zipcode),
           state_id:     get_state_id(zipcode),
@@ -49,6 +50,7 @@ class Address < ApplicationRecord
       else
         address.zipcode      = result[:zipcode]
         address.address      = result[:address]
+        address.number       = result[:number]
         address.neighborhood = result[:neighborhood]
         address.city_id      = get_city_id(zipcode)
         address.state_id     = get_state_id(zipcode)
