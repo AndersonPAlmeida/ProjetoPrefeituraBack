@@ -39,7 +39,7 @@ class ResourceBooking < ApplicationRecord
       Arel.sql("date(\"resource_bookings\".\"booking_start_time\")")
     end
     ransacker :date_end_booking do
-      Arel.sql("date(\"resource_bookings\".\"booking_en_time\")")
+      Arel.sql("date(\"resource_bookings\".\"booking_end_time\")")
     end
 
     private
