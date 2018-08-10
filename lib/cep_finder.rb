@@ -1,5 +1,24 @@
+# This file is part of Agendador.
+#
+# Agendador is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Agendador is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Agendador.  If not, see <https://www.gnu.org/licenses/>.
+
 require 'curb'
 require 'nokogiri'
+
+def is_number? string
+  true if Float(string) rescue false
+end
 
 module Agendador
   module CEP
@@ -57,6 +76,34 @@ module Agendador
           address[:neighborhood] = doc.xpath("//bairro").text
           address[:city] =  doc.xpath("//cidade").text
           address[:state] = doc.xpath("//estado").text
+          address[:number] = nil
+
+          # Get the last three digits from the zipcode
+          zipcode_suffix = address[:zipcode].split(//).last(3).join
+
+          # Check specific cases of CEP codes that may have a number included
+          # in its address field, the following address shows more details:
+          # https://www.correios.com.br/precisa-de-ajuda/
+          # o-que-e-cep-e-por-que-usa-lo/estrutura-do-cep
+          if zipcode_suffix.to_i >= 900 and zipcode_suffix.to_i <= 969
+            # Split the address by comma
+            address_splitted = address[:address].split(',')
+
+            # If there is more elements in the array, so there's a comma in the
+            # address (probably separating address and number)
+            if address_splitted.length > 1
+              # Get possible number from address
+              number = address_splitted.last.strip
+
+              # Verify if number is numeric, if it is, change the address to
+              # the part of address without the number and set the number
+              # field in the address
+              if is_number?(number)
+                address[:address] = address_splitted[0].strip
+                address[:number] = number.to_i
+              end
+            end
+          end
         end
 
         return address

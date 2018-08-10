@@ -1,3 +1,18 @@
+# This file is part of Agendador.
+#
+# Agendador is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Agendador is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Agendador.  If not, see <https://www.gnu.org/licenses/>.
+
 class CitizenUpload < ApplicationRecord
   include Searchable
 
@@ -7,14 +22,13 @@ class CitizenUpload < ApplicationRecord
   has_attached_file :log,
     path: "/data/citizen_upload/:id/log.csv"
 
-  # Validates format of logs
-  validates_attachment_content_type :log,
-    :content_type => ["text/plain", "text/csv"]
+  # Do not validate format of logs
+  do_not_validate_attachment_file_type :log
 
   # @params params [ActionController::Parameters] Parameters for searching
   # @params npage [String] number of page to be returned
   # @params permission [String] Permission of current user
-  # @return [ActiveRecords] filtered citizens 
+  # @return [ActiveRecords] filtered citizens
   def self.filter(params, npage, permission)
     return search(search_params(params, permission), npage)
   end
