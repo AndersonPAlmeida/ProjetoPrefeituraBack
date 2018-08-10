@@ -1,3 +1,18 @@
+# This file is part of Agendador.
+#
+# Agendador is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Agendador is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Agendador.  If not, see <https://www.gnu.org/licenses/>.
+
 class CitizenUploadWorker
   include Sidekiq::Worker
   require 'csv'
@@ -31,15 +46,6 @@ class CitizenUploadWorker
       status: 1 # parsing content
     )
 
-    # Parse citizens from the CSV data
-    citizens = CSV.parse(content).map { |row| Hash[columns.zip(row)] }
-
-    # Remove headers
-    citizens = citizens.drop(1)
-
-    # Number of citizens to be uploaded
-    upload_size = citizens.length
-
     # Line number starts with one
     line_number = 1
     # Hash with errors
@@ -48,6 +54,41 @@ class CitizenUploadWorker
     to_create = Array.new
     # Buffer containing accounts to create
     account_to_create = Array.new
+
+    begin
+      # Parse citizens from the CSV data
+      citizens = CSV.parse(content).map { |row| Hash[columns.zip(row)] }
+
+      # Remove headers
+      citizens = citizens.drop(1)
+
+      # Number of citizens to be uploaded
+      upload_size = citizens.length
+    rescue
+      # Set citizens to nil
+      citizens = []
+
+      # Upload size is zero
+      upload_size = 1
+
+      # Add parsing error to log
+      errors.push([
+        0,
+        " ",
+        " ",
+        " ",
+        " ",
+        " ",
+        " ",
+        " ",
+        " ",
+        " ",
+        " ",
+        " ",
+        " ",
+        "Could not parse CSV file!"
+      ])
+    end
 
     # Update task status to in progress
     CitizenUpload.update(
@@ -70,16 +111,34 @@ class CitizenUploadWorker
         provider: "cpf"
       })
 
-      # Create default password for current citizen
-      account.password = citizen.birth_date.strftime('%d%m%y')
-
       # Citizen remaining info is added when .valid? method is called
-      if citizen.valid? and account.valid?
+      if citizen.valid?
+        # Create default password for current citizen
+        account.password = citizen.birth_date.strftime('%d%m%y')
+      end
+
+      # Check if account is valid
+      if account.valid?
         # Check for permissions on the citizen to be added
         if permission != "adm_c3sl" and citizen.city_id != city_id
           # If there was a permission error, store it in the errors hash
-          # errors.push("%d,Permission denied for this city" % [line_number])
-          errors.push([line_number, "Permission denied for this city"])
+          errors.push([
+            citizen_params[:name],
+            citizen_params[:cpf],
+            citizen_params[:rg],
+            citizen_params[:birth_date],
+            citizen_params[:cep],
+            citizen_params[:address_number],
+            citizen_params[:address_complement],
+            citizen_params[:phone1],
+            citizen_params[:phone2],
+            citizen_params[:email],
+            citizen_params[:pcd],
+            citizen_params[:note],
+            line_number,
+            "Permission denied for this city"
+          ])
+
         else
           # Add valid citizen with complete info to to_create array
           inst = [
@@ -115,11 +174,37 @@ class CitizenUploadWorker
         end
 
       else
+        # Full messages string
+        full_messages_string = nil
+
         # Go through error messages
         citizen.errors.full_messages.each do |message|
-          # Add current error in the list of errors
-          # errors.push("%d,%s" % [line_number, message])
-          errors.push([line_number, message])
+          if full_messages_string.present?
+            full_messages_string = "#{full_messages_string} / #{message}"
+          else
+            full_messages_string = message
+          end
+        end
+
+        # If there are errors, insert them into the log
+        if full_messages_string.present?
+          # Add current citizen in the list of errors
+          errors.push([
+            citizen_params[:name],
+            citizen_params[:cpf],
+            citizen_params[:rg],
+            citizen_params[:birth_date],
+            citizen_params[:cep],
+            citizen_params[:address_number],
+            citizen_params[:address_complement],
+            citizen_params[:phone1],
+            citizen_params[:phone2],
+            citizen_params[:email],
+            citizen_params[:pcd],
+            citizen_params[:note],
+            line_number,
+            full_messages_string
+          ])
         end
       end
 
@@ -187,8 +272,16 @@ class CitizenUploadWorker
     # Get CSV path
     path = "#{Rails.root.to_s}/tmp/citizen_uploads/#{upload_id}.csv"
 
+    # Open log CSV file for writing the log
     CSV.open(path, "wb") do |csv|
-      csv << ["Line", "Error Message"]
+      # Add headers to log
+      csv << [
+        "Nome", "CPF", "RG", "Data de Nascimento", "CEP",
+        "Numero", "Complemento", "Telefone 1", "Telefone 2", "E-mail",
+        "Deficiencia", "Observacao", "Linha", "Erros"
+      ]
+
+      # Go through the errors to add them into the log
       errors.each do |error|
         csv << error
       end

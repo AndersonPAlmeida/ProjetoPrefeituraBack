@@ -1,3 +1,18 @@
+# This file is part of Agendador.
+#
+# Agendador is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Agendador is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Agendador.  If not, see <https://www.gnu.org/licenses/>.
+
 class ServicePlace < ApplicationRecord
   include Searchable
 
@@ -18,7 +33,7 @@ class ServicePlace < ApplicationRecord
   validates_presence_of :cep
 
   validates_length_of :name, maximum: 255
-  validates_length_of :address_number, 
+  validates_length_of :address_number,
     within: 0..10,
     allow_blank: true
 
@@ -33,7 +48,7 @@ class ServicePlace < ApplicationRecord
     where(active: true)
   }
 
-  scope :local_city_hall, -> (city_hall_id) { 
+  scope :local_city_hall, -> (city_hall_id) {
     where(city_hall_id: city_hall_id)
   }
 
@@ -44,7 +59,7 @@ class ServicePlace < ApplicationRecord
   delegate :state_name, to: :city
 
 
-  # Get every available schedule from the current service_place given a 
+  # Get every available schedule from the current service_place given a
   # service_type
   #
   # @param service_type_id [Integer] id from specified service_type
@@ -68,14 +83,14 @@ class ServicePlace < ApplicationRecord
   end
 
 
-  # Returns json response to index service_types 
+  # Returns json response to index service_types
   # @return [Json] response
   def self.index_response
     self.all.as_json(only: [
       :id, :name, :cep, :active, :neighborhood, :phone1
     ], methods: %w(city_hall_name city_name state_name))
   end
-  
+
 
   # @return [Json] detailed service_type's data
   def complete_info_response
@@ -103,7 +118,7 @@ class ServicePlace < ApplicationRecord
         :ibge_code, :created_at, :updated_at
       ])})
       .merge({address: address.as_json(except: [
-        :created_at, :updated_at, :state_id, :city_id
+        :created_at, :updated_at, :state_id, :city_id, :number
       ])})
   end
 
@@ -111,14 +126,14 @@ class ServicePlace < ApplicationRecord
   # Get every service_place and its schedules given a service_type
   #
   # @param service_type [ServiceType] specified ServiceType
-  # @return [Json] array containing the reponses from get_schedules for every 
+  # @return [Json] array containing the reponses from get_schedules for every
   # service_place
   def self.get_schedule_response(service_type)
     service_places = ServicePlace.where(active: true)
       .find(service_type.service_place_ids)
 
     # Add reponses from get_schedules obtained from every service_place
-    # containing the specified service_type 
+    # containing the specified service_type
     response = [].as_json
     for i in service_places
       response << i.get_schedules(service_type.id)
@@ -147,46 +162,46 @@ class ServicePlace < ApplicationRecord
     case permission
     when "adm_c3sl"
       sortable = [
-        "name", 
-        "cep", 
-        "city_hall_name", 
-        "active", 
+        "name",
+        "cep",
+        "city_hall_name",
+        "active",
         "neighborhood"
       ]
 
       filter = {
-        "name" => "name_cont", 
-        "active" => "active_eq", 
+        "name" => "name_cont",
+        "active" => "active_eq",
         "neighborhood" => "neighborhood_cont",
-        "cep" => "cep_cont", 
-        "city_hall_id" => "city_hall_id_eq", 
+        "cep" => "cep_cont",
+        "city_hall_id" => "city_hall_id_eq",
         "s" => "s"
       }
 
     when "adm_prefeitura"
       sortable = [
-        "name", 
+        "name",
         "cep",
-        "active", 
+        "active",
         "neighborhood"
       ]
 
       filter = {
-        "name" => "name_cont", 
-        "active" => "active_eq", 
+        "name" => "name_cont",
+        "active" => "active_eq",
         "neighborhood" => "neighborhood_cont",
-        "cep" => "cep_cont", 
+        "cep" => "cep_cont",
         "role" => "professionals_service_places_role_eq",
         "s" => "s"
       }
 
     end
 
-    return filter_search_params(params, filter, sortable) 
+    return filter_search_params(params, filter, sortable)
   end
 
 
-  # Method called when creating a service_place. It associates 
+  # Method called when creating a service_place. It associates
   # the address to the service place given a cep
   def create_service_place
     address = Address.get_address(self.cep)
@@ -208,6 +223,10 @@ class ServicePlace < ApplicationRecord
 
       self.address_street = address.address
       self.neighborhood = address.neighborhood
+
+      if not address.number.nil?
+        self.address_number = address.number
+      end
     else
       self.errors["cep"] << "#{self.cep} is invalid."
       return false

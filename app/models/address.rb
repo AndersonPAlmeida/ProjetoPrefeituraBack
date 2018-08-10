@@ -1,3 +1,18 @@
+# This file is part of Agendador.
+#
+# Agendador is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Agendador is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Agendador.  If not, see <https://www.gnu.org/licenses/>.
+
 class Address < ApplicationRecord
   require "#{Rails.root}/lib/cep_finder"
 
@@ -25,6 +40,7 @@ class Address < ApplicationRecord
         address = Address.new(
           zipcode:      result[:zipcode],
           address:      result[:address],
+          number:       result[:number],
           neighborhood: result[:neighborhood],
           city_id:      get_city_id(zipcode),
           state_id:     get_state_id(zipcode),
@@ -34,6 +50,7 @@ class Address < ApplicationRecord
       else
         address.zipcode      = result[:zipcode]
         address.address      = result[:address]
+        address.number       = result[:number]
         address.neighborhood = result[:neighborhood]
         address.city_id      = get_city_id(zipcode)
         address.state_id     = get_state_id(zipcode)

@@ -1,3 +1,18 @@
+# This file is part of Agendador.
+#
+# Agendador is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Agendador is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Agendador.  If not, see <https://www.gnu.org/licenses/>.
+
 module Api::V1
   class CitizenUploadsController < ApplicationController
     include Authenticable
@@ -142,6 +157,22 @@ module Api::V1
 
     # DELETE /citizen_uploads/1
     def destroy
+    end
+
+    # GET /citizen_uploads/example_file_xls
+    def example_xls
+      filename = "#{Rails.root.to_s}/public/citizen_upload_example.xls"
+      content_type = "application/xls"
+
+      send_file filename, :type => content_type, :x_sendfile => true
+    end
+
+    # GET /citizen_uploads/example_file_ods
+    def example_ods
+      filename = "#{Rails.root.to_s}/public/citizen_upload_example.ods"
+      content_type = "application/vnd.oasis.opendocument.spreadsheet"
+
+      send_file filename, :type => content_type, :x_sendfile => true
     end
 
     private
