@@ -31,6 +31,7 @@ ActiveRecord::Schema.define(version: 20180803163556) do
     t.json     "tokens"
     t.datetime "created_at",                             null: false
     t.datetime "updated_at",                             null: false
+    t.boolean  "allow_password_change",  default: false
     t.index ["reset_password_token"], name: "index_accounts_on_reset_password_token", unique: true, using: :btree
     t.index ["uid"], name: "index_accounts_on_uid", unique: true, using: :btree
   end
