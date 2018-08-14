@@ -19,7 +19,8 @@ module Api::V1
     include HasPolicies
     require 'csv'
 
-    before_action :set_citizen, only: [:picture, :show, :update, :destroy]
+    before_action :set_citizen, only: [:picture, :show, :update,
+                                       :change_password, :destroy]
 
     # GET /citizens
     def index
@@ -39,7 +40,6 @@ module Api::V1
         render json: response.to_json
       end
     end
-
 
     # GET /citizens/1/picture
     def picture
@@ -107,7 +107,6 @@ module Api::V1
       end
     end
 
-
     # GET /citizens/1
     def show
       if @citizen.nil?
@@ -128,7 +127,6 @@ module Api::V1
         render json: @citizen
       end
     end
-
 
     # POST /citizens
     def create
@@ -194,7 +192,6 @@ module Api::V1
       end
     end
 
-
     # DELETE /citizens/1
     def destroy
       if @citizen.nil?
@@ -207,7 +204,7 @@ module Api::V1
           authorize @citizen, :deactivate?
         rescue
           render json: {
-            errors: ["You're not allowed to deativate this citizen."]
+            errors: ["You're not allowed to deactivate this citizen."]
           }, status: 403
           return
         end
@@ -217,6 +214,61 @@ module Api::V1
         @citizen.active = false
 
         if @citizen.save
+          render json: @citizen
+        else
+          render json: @citizen.errors, status: :unprocessable_entity
+        end
+      end
+    end
+
+    # PUT /citizens/1/change_password
+    def change_password
+      if @citizen.nil?
+        render json: {
+          errors: ["User #{params[:id]} does not exist."]
+        }, status: 404
+      else
+        # Allow request only if the citizen is reachable from current user
+        begin
+          authorize @citizen, :change_password?
+        rescue
+          render json: {
+            errors: ["You're not allowed to change password for this citizen."]
+          }, status: 403
+          return
+        end
+
+        if @citizen.email.present?
+          render json: {
+            errors: ["This citizen has an e-mail registered, use it for resetting the password!"]
+          }, status: 401
+          return
+        end
+
+        @account = Account.find(@citizen.account_id)
+        birth_date = @citizen.birth_date.strftime("%Y-%m-%d")
+
+        if(
+            @account.uid != params[:cpf] or
+            birth_date != params[:birth_date]
+        )
+          render json: {
+            errors: ["CPF and birth date do not match!"]
+          }, status: 403
+          return
+        end
+
+        if params[:password] != params[:password_confirmation]
+          render json: {
+            errors: ["Passwords do not match!"]
+          }, status: 403
+          return
+        end
+
+        @account.password = params[:password]
+        @account.password_confirmation = params[:password_confirmation]
+
+        if @account.save!
           render json: @citizen
         else
           render json: @citizen.errors, status: :unprocessable_entity
