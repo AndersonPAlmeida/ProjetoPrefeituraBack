@@ -27,7 +27,7 @@ class CitizenPolicy < ApplicationPolicy
 
       city_id = professional.professionals_service_places
         .find(user[1]).service_place.city_id
-      
+
       return case permission
       when "adm_c3sl"
         scope.all_active.where.not(id: citizen.id)
@@ -56,7 +56,7 @@ class CitizenPolicy < ApplicationPolicy
     permission = Professional.get_permission(user[1])
 
     if permission == "citizen"
-      return condition 
+      return condition
     end
 
     professional = citizen.professional
@@ -95,8 +95,12 @@ class CitizenPolicy < ApplicationPolicy
   end
 
   def schedule?
-    return access_policy(user, ((user[0].id == record.id) || 
+    return access_policy(user, ((user[0].id == record.id) ||
                                 (record.responsible_id == user[0].id)))
+  end
+
+  def change_password?
+    return access_policy(user, false)
   end
 
   def show_picture?
@@ -114,7 +118,7 @@ class CitizenPolicy < ApplicationPolicy
 
     return case
     when permission == "adm_c3sl"
-      return true 
+      return true
 
     when permission == "adm_prefeitura"
       return ((citizen.id == record.id) or (city_id == record.city_id))
@@ -131,8 +135,8 @@ class CitizenPolicy < ApplicationPolicy
   end
 
   private
-  
-  # Generic method for checking permissions when show/accessing/modifying 
+
+  # Generic method for checking permissions when show/accessing/modifying
   # citizens. It is used for avoiding code repetition in citizen's policy
   # methods.
   #
@@ -144,7 +148,7 @@ class CitizenPolicy < ApplicationPolicy
     permission = Professional.get_permission(user[1])
 
     if permission == "citizen"
-      return condition 
+      return condition
     end
 
     professional = citizen.professional
