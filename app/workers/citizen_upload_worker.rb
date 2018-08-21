@@ -86,7 +86,8 @@ class CitizenUploadWorker
         " ",
         " ",
         " ",
-        "Could not parse CSV file!"
+        # "Could not parse CSV file!"
+        "Impossível ler arquivo CSV!"
       ])
     end
 
@@ -136,7 +137,8 @@ class CitizenUploadWorker
             citizen_params[:pcd],
             citizen_params[:note],
             line_number,
-            "Permission denied for this city"
+            # "Permission denied for this city"
+            "Permissão negada para esta cidade!"
           ])
 
         else

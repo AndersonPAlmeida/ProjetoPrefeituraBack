@@ -21,12 +21,13 @@ module Api::V1
 
     # GET /shifts
     def index
-      @shifts = policy_scope(Shift.filter(params[:q], params[:page], 
+      @shifts = policy_scope(Shift.filter(params[:q], params[:page],
                              Professional.get_permission(current_user[1])))
 
       if @shifts.nil?
         render json: {
-          errors: ["You don't have the permission to view shifts."]
+          # errors: ["You don't have the permission to view shifts."]
+          errors: ["Você não tem permissão para listar escalas!"]
         }, status: 403
       else
         response = Hash.new
@@ -41,14 +42,16 @@ module Api::V1
     def show
       if @shift.nil?
         render json: {
-          errors: ["Shift #{params[:id]} does not exist."]
+          # errors: ["Shift #{params[:id]} does not exist."]
+          errors: ["Escala #{params[:id]} não existe!"]
         }, status: 404
       else
         begin
           authorize @shift, :show?
         rescue
           render json: {
-            errors: ["You're not allowed to view this shift."]
+            # errors: ["You're not allowed to view this shift."]
+            errors: ["Você não tem permissão para visualizar esta escala!"]
           }, status: 403
           return
         end
@@ -71,10 +74,11 @@ module Api::V1
         shift_params[:shifts].each do |s|
           shift = Shift.new(s)
 
-          begin 
+          begin
             authorize shift, :create?
           rescue
-            raise_rollback.call(["You're not allowed to create this shift."])
+            # raise_rollback.call(["You're not allowed to create this shift."])
+            raise_rollback.call(["Você não tem permissão para criar esta escala!"])
           end
 
           raise_rollback.call(shift.errors.to_hash) unless shift.save
@@ -87,7 +91,7 @@ module Api::V1
         render json: shift_params.as_json
       else
         render json: {
-          errors: error_message 
+          errors: error_message
         }, status: :unprocessable_entity
       end
     end
@@ -96,7 +100,8 @@ module Api::V1
     def update
       if @shift.nil?
         render json: {
-          errors: ["Shift #{params[:id]} does not exist."]
+          # errors: ["Shift #{params[:id]} does not exist."]
+          errors: ["Escala #{params[:id]} não existe!"]
         }, status: 404
       else
         success = false
@@ -113,7 +118,8 @@ module Api::V1
           begin
             authorize @shift, :update?
           rescue
-            raise_rollback.call(["You're not allowed to update this shift."])
+            # raise_rollback.call(["You're not allowed to update this shift."])
+            raise_rollback.call(["Você não tem permissão para atualizar esta escala!"])
           end
 
           raise_rollback.call(@shift.errors.to_hash) unless @shift.save
@@ -133,14 +139,16 @@ module Api::V1
     def destroy
       if @shift.nil?
         render json: {
-          errors: ["Shift #{params[:id]} does not exist."]
+          # errors: ["Shift #{params[:id]} does not exist."]
+          errors: ["Escala #{params[:id]} não existe!"]
         }, status: 404
       else
         begin
           authorize @shift, :destroy?
         rescue
           render json: {
-            errors: ["You're not allowed to view this shift."]
+            # errors: ["You're not allowed to view this shift."]
+            errors: ["Você não tem permissão para visualizar esta escala!"]
           }, status: 403
           return
         end

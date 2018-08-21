@@ -154,7 +154,8 @@ class CityHall < ApplicationRecord
         self.address_number = address.number
       end
     else
-      self.errors["cep"] << "#{self.cep} is invalid."
+      # self.errors["cep"] << "#{self.cep} is invalid."
+      self.errors["cep"] << "#{self.cep} é inválido!"
       return false
     end
   end

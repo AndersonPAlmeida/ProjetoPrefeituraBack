@@ -29,7 +29,8 @@ module Api::V1
 
       if @citizens.nil?
         render json: {
-          errors: ["You don't have the permission to view citizens."]
+          # errors: ["You don't have the permission to view citizens."]
+          errors: ["Você não tem permissão para listar cidadãos!"]
         }, status: 403
       else
         response = Hash.new
@@ -45,7 +46,8 @@ module Api::V1
     def picture
       if @citizen.nil?
         render json: {
-          errors: ["User #{params[:id]} does not exist."]
+          # errors: ["User #{params[:id]} does not exist."]
+          errors: ["Usuário #{params[:id]} não existe!"]
         }, status: 404
       else
         # Allow request only if the citizen is reachable from current user
@@ -53,7 +55,8 @@ module Api::V1
           authorize @citizen, :show_picture?
         rescue
           render json: {
-            errors: ["You're not allowed to view this citizen."]
+            # errors: ["You're not allowed to view this citizen."]
+            errors: ["Você não tem permissão para visualizar este cidadão!"]
           }, status: 403
           return
         end
@@ -62,7 +65,8 @@ module Api::V1
 
         if path.nil?
           render json: {
-            errors: ["User #{params[:id]} does not have a picture."]
+            # errors: ["User #{params[:id]} does not have a picture."]
+            errors: ["Usuário #{params[:id]} não possui uma foto!"]
           }, status: 404
         else
           if not params[:size].nil?
@@ -96,7 +100,8 @@ module Api::V1
           authorize @citizen, :schedule?
         rescue
           render json: {
-            errors: ["You're not allowed to schedule for this citizen."]
+            # errors: ["You're not allowed to schedule for this citizen."]
+            errors: ["Você não tem permissão para agendar para este cidadão!"]
           }, status: 403
           return
         end
@@ -111,7 +116,8 @@ module Api::V1
     def show
       if @citizen.nil?
         render json: {
-          errors: ["User #{params[:id]} does not exist."]
+          # errors: ["User #{params[:id]} does not exist."]
+          errors: ["Usuário #{params[:id]} não existe!"]
         }, status: 404
       else
         # Allow request only if the citizen is reachable from current user
@@ -119,7 +125,8 @@ module Api::V1
           authorize @citizen, :show?
         rescue
           render json: {
-            errors: ["You're not allowed to view this citizen."]
+            # errors: ["You're not allowed to view this citizen."]
+            errors: ["Você não tem permissão para visualizar este cidadão!"]
           }, status: 403
           return
         end
@@ -181,7 +188,8 @@ module Api::V1
     def update
       if @citizen.nil?
         render json: {
-          errors: ["User #{params[:id]} does not exist."]
+          # errors: ["User #{params[:id]} does not exist."]
+          errors: ["Usuário #{params[:id]} não existe!"]
         }, status: 404
       else
         if @citizen.update(citizen_params)
@@ -196,7 +204,8 @@ module Api::V1
     def destroy
       if @citizen.nil?
         render json: {
-          errors: ["User #{params[:id]} does not exist."]
+          # errors: ["User #{params[:id]} does not exist."]
+          errors: ["Usuário #{params[:id]} não existe!"]
         }, status: 404
       else
         # Allow request only if the citizen is reachable from current user
@@ -204,7 +213,8 @@ module Api::V1
           authorize @citizen, :deactivate?
         rescue
           render json: {
-            errors: ["You're not allowed to deactivate this citizen."]
+            # errors: ["You're not allowed to deactivate this citizen."]
+            errors: ["Você não tem permissão para desativar este cidadão!"]
           }, status: 403
           return
         end
@@ -225,7 +235,8 @@ module Api::V1
     def change_password
       if @citizen.nil?
         render json: {
-          errors: ["User #{params[:id]} does not exist."]
+          # errors: ["User #{params[:id]} does not exist."]
+          errors: ["Usuário #{params[:id]} não existe!"]
         }, status: 404
       else
         # Allow request only if the citizen is reachable from current user
@@ -233,14 +244,16 @@ module Api::V1
           authorize @citizen, :change_password?
         rescue
           render json: {
-            errors: ["You're not allowed to change password for this citizen."]
+            # errors: ["You're not allowed to change password for this citizen."]
+            errors: ["Você não tem permissão para mudar a senha deste cidadão!"]
           }, status: 403
           return
         end
 
         if @citizen.email.present?
           render json: {
-            errors: ["This citizen has an e-mail registered, use it for resetting the password!"]
+            # errors: ["This citizen has an e-mail registered, use it for resetting the password!"]
+            errors: ["Este cidadão possui e-mail registrado, use-o para resetar sua senha!"]
           }, status: 401
           return
         end
@@ -253,14 +266,16 @@ module Api::V1
             birth_date != params[:birth_date]
         )
           render json: {
-            errors: ["CPF and birth date do not match!"]
+            # errors: ["CPF and birth date do not match!"]
+            errors: ["CPF ou data de nascimento inválidos!"]
           }, status: 403
           return
         end
 
         if params[:password] != params[:password_confirmation]
           render json: {
-            errors: ["Passwords do not match!"]
+            # errors: ["Passwords do not match!"]
+            errors: ["As senhas informadas devem ser iguais!"]
           }, status: 403
           return
         end

@@ -207,7 +207,8 @@ class Citizen < ApplicationRecord
   # @return [Boolean] true if provided CEP is correct, false otherwise
   def set_address
     if self.cep.nil? or self.cep.empty?
-      self.errors["cep"] << "Cep can't be blank."
+      # self.errors["cep"] << "Cep can't be blank."
+      self.errors["cep"] << "CEP não pode ficar em branco!"
       return false
     end
 
@@ -228,7 +229,8 @@ class Citizen < ApplicationRecord
         self.neighborhood = address.neighborhood
       end
     else
-      self.errors["cep"] << "#{self.cep} is invalid."
+      # self.errors["cep"] << "#{self.cep} is invalid."
+      self.errors["cep"] << "#{self.cep} é inválido!"
       return false
     end
   end

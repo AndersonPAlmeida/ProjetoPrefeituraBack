@@ -71,19 +71,22 @@ class Address < ApplicationRecord
   # @return [Json, Integer] [(address info, nil) | (error message, error status)]
   def self.get_cep_response(cep, only_registered)
     if not CepValidator.valid_format?(cep)
-      return { errors: ["Invalid CEP."] }.to_json, 422
+      # return { errors: ["Invalid CEP."] }.to_json, 422
+      return { errors: ["CEP inválido!"] }.to_json, 422
     end
 
     address = Address.get_address(cep)
 
     # Verify if cep is valid
     if address.nil?
-      return { errors: ["Invalid CEP."] }.to_json, 422
+      # return { errors: ["Invalid CEP."] }.to_json, 422
+      return { errors: ["CEP inválido!"] }.to_json, 422
     else
 
       # City may not exist due to tests without setting up cities
       if address[:city_id].nil?
-        return { errors: ["City not registered."] }.to_json, 404
+        # return { errors: ["City not registered."] }.to_json, 404
+        return { errors: ["Cidade não registrada!"] }.to_json, 404
       end
 
       city = City.find(address[:city_id])
@@ -95,7 +98,8 @@ class Address < ApplicationRecord
         # Verify if the city obtained from cep is registered
         if only_registered and city_hall.empty?
           return {
-            errors: ["City not registered."],
+            # errors: ["City not registered."],
+            errors: ["Cidade não registrada!"],
             city_name: city.name,
             state_name: state.abbreviation
           }.to_json, 404
@@ -108,7 +112,8 @@ class Address < ApplicationRecord
             .merge({state_name: state}), nil
         end
       else
-        return { errors: ["City not registered."] }.to_json, 404
+        # return { errors: ["City not registered."] }.to_json, 404
+        return { errors: ["Cidade não registrada!"] }.to_json, 404
       end
     end
   end

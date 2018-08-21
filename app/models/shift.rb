@@ -169,7 +169,8 @@ class Shift < ApplicationRecord
   # Check for time conflict with existing shifts for the same professional_performer
   def check_conflict
     if self.execution_start_time == self.execution_end_time
-      self.errors["execution_start_time"] << "Can't be equal end_time"
+      # self.errors["execution_start_time"] << "Can't be equal end_time"
+      self.errors["execution_start_time"] << "Não pode ser igual ao tempo de fim!"
       raise ActiveRecord::Rollback
     end
 
@@ -178,8 +179,9 @@ class Shift < ApplicationRecord
                        self.execution_start_time, self.execution_end_time)
             .where(professional_performer_id: self.professional_performer_id).count > 0
 
-      self.errors["execution_start_time"] << "Conflicting time with existing \
-      shift for the same professional"
+      # self.errors["execution_start_time"] << "Conflicting time with existing \
+      # shift for the same professional"
+      self.errors["execution_start_time"] << "Tempo conflitante com escala existente para o mesmo profissional!"
 
       raise ActiveRecord::Rollback
     end
