@@ -407,7 +407,7 @@ pt-BR:
     registrations:
       missing_confirm_success_url: "Parâmetro 'confirm_success_url' não informado."
       redirect_url_not_allowed: "Redirecionamento para '%{redirect_url}' não permitido."
-      email_already_exists: "Já existe uma conta com o email '%{email}'."
+      email_already_exists: "Já existe uma conta com o email/CPF '%{email}'."
       account_with_uid_destroyed: "A conta com uid '%{uid}' foi excluída."
       account_to_destroy_not_found: "Não foi possível encontrar a conta para exclusão."
       user_not_found: "Usuário não encontrado."
