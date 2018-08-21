@@ -23,8 +23,8 @@ module Api::V1
     def index
       if not params[:history].nil?
         @schedules = Schedule.citizen_history(
-          current_user[0].id, 
-          params[:q], 
+          current_user[0].id,
+          params[:q],
           params[:page],
           params[:dependant_citizen_id],
           params[:dependant_page]
@@ -33,7 +33,7 @@ module Api::V1
         render json: @schedules
         return
       elsif not params[:future].nil?
-        @schedules = Schedule.citizen_future(current_user[0].id, 
+        @schedules = Schedule.citizen_future(current_user[0].id,
                                              params[:q], params[:page])
 
         render json: @schedules
@@ -41,17 +41,19 @@ module Api::V1
       elsif not params[:not_available].nil?
         @schedules = policy_scope(
           Schedule.where.not(situation_id: 1)
-          .filter(params[:q], params[:page], 
+          .filter(params[:q], params[:page],
         Professional.get_permission(current_user[1])))
 
 
         if @schedules.nil?
           render json: {
-            errors: ["You don't have the permission to view schedules."]
+            # errors: ["You don't have the permission to view schedules."]
+            errors: ["Você não tem permissão para listar agendamentos!"]
           }, status: 403
         elsif @schedules.empty?
           render json: {
-            errors: ["No schedules found."]
+            # errors: ["No schedules found."]
+            errors: ["Nenhum agendamento encontrado!"]
           }, status: 404
         else
           response = Hash.new
@@ -66,17 +68,19 @@ module Api::V1
         if not params[:service].nil?
           @schedules = policy_scope(
             Schedule.where.not(situation_id: [1, 2, 3])
-            .filter(params[:q], params[:page], 
+            .filter(params[:q], params[:page],
           Professional.get_permission(current_user[1])))
 
 
           if @schedules.nil?
             render json: {
-              errors: ["You don't have the permission to view schedules."]
+              # errors: ["You don't have the permission to view schedules."]
+              errors: ["Você não tem permissão para listar agendamentos!"]
             }, status: 403
           elsif @schedules.empty?
             render json: {
-              errors: ["No schedules found."]
+              # errors: ["No schedules found."]
+              errors: ["Nenhum agendamento encontrado!"]
             }, status: 404
           else
             response = Hash.new
@@ -90,17 +94,19 @@ module Api::V1
         else
           @schedules = policy_scope(
             Schedule.where(situation_id: [1, 2, 3])
-            .filter(params[:q], params[:page], 
+            .filter(params[:q], params[:page],
           Professional.get_permission(current_user[1])))
 
 
           if @schedules.nil?
             render json: {
-              errors: ["You don't have the permission to view schedules."]
+              # errors: ["You don't have the permission to view schedules."]
+              errors: ["Você não tem permissão para listar agendamentos!"]
             }, status: 403
           elsif @schedules.empty?
             render json: {
-              errors: ["No schedules found."]
+              # errors: ["No schedules found."]
+              errors: ["Nenhum agendamento encontrado!"]
             }, status: 404
           else
             response = Hash.new
@@ -120,14 +126,16 @@ module Api::V1
     def show
       if @schedule.nil?
         render json: {
-          errors: [" Schedule #{params[:id]} does not exist."]
+          # errors: ["Schedule #{params[:id]} does not exist."]
+          errors: ["Agendamento #{params[:id]} não existe!"]
         }, status: 404
       else
         begin
           authorize @schedule, :show?
         rescue
           render json: {
-            errors: ["You're not allowed to view this schedule."]
+            # errors: ["You're not allowed to view this schedule."]
+            errors: ["Você não tem permissão para visualizar este agendamento!"]
           }, status: 422
           return
         end
@@ -145,7 +153,8 @@ module Api::V1
     def confirmation
       if @schedule.nil?
         render json: {
-          errors: [" Schedule #{params[:id]} does not exist."]
+          # errors: ["Schedule #{params[:id]} does not exist."]
+          errors: ["Agendamento #{params[:id]} não existe!"]
         }, status: 404
       else
         # Workaround for Pundit's lack of parameter passing
@@ -157,7 +166,8 @@ module Api::V1
           authorize @schedule, :permitted?
         rescue
           render json: {
-            errors: ["You're not allowed to schedule for this citizen."]
+            # errors: ["You're not allowed to schedule for this citizen."]
+            errors: ["Você não tem permissão para agendar para este cidadão!"]
           }, status: 422
           return
         end
@@ -167,7 +177,8 @@ module Api::V1
           authorize @schedule, :no_conflict?
         rescue
           render json: {
-            errors: ["This citizen is already scheduled in the given time."]
+            # errors: ["This citizen is already scheduled in the given time."]
+            errors: ["Este cidadão já possui agendamento no tempo informado!"]
           }, status: 409
           return
         end
@@ -183,13 +194,15 @@ module Api::V1
     def confirm
       if @schedule.nil?
         render json: {
-          errors: [" Schedule #{params[:id]} does not exist."]
+          # errors: ["Schedule #{params[:id]} does not exist."]
+          errors: ["Agendamento #{params[:id]} não existe!"]
         }, status: 404
       else
         # Check if schedule's situation is available
         if @schedule.situation.id != 1
           render json: {
-            errors: ["This schedule is not available."]
+            # errors: ["This schedule is not available."]
+            errors: ["Este agendamento não está disponível!"]
           }, status: 409
           return
         end
@@ -226,14 +239,15 @@ module Api::V1
             authorize @notification, :create?
           rescue
             render json: {
-              errors: ["You are not authorized to create this notification."]
+              # errors: ["You are not authorized to create this notification."]
+              errors: ["Você não possui permissão para criar esta notificação!"]
             }, status: 403
             return
           end
         end
 
 
-        # This request is successful if both schedule and notification 
+        # This request is successful if both schedule and notification
         # operations are successful
         if @schedule.update(update_params)
           if not params[:notification].nil?
@@ -260,7 +274,8 @@ module Api::V1
           .find(current_user[1]).service_place.city_hall_id
       else
         render json: {
-          errors: ["You're not allowed to view this report."]
+          # errors: ["You're not allowed to view this report."]
+          errors: ["Você não tem permissão para visualizar este relatório!"]
         }, status: 422
         return
       end
@@ -291,20 +306,22 @@ module Api::V1
     def update
       if @schedule.nil?
         render json: {
-          errors: ["Schedule #{params[:id]} does not exist."]
+          # errors: ["Schedule #{params[:id]} does not exist."]
+          errors: ["Agendamento #{params[:id]} não existe!"]
         }, status: 404
       else
         begin
           authorize @schedule, :update?
 
-          # Citizen can only update scheduled schedules (situation == Agendado) 
-          if ((current_user[1] == "citizen") and 
+          # Citizen can only update scheduled schedules (situation == Agendado)
+          if ((current_user[1] == "citizen") and
               (schedule_update_params[:situation_id].to_i != 3))
             raise "Error"
           end
         rescue
           render json: {
-            errors: ["You are not allowed to modify this schedule"]
+            # errors: ["You are not allowed to modify this schedule"]
+            errors: ["Você não tem permissão para alterar este agendamento!"]
           }, status: 403
           return
         end
@@ -322,7 +339,8 @@ module Api::V1
     def destroy
       if @schedule.nil?
         render json: {
-          errors: ["Schedule #{params[:id]} does not exist."]
+          # errors: ["Schedule #{params[:id]} does not exist."]
+          errors: ["Agendamento #{params[:id]} não existe!"]
         }, status: 404
       else
         @schedule.situation_id = Situation.where(description: "Cancelado").first.id
@@ -371,7 +389,7 @@ module Api::V1
         :read,
         :content,
         :reminder_email,
-        :reminder_email_sent          
+        :reminder_email_sent
       )
     end
 

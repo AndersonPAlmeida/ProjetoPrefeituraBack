@@ -26,18 +26,23 @@ class CitizenUploadSerializer < ActiveModel::Serializer
   def status_string
     # Check if status is "Ready to start"
     if object.status == 0
-      return "Ready to start"
+      # return "Ready to start"
+      return "Pronto para iniciar"
     # Check if status is "In progress"
     elsif object.status == 1
-      return "In progress"
+      # return "In progress"
+      return "Em progresso"
     # Check if status is "Completed"
     elsif object.status == 2
-      return "Completed"
+      # return "Completed"
+      return "Finalizado"
     # Check if status is "Completed with errors"
     elsif object.status == 3
-      return "Completed with errors"
+      # return "Completed with errors"
+      return "Finalizado com erros"
     end
 
-    return "Undefined"
+    # return "Undefined"
+    return "Indefinido"
   end
 end

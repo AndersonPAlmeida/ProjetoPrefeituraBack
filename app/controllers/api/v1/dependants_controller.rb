@@ -14,7 +14,7 @@
 # along with Agendador.  If not, see <https://www.gnu.org/licenses/>.
 
 module Api::V1
-  class DependantsController < ApplicationController 
+  class DependantsController < ApplicationController
     include Authenticable
     include HasPolicies
 
@@ -27,7 +27,8 @@ module Api::V1
     def index
       if @citizen.nil?
         render json: {
-          errors: ["Citizen #{params[:citizen_id]} does not exist."]
+          # errors: ["Citizen #{params[:citizen_id]} does not exist."]
+          errors: ["Cidadão #{params[:citizen_id]} não existe!"]
         }, status: :not_found
       else
         # Allow request only if the citizen is reachable from current user
@@ -35,7 +36,8 @@ module Api::V1
           authorize @citizen, :show_dependants?
         rescue
           render json: {
-            errors: ["You're not allowed to view this dependant."]
+            # errors: ["You're not allowed to view this dependant."]
+            errors: ["Você não tem permissão para visualizar este dependente!"]
           }, status: 403
           return
         end
@@ -65,16 +67,19 @@ module Api::V1
     def show
       if @citizen.nil?
         render json: {
-          errors: ["Citizen #{params[:citizen_id]} does not exist."]
+          # errors: ["Citizen #{params[:citizen_id]} does not exist."]
+          errors: ["Cidadão #{params[:citizen_id]} não existe!"]
         }, status: :not_found
       else
         if @dependant.nil?
           render json: {
-            errors: ["Dependant #{params[:id]} does not exist."]
+            # errors: ["Dependant #{params[:id]} does not exist."]
+            errors: ["Dependente #{params[:id]} não existe!"]
           }, status: :not_found
         elsif @dependant.citizen.responsible_id != @citizen.id
           render json: {
-            errors: ["Dependant #{params[:id]} does not belong to citizen #{params[:citizen_id]}."]
+            # errors: ["Dependant #{params[:id]} does not belong to citizen #{params[:citizen_id]}."]
+            errors: ["Dependente #{params[:id]} não pertence ao cidadão #{params[:citizen_id]}."]
           }, status: :forbidden
         else
           # Allow request only if the citizen is reachable from current user
@@ -82,7 +87,8 @@ module Api::V1
             authorize @citizen, :show_dependants?
           rescue
             render json: {
-              errors: ["You're not allowed to view this dependant."]
+              # errors: ["You're not allowed to view this dependant."]
+              errors: ["Você não tem permissão para visualizar este dependente!"]
             }, status: 403
             return
           end
@@ -97,7 +103,8 @@ module Api::V1
     def create
       if @citizen.nil?
         render json: {
-          errors: ["Citizen #{params[:citizen_id]} does not exist."]
+          # errors: ["Citizen #{params[:citizen_id]} does not exist."]
+          errors: ["Cidadão #{params[:citizen_id]} não existe!"]
         }, status: :not_found
       else
         # Allow request only if the citizen is reachable from current user
@@ -105,7 +112,8 @@ module Api::V1
           authorize @citizen, :create_dependants?
         rescue
           render json: {
-            errors: ["You're not allowed to create dependants."]
+            # errors: ["You're not allowed to create dependants."]
+            errors: ["Você não tem permissão para criar dependentes!"]
           }, status: 403
           return
         end
@@ -116,7 +124,7 @@ module Api::V1
         if new_params[:cep].blank?
           new_params[:cep] = @citizen.cep
         end
-        
+
         # Create new citizen associated with new dependant
         citizen = Citizen.new(new_params)
         citizen.active = true
@@ -134,7 +142,7 @@ module Api::V1
 
         if not citizen.save
           render json: citizen.errors, status: :unprocessable_entity
-        else 
+        else
           @dependant = Dependant.new(citizen_id: citizen.id)
 
           if @dependant.save
@@ -151,16 +159,19 @@ module Api::V1
     def update
       if @citizen.nil?
         render json: {
-          errors: ["Citizen #{params[:citizen_id]} does not exist."]
+          # errors: ["Citizen #{params[:citizen_id]} does not exist."]
+          errors: ["Cidadão #{params[:citizen_id]} não existe!"]
         }, status: :not_found
       else
         if @dependant.nil?
           render json: {
-            errors: ["Dependant #{params[:id]} does not exist."]
+            # errors: ["Dependant #{params[:id]} does not exist."]
+            errors: ["Dependente #{params[:id]} não existe!"]
           }, status: :not_found
         elsif @dependant.citizen.responsible_id != @citizen.id
           render json: {
-            errors: ["Dependant #{params[:id]} does not belong to citizen #{params[:id]}."]
+            # errors: ["Dependant #{params[:id]} does not belong to citizen #{params[:id]}."]
+            errors: ["Dependente #{params[:id]} não pertence ao cidadão #{params[:id]}."]
           }, status: :forbidden
         else
           # Allow request only if the citizen is reachable from current user
@@ -168,7 +179,8 @@ module Api::V1
             authorize @citizen, :create_dependants?
           rescue
             render json: {
-              errors: ["You're not allowed to create dependants."]
+              # errors: ["You're not allowed to create dependants."]
+              errors: ["Você não tem permissão para criar dependentes!"]
             }, status: 403
             return
           end
@@ -197,7 +209,7 @@ module Api::V1
             new_params[:city_id] = Address.get_city_id(new_params[:cep])
           end
 
-          if @dependant.citizen.update(new_params) and 
+          if @dependant.citizen.update(new_params) and
             render json: @dependant.complete_info_response
           else
             render json: @dependant.citizen.errors, status: :unprocessable_entity
@@ -211,7 +223,8 @@ module Api::V1
     def destroy
       if @dependant.nil?
         render json: {
-          errors: ["Dependant #{params[:id]} does not exist."]
+          # errors: ["Dependant #{params[:id]} does not exist."]
+          errors: ["Dependente #{params[:id]} não existe!"]
         }, status: :not_found
       else
         @dependant.citizen.active = false

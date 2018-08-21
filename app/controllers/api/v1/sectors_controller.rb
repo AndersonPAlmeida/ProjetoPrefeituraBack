@@ -29,7 +29,8 @@ module Api::V1
             @citizen = Citizen.find(params[:citizen_id])
           rescue
             render json: {
-              errors: ["Citizen #{params[:citizen_id]} does not exist."]
+              # errors: ["Citizen #{params[:citizen_id]} does not exist."]
+              errors: ["Cidadão #{params[:citizen_id]} não existe!"]
             }, status: 404
             return
           end
@@ -40,7 +41,8 @@ module Api::V1
           authorize @citizen, :schedule?
         rescue
           render json: {
-            errors: ["You're not allowed to schedule for this citizen."]
+            # errors: ["You're not allowed to schedule for this citizen."]
+            errors: ["Você não tem permissão para agendar para este cidadão!"]
           }, status: 403
           return
         end
@@ -56,7 +58,8 @@ module Api::V1
 
       if @sectors.nil?
         render json: {
-          errors: ["You're not allowed to view sectors"]
+          # errors: ["You're not allowed to view sectors"]
+          errors: ["Você não tem permissão para listar setores!"]
         }, status: 403
       else
         response = Hash.new
@@ -71,14 +74,16 @@ module Api::V1
     def show
       if @sector.nil?
         render json: {
-          errors: ["Sector #{params[:id]} does not exist."]
+          # errors: ["Sector #{params[:id]} does not exist."]
+          errors: ["Setor #{params[:id]} não existe!"]
         }, status: 404
       else
         begin
           authorize @sector, :show?
         rescue
           render json: {
-            errors: ["You're not allowed show this sector."]
+            # errors: ["You're not allowed to view this sector."]
+            errors: ["Você não tem permissão para visualizar este setor!"]
           }, status: 403
           return
         end
@@ -96,7 +101,8 @@ module Api::V1
         authorize @sector, :create?
       rescue
         render json: {
-          errors: ["You're not allowed to create this sector."]
+          # errors: ["You're not allowed to create this sector."]
+          errors: ["Você não tem permissão para criar este setor!"]
         }, status: 403
         return
       end
@@ -112,14 +118,16 @@ module Api::V1
     def update
       if @sector.nil?
         render json: {
-          errors: ["Sector #{params[:id]} does not exist."]
+          # errors: ["Sector #{params[:id]} does not exist."]
+          errors: ["Setor #{params[:id]} não existe!"]
         }, status: 404
       else
         begin
           authorize @sector, :update?
         rescue
           render json: {
-            errors: ["You're not allowed update this sector."]
+            # errors: ["You're not allowed update this sector."]
+            errors: ["Você não tem permissão para atualizar este setor!"]
           }, status: 403
           return
         end
@@ -136,14 +144,16 @@ module Api::V1
     def destroy
       if @sector.nil?
         render json: {
-          errors: ["Sector #{params[:id]} does not exist."]
+          # errors: ["Sector #{params[:id]} does not exist."]
+          errors: ["Setor #{params[:id]} não existe!"]
         }, status: 404
       else
         begin
           authorize @sector, :destroy?
         rescue
           render json: {
-            errors: ["You're not allowed deactivate this sector."]
+            # errors: ["You're not allowed deactivate this sector."]
+            errors: ["Você não tem permissão para desativar este setor!"]
           }, status: 403
           return
         end
@@ -177,7 +187,7 @@ module Api::V1
         :cancel_limit,
         :city_hall_id,
         :description,
-        :previous_notice, 
+        :previous_notice,
         :name,
         :schedules_by_sector
       );

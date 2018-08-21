@@ -18,55 +18,57 @@ module Api::V1
     include Authenticable
 
     before_action :set_notification, only: [:show, :update, :destroy]
-      
-    # GET /notifications 
+
+    # GET /notifications
     def index
       @notifications = Notification.where(account_id: current_user.first.account_id)
         .where(read: false)
-      
+
       render json: @notifications
     end
 
 
-    # POST /notifications 
+    # POST /notifications
     def create
       notification = notification_params
 
       if notification["account_id"].nil?
         notification["account_id"] = current_user.first.account_id
-      end   
+      end
 
       @notification = Notification.new(notification)
 
       authorize @notification, :create?
 
       if @notification.save
-        render json: @notification, status: :created            
+        render json: @notification, status: :created
       else
         render json: @notification.errors, status: :unprocessable_entity
       end
     end
 
 
-    # GET /notifications/:id 
+    # GET /notifications/:id
     def show
       if @notification.nil?
         render json: {
-        errors: ["Notification #{params[:id]} does not exist."]
+          # errors: ["Notification #{params[:id]} does not exist."]
+          errors: ["Notificação #{params[:id]} não existe!"]
         }, status: 404
       else
-        authorize @notification, :show?        
+        authorize @notification, :show?
 
         render json: @notification
       end
     end
 
 
-    # PATCH/PUT /notifications/1 
+    # PATCH/PUT /notifications/1
     def update
       if @notification.nil?
         render json: {
-        errors: ["Notification #{params[:id]} does not exist."]
+          # errors: ["Notification #{params[:id]} does not exist."]
+          errors: ["Notificação #{params[:id]} não existe!"]
         }, status: 404
       else
         authorize @notification, :update?
@@ -84,7 +86,8 @@ module Api::V1
     def destroy
       if @notification.nil?
         render json: {
-            errors: ["Notification #{params[:id]} does not exist."]
+          # errors: ["Notification #{params[:id]} does not exist."]
+          errors: ["Notificação #{params[:id]} não existe!"]
         }, status: 404
       else
         authorize @notification, :update?
@@ -105,7 +108,7 @@ module Api::V1
         @notification = nil
       end
     end
-   
+
 
     # Only allow a trusted parameter "white list" through.
     def notification_params
@@ -117,7 +120,7 @@ module Api::V1
           :read,
           :content,
           :reminder_email,
-          :reminder_email_sent          
+          :reminder_email_sent
       )
     end
   end

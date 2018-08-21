@@ -31,7 +31,8 @@ module Api::V1
 
       if @solicitations.nil?
         render json: {
-          errors: ["You don't have the permission to view solicitations."]
+          # errors: ["You don't have the permission to view solicitations."]
+          errors: ["Você não tem permissão para listar solicitações!"]
         }, status: 403
         return
       else
@@ -49,14 +50,16 @@ module Api::V1
     def show
       if @solicitation.nil?
         render json: {
-          errors: ["Solicitation #{params[:id]} does not exist."]
+          # errors: ["Solicitation #{params[:id]} does not exist."]
+          errors: ["Solicitação #{params[:id]} não existe!"]
         }, status: 404
       else
         begin
-          authorize @solicitation, :show? 
+          authorize @solicitation, :show?
         rescue
           render json: {
-            errors: ["You are not allowed to view solicitations"]
+            # errors: ["You are not allowed to view solicitations"]
+            errors: ["Você não tem permissão para listar visualizar solicitações!"]
           }, status: 403
           return
         end

@@ -24,8 +24,9 @@ class CpfValidator < ActiveModel::EachValidator
   # @param attribute [Symbol] the attribute to be validated (cpf)
   # @param value [String] the value of the record's cpf
   def validate_each(record, attribute, value)
-    unless CpfValidator.validate_cpf(value) 
-      record.errors[attribute] << ("#{value} is invalid.")
+    unless CpfValidator.validate_cpf(value)
+      # record.errors[attribute] << ("#{value} is invalid.")
+      record.errors[attribute] << ("#{value} é inválido!")
     end
   end
 

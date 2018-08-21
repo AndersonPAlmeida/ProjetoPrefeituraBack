@@ -80,7 +80,8 @@ module Api::V1
 
       else
         render json: {
-          errors: ["You're not allowed to view this form."]
+          # errors: ["You're not allowed to view this form."]
+          errors: ["Você não tem permissão para visualizar este formulário!"]
         }, status: 403
         return
       end
@@ -101,7 +102,8 @@ module Api::V1
 
       else
         render json: {
-          errors: ["You're not allowed to view this form."]
+          # errors: ["You're not allowed to view this form."]
+          errors: ["Você não tem permissão para visualizar este formulário!"]
         }, status: 403
         return
       end
@@ -122,7 +124,8 @@ module Api::V1
 
       else
         render json: {
-          errors: ["You're not allowed to view this form."]
+          # errors: ["You're not allowed to view this form."]
+          errors: ["Você não tem permissão para visualizar este formulário!"]
         }, status: 403
         return
       end
@@ -155,7 +158,8 @@ module Api::V1
 
       else
         render json: {
-          errors: ["You're not allowed to view this form."]
+          # errors: ["You're not allowed to view this form."]
+          errors: ["Você não tem permissão para visualizar este formulário!"]
         }, status: 403
         return
       end
@@ -176,7 +180,8 @@ module Api::V1
 
       else
         render json: {
-          errors: ["You're not allowed to view this form."]
+          # errors: ["You're not allowed to view this form."]
+          errors: ["Você não tem permissão para visualizar este formulário!"]
         }, status: 403
         return
       end
@@ -231,7 +236,8 @@ module Api::V1
 
       else
         render json: {
-          errors: ["You're not allowed to view this form."]
+          # errors: ["You're not allowed to view this form."]
+          errors: ["Você não tem permissão para visualizar este formulário!"]
         }, status: 403
         return
       end
@@ -346,7 +352,8 @@ module Api::V1
 
       else
         render json: {
-          errors: ["You're not allowed to view this form."]
+          # errors: ["You're not allowed to view this form."]
+          errors: ["Você não tem permissão para visualizar este formulário!"]
         }, status: 403
         return
       end
@@ -556,7 +563,8 @@ module Api::V1
 
       else
         render json: {
-          errors: ["You're not allowed to view this form."]
+          # errors: ["You're not allowed to view this form."]
+          errors: ["Você não tem permissão para visualizar este formulário!"]
         }, status: 403
         return
       end
@@ -577,7 +585,8 @@ module Api::V1
 
       else
         render json: {
-          errors: ["You're not allowed to view this form."]
+          # errors: ["You're not allowed to view this form."]
+          errors: ["Você não tem permissão para visualizar este formulário!"]
         }, status: 403
         return
       end
@@ -672,7 +681,8 @@ module Api::V1
 
       else
         render json: {
-          errors: ["You're not allowed to view this form."]
+          # errors: ["You're not allowed to view this form."]
+          errors: ["Você não tem permissão para visualizar este formulário!"]
         }, status: 403
         return
       end
@@ -693,7 +703,8 @@ module Api::V1
 
       else
         render json: {
-          errors: ["You're not allowed to view this form."]
+          # errors: ["You're not allowed to view this form."]
+          errors: ["Você não tem permissão para visualizar este formulário!"]
         }, status: 403
         return
       end
@@ -714,7 +725,8 @@ module Api::V1
 
       else
         render json: {
-          errors: ["You're not allowed to view this form."]
+          # errors: ["You're not allowed to view this form."]
+          errors: ["Você não tem permissão para visualizar este formulário!"]
         }, status: 403
         return
       end

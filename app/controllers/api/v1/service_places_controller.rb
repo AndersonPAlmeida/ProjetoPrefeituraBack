@@ -25,8 +25,8 @@ module Api::V1
         @service_places = policy_scope(ServicePlace.filter(params[:q], params[:page],
           Professional.get_permission(current_user[1])))
 
-      else 
-        # if service_type is specified, then request should return 
+      else
+        # if service_type is specified, then request should return
         # service_places from the given service_type
         service_type = ServiceType.find(params[:service_type_id])
 
@@ -41,7 +41,8 @@ module Api::V1
 
       if @service_places.nil?
         render json: {
-          errors: ["You don't have the permission to view service places."]
+          # errors: ["You don't have the permission to view service places."]
+          errors: ["Você não tem permissão para listar locais de atendimento!"]
         }, status: 403
       else
         response = Hash.new
@@ -57,14 +58,16 @@ module Api::V1
     def show
       if @service_place.nil?
         render json: {
-          errors: ["Service place #{params[:id]} does not exist."]
+          # errors: ["Service place #{params[:id]} does not exist."]
+          errors: ["Local de atendimento #{params[:id]} não existe!"]
         }, status: 404
       else
         begin
           authorize @service_place, :show?
         rescue
           render json: {
-            errors: ["You're not allowed to view this service place."]
+            # errors: ["You're not allowed to view this service place."]
+            errors: ["Você não tem permissão para visualizar este local de atendimento!"]
           }, status: 403
           return
         end
@@ -73,7 +76,7 @@ module Api::V1
       end
     end
 
-    
+
     # POST /service_places
     def create
       # Grab service_types ids to insert later
@@ -86,7 +89,8 @@ module Api::V1
         authorize @service_place, :create?
       rescue
         render json: {
-          errors: ["You're not allowed to create this service place."]
+          # errors: ["You're not allowed to create this service place."]
+          errors: ["Você não tem permissão de criar este local de atendimento!"]
         }, status: 403
         return
       end
@@ -101,7 +105,7 @@ module Api::V1
       @service_place.service_types = service_types
 
       if @service_place.save
-        render json: @service_place, status: :created 
+        render json: @service_place, status: :created
       else
         render json: @service_place.errors, status: :unprocessable_entity
       end
@@ -112,7 +116,8 @@ module Api::V1
     def update
       if @service_place.nil?
         render json: {
-          errors: ["Service place #{params[:id]} does not exist."]
+          # errors: ["Service place #{params[:id]} does not exist."]
+          errors: ["Local de atendimento #{params[:id]} não existe!"]
         }, status: 404
       else
         # Grab service_types ids to insert later
@@ -125,7 +130,8 @@ module Api::V1
           authorize @service_place, :update?
         rescue
           render json: {
-            errors: ["You're not allowed to update this service place."]
+            # errors: ["You're not allowed to update this service place."]
+            errors: ["Você não tem permissão para atualizar este local de atendimento!"]
           }, status: 403
           return
         end
@@ -152,7 +158,8 @@ module Api::V1
     def destroy
       if @service_place.nil?
         render json: {
-          errors: ["Service place #{params[:id]} does not exist."]
+          # errors: ["Service place #{params[:id]} does not exist."]
+          errors: ["Local de atendimento #{params[:id]} não existe!"]
         }, status: 404
       else
         @service_place.active = false

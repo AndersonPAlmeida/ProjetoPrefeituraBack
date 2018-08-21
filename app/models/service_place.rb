@@ -210,13 +210,17 @@ class ServicePlace < ApplicationRecord
       self.city_id = address.city_id
 
       if self.city_hall.nil?
-        self.errors["city_hall_id"] << "City hall can't be blank."
+        # self.errors["city_hall_id"] << "City hall can't be blank."
+        self.errors["city_hall_id"] << "Prefeitura não pode ficar em branco!"
         return false
       end
 
       if self.city_hall.city_id != self.city_id
-        self.errors["city_hall_id"] << "City hall #{self.city_hall_id} does not "\
-          "belong to the given address."
+        # self.errors["city_hall_id"] << "City hall #{self.city_hall_id} does not "\
+        #   "belong to the given address."
+
+        self.errors["city_hall_id"] << "Prefeitura #{self.city_hall_id} não pertence "\
+          "ao endereço informado!"
 
         return false
       end
@@ -228,7 +232,8 @@ class ServicePlace < ApplicationRecord
         self.address_number = address.number
       end
     else
-      self.errors["cep"] << "#{self.cep} is invalid."
+      # self.errors["cep"] << "#{self.cep} is invalid."
+      self.errors["cep"] << "#{self.cep} é inválido!"
       return false
     end
   end

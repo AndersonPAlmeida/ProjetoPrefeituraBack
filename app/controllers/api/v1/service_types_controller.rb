@@ -35,7 +35,8 @@ module Api::V1
 
       if @service_types.nil?
         render json: {
-          errors: ["You don't have the permission to view service types."]
+          # errors: ["You don't have the permission to view service types."]
+          errors: ["Você não tem permissão para listar tipos de serviço!"]
         }, status: 403
       else
         response = Hash.new
@@ -51,14 +52,16 @@ module Api::V1
     def show
       if @service_type.nil?
         render json: {
-          errors: ["Service type #{params[:id]} does not exist."]
+          # errors: ["Service type #{params[:id]} does not exist."]
+          errors: ["Tipo de serviço #{params[:id]} não existe!"]
         }, status: 404
       else
         begin
           authorize @service_type, :show?
         rescue
           render json: {
-            errors: ["You're not allowed to view this service type."]
+            # errors: ["You're not allowed to view this service type."]
+            errors: ["Você não tem permissão para visualizar este tipo de serviço!"]
           }, status: 403
           return
         end
@@ -76,7 +79,8 @@ module Api::V1
         authorize @service_type, :create?
       rescue
         render json: {
-          errors: ["You're not allowed to create this service type."]
+          # errors: ["You're not allowed to create this service type."]
+          errors: ["Você não tem permissão para criar este tipo de serviço!"]
         }, status: 403
         return
       end
@@ -93,7 +97,8 @@ module Api::V1
     def update
       if @service_type.nil?
         render json: {
-          errors: ["Service type #{params[:id]} does not exist."]
+          # errors: ["Service type #{params[:id]} does not exist."]
+          errors: ["Tipo de serviço #{params[:id]} não existe!"]
         }, status: 404
       else
         @service_type.assign_attributes(service_type_params)
@@ -102,12 +107,13 @@ module Api::V1
           authorize @service_type, :update?
         rescue
           render json: {
-            errors: ["You're not allowed to update this service type."]
+            # errors: ["You're not allowed to update this service type."]
+            errors: ["Você não tem permissão para atualizar este tipo de serviço!"]
           }, status: 403
           return
         end
 
-        if @service_type.save 
+        if @service_type.save
           render json: @service_type
         else
           render json: {
