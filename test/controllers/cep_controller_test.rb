@@ -73,7 +73,7 @@ class Api::V1::CepControllerTest < ActionDispatch::IntegrationTest
       end
 
       it "should return an error" do
-        assert_equal ["Invalid CEP."], @body["errors"]
+        assert_equal ["CEP inválido!"], @body["errors"]
       end
     end
 
@@ -89,7 +89,7 @@ class Api::V1::CepControllerTest < ActionDispatch::IntegrationTest
       end
 
       it "should return an error" do
-        assert_equal ["City not registered."], @body["errors"]
+        assert_equal ["Cidade não registrada!"], @body["errors"]
       end
     end
   end
