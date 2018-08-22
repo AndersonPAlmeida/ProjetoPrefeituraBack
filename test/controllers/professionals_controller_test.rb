@@ -101,7 +101,7 @@ class Api::V1::ProfessionalsControllerTest < ActionDispatch::IntegrationTest
       end
 
       it "should not be permitted" do
-        assert_equal 404, response.status
+        assert_equal 422, response.status
       end
 
       it "should not create a professional" do

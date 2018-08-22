@@ -103,6 +103,16 @@ module Api::V1
       success = false
       error_message = nil
 
+      # Check if the roles list is not empty, if it is, displays
+      # an error message
+      if params[:professional][:roles].blank?
+        render json: {
+          # errors: ["You must inform at least one role!"]
+          errors: ["É necessário informar pelo menos uma permissão!"]
+        }, status: 422
+        return
+      end
+
       raise_rollback = -> (error) {
         error_message = error
         raise ActiveRecord::Rollback
@@ -144,7 +154,6 @@ module Api::V1
           @citizen.account_id = @account.id
           raise_rollback.call(@citizen.errors.to_hash) unless @citizen.save
 
-
           # Creates professional
           @professional = Professional.new(professional_params)
 
@@ -152,8 +161,9 @@ module Api::V1
           @professional.active = true
           raise_rollback.call(@professional.errors.to_hash) unless @professional.save
 
-
+          # Professional service places list
           psp_id_list = []
+
           # Creates professionals service places
           params[:professional][:roles].each do |item|
             psp = ProfessionalsServicePlace.new({
