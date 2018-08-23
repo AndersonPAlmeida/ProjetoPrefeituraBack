@@ -138,6 +138,8 @@ pt-BR:
               blank: "Agendamentos por setor não pode ficar em branco!"
             previous_notice:
               blank: "Aviso prévio não pode ficar em branco!"
+              greater_than: "Aviso prévio deve ser acima de 0!"
+              less_than_or_equal_to: "Aviso prévio deve ser menor ou igual à 2000000000!"
         service_place:
           attributes:
             address_number:
