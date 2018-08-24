@@ -34,6 +34,7 @@ Rails.application.routes.draw do
         resources :dependants
         member do
           get 'picture'
+          put 'change_password'
         end
       end
 

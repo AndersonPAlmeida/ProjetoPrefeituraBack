@@ -34,7 +34,7 @@ class Solicitation < ApplicationRecord
   # Returns json response to index solicitations
   # @return [Json] response
   def self.index_response
-    self.all.as_json(only: [:id, :name, :cep, :phone, :city_id, :email, :sent], 
+    self.all.as_json(only: [:id, :name, :cep, :phone, :city_id, :email, :sent],
                     methods: %w(city_name state_name))
   end
 
@@ -63,7 +63,7 @@ class Solicitation < ApplicationRecord
   # @params params [ActionController::Parameters] Parameters for searching
   # @params npage [String] number of page to be returned
   # @params permission [String] Permission of current user
-  # @return [ActiveRecords] filtered citizens 
+  # @return [ActiveRecords] filtered citizens
   def self.filter(params, npage, permission)
     return search(search_params(params, permission), npage)
   end
@@ -82,11 +82,11 @@ class Solicitation < ApplicationRecord
       filter = {"city_id" => "city_id_eq", "sent" => "sent_eq", "s" => "s"}
     end
 
-    return filter_search_params(params, filter, sortable) 
+    return filter_search_params(params, filter, sortable)
   end
 
 
-  # Method called when creating a solicitation. It associates 
+  # Method called when creating a solicitation. It associates
   # the address to the service place given a cep
   def create_solicitation
     address = Address.get_address(self.cep)
@@ -99,10 +99,12 @@ class Solicitation < ApplicationRecord
       city_hall = CityHall.find_by(city_id: self.city_id)
 
       if not city_hall.nil?
-        self.errors["cep"] << "CityHall already exists for city #{city.name}"
+        # self.errors["cep"] << "CityHall already exists for city #{city.name}"
+        self.errors["cep"] << "Já existe prefeitura para a cidade #{city.name}"
       end
     else
-      self.errors["cep"] << "#{self.cep} is invalid."
+      # self.errors["cep"] << "#{self.cep} is invalid."
+      self.errors["cep"] << "#{self.cep} é inválido!"
       return false
     end
   end

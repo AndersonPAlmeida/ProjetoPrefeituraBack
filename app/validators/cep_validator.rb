@@ -18,14 +18,15 @@ class CepValidator < ActiveModel::EachValidator
   # regular expression to describe a valid cep
   CEP_REGEX = /^[0-9]{8}$/
 
-  # Validate cep, if not valid put an error message in 
+  # Validate cep, if not valid put an error message in
   # the record.errors[attribute]
   # @param record [ApplicationRecord] the model which owns the cep
   # @param attribute [Symbol] the attribute to be validated (cep)
   # @param value [String] the value of the record's cep
   def validate_each(record, attribute, value)
     unless valid_format?(value)
-      record.errors[attribute] << ("#{value} is invalid.")
+      # record.errors[attribute] << ("#{value} is invalid.")
+      record.errors[attribute] << ("#{value} é inválido!")
     end
   end
 

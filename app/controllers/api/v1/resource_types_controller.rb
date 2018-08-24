@@ -28,7 +28,8 @@ module Api::V1
 
       if @resource_type.nil?
         render json: {
-          errors: ["You don't have the permission to view resource types."]
+          # errors: ["You don't have the permission to view resource types."]
+          errors: ["Você não tem permissão para listar tipos de recurso!"]
         }, status: 403
       else
         authorize @resource_type, :index?
@@ -40,7 +41,8 @@ module Api::V1
     def show
       if @resource_type.nil?
         render json: {
-          errors: ["Resource type #{params[:id]} does not exist."]
+          # errors: ["Resource type #{params[:id]} does not exist."]
+          errors: ["Tipo de recurso #{params[:id]} não existe!"]
         }, status: 404
       else
         authorize @resource_type, :show?
@@ -65,7 +67,8 @@ module Api::V1
     def update
       if @resource_type.nil?
         render json: {
-          errors: ["Resource type #{params[:id]} does not exist."]
+          # errors: ["Resource type #{params[:id]} does not exist."]
+          errors: ["Tipo de recurso #{params[:id]} não existe!"]
         }, status: 404
       else
         authorize @resource_type, :update?
@@ -81,7 +84,8 @@ module Api::V1
     def destroy
       if @resource_type.nil?
         render json: {
-          errors: ["Resource type #{params[:id]} does not exist."]
+          # errors: ["Resource type #{params[:id]} does not exist."]
+          errors: ["Tipo de recurso #{params[:id]} não existe!"]
         }, status: 404
       else
         authorize @resource_type, :destroy?

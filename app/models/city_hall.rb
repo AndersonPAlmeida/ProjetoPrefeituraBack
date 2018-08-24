@@ -149,8 +149,13 @@ class CityHall < ApplicationRecord
       self.city_id = address.city_id
       self.address_street = address.address
       self.neighborhood = address.neighborhood
+
+      if not address.number.nil?
+        self.address_number = address.number
+      end
     else
-      self.errors["cep"] << "#{self.cep} is invalid."
+      # self.errors["cep"] << "#{self.cep} is invalid."
+      self.errors["cep"] << "#{self.cep} é inválido!"
       return false
     end
   end

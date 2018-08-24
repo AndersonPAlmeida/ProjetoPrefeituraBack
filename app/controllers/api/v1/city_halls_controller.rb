@@ -29,7 +29,8 @@ module Api::V1
 
       if @city_halls.nil?
         render json: {
-          errors: ["You don't have the permission to view city halls."]
+          # errors: ["You don't have the permission to view city halls."]
+          errors: ["Você não tem permissão para listar prefeituras!"]
         }, status: 403
         return
       else
@@ -47,14 +48,16 @@ module Api::V1
     def show
       if @city_hall.nil?
         render json: {
-          errors: ["City hall #{params[:id]} does not exist."]
+          # errors: ["City hall #{params[:id]} does not exist."]
+          errors: ["Prefeitura #{params[:id]} não existe!"]
         }, status: 404
       else
         begin
           authorize @city_hall, :show?
         rescue
           render json: {
-            errors: ["You don't have the permission to view this city hall."]
+            # errors: ["You don't have the permission to view this city hall."]
+            errors: ["Você não tem permissão para visualizar esta prefeitura!"]
           }, status: 403
           return
         end
@@ -72,7 +75,8 @@ module Api::V1
         authorize @city_hall, :create?
       rescue
         render json: {
-          errors: ["You don't have the permission to create city halls."]
+          # errors: ["You don't have the permission to create city halls."]
+          errors: ["Você não tem permissão para criar prefeituras!"]
         }, status: 403
         return
       end
@@ -89,14 +93,16 @@ module Api::V1
     def update
       if @city_hall.nil?
         render json: {
-          errors: ["City hall #{params[:id]} does not exist."]
+          # errors: ["City hall #{params[:id]} does not exist."]
+          errors: ["Prefeitura #{params[:id]} não existe!"]
         }, status: 404
       else
         begin
           authorize @city_hall, :update?
         rescue
           render json: {
-            errors: ["You don't have the permission to create city halls."]
+            # errors: ["You don't have the permission to update city halls."]
+            errors: ["Você não tem permissão para atualizar prefeituras!"]
           }, status: 403
           return
         end
@@ -113,14 +119,16 @@ module Api::V1
     def destroy
       if @city_hall.nil?
         render json: {
-          errors: ["City hall #{params[:id]} does not exist."]
+          # errors: ["City hall #{params[:id]} does not exist."]
+          errors: ["Prefeitura #{params[:id]} não existe!"]
         }, status: 404
       else
         begin
           authorize @city_hall, :destroy?
         rescue
           render json: {
-            errors: ["You're not allowed to destroy this city hall."]
+            # errors: ["You're not allowed to destroy this city hall."]
+            errors: ["Você não tem permissão para remover esta prefeitura!"]
           }, status: 403
           return
         end
@@ -139,7 +147,8 @@ module Api::V1
     def picture
       if @city_hall.nil?
         render json: {
-          errors: ["City hall #{params[:id]} does not exist."]
+          # errors: ["City hall #{params[:id]} does not exist."]
+          errors: ["Prefeitura #{params[:id]} não existe!"]
         }, status: 404
       else
         # Allow request only if the citizen is reachable from current user
@@ -147,7 +156,8 @@ module Api::V1
           authorize @city_hall, :picture?
         rescue
           render json: {
-            errors: ["You're not allowed to view this city hall."]
+            # errors: ["You're not allowed to view this city hall."]
+            errors: ["Você não tem permissão para visualizar esta prefeitura!"]
           }, status: 403
           return
         end
@@ -156,7 +166,8 @@ module Api::V1
 
         if path.nil?
           render json: {
-            errors: ["City hall #{params[:id]} does not have a picture."]
+            # errors: ["City hall #{params[:id]} does not have a picture."]
+            errors: ["Prefeitura #{params[:id]} não possui uma foto!"]
           }, status: 404
         else
           if not params[:size].nil?
@@ -180,7 +191,8 @@ module Api::V1
     def upload_picture
       if @city_hall.nil?
         render json: {
-          errors: ["City hall #{params[:id]} does not exist."]
+          # errors: ["City hall #{params[:id]} does not exist."]
+          errors: ["Prefeitura #{params[:id]} não existe!"]
         }, status: 404
       else
         # Allow request only if the citizen is reachable from current user
@@ -188,7 +200,8 @@ module Api::V1
           authorize @city_hall, :update?
         rescue
           render json: {
-            errors: ["You're not allowed to update this city hall."]
+            # errors: ["You're not allowed to update this city hall."]
+            errors: ["Você não tem permissão para atualizar esta prefeitura!"]
           }, status: 403
           return
         end
@@ -203,11 +216,13 @@ module Api::V1
           @city_hall.save
 
           render json: {
-            errors: ["City hall avatar uploaded!"]
+            # errors: ["City hall avatar uploaded!"]
+            errors: ["Avatar da prefeitura atualizado!"]
           }, status: 201
         else
           render json: {
-            errors: ["Avatar parameter undefined."]
+            # errors: ["Avatar parameter undefined."]
+            errors: ["Avatar indefinido!"]
           }, status: 400
         end
       end

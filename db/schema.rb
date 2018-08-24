@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180511112959) do
+ActiveRecord::Schema.define(version: 20180803163556) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -31,6 +31,7 @@ ActiveRecord::Schema.define(version: 20180511112959) do
     t.json     "tokens"
     t.datetime "created_at",                             null: false
     t.datetime "updated_at",                             null: false
+    t.boolean  "allow_password_change",  default: false
     t.index ["reset_password_token"], name: "index_accounts_on_reset_password_token", unique: true, using: :btree
     t.index ["uid"], name: "index_accounts_on_uid", unique: true, using: :btree
   end
@@ -52,6 +53,7 @@ ActiveRecord::Schema.define(version: 20180511112959) do
     t.datetime "updated_at",   null: false
     t.integer  "city_id"
     t.integer  "state_id"
+    t.integer  "number"
     t.index ["city_id"], name: "index_addresses_on_city_id", using: :btree
     t.index ["state_id"], name: "index_addresses_on_state_id", using: :btree
   end

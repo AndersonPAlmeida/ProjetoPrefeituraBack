@@ -43,7 +43,8 @@ module Api::V1
 
       if @resource_shift.nil?
         render json: {
-          errors: ["You don't have the permission to view resource shifts."]
+          # errors: ["You don't have the permission to view resource shifts."]
+          errors: ["Você não tem permissão para listar escalas de recursos!"]
         }, status: 403
       else
         render json: @resource_shift
@@ -56,14 +57,16 @@ module Api::V1
         authorize @resource_shift, :show?
       rescue
         render json: {
-          errors: ["This resource does not belong to your city"]
+          # errors: ["This resource does not belong to your city"]
+          errors: ["Este recurso não pertence à sua cidade!"]
         }, status: :unprocessable_entity
         return
       end
 
       if @resource_shift.nil?
         render json: {
-          errors: ["Resource shift #{params[:id]} does not exist."]
+          # errors: ["Resource shift #{params[:id]} does not exist."]
+          errors: ["Escala de recurso #{params[:id]} não existe!"]
         }, status: 404
       else
         render json: @resource_shift
@@ -89,12 +92,14 @@ module Api::V1
           end
         else
           render json: {
-            errors: ["The system could not create shift: Resource id #{@resource_shift.resource_id} is deactivated."]
+            # errors: ["The system could not create shift: Resource id #{@resource_shift.resource_id} is deactivated."]
+            errors: ["Impossível criar escala: Recurso com id #{@resource_shift.resource_id} está desativado!"]
           }, status: :unprocessable_entity
         end
       else
         render json: {
-          errors: ["The system could not create shift: Resource id #{@resource_shift.resource_id} does not exist."]
+          # errors: ["The system could not create shift: Resource id #{@resource_shift.resource_id} does not exist."]
+          errors: ["Impossível criar escala: Recurso com id #{@resource_shift.resource_id} não existe!"]
         }, status: :unprocessable_entity
       end
     end
@@ -103,7 +108,8 @@ module Api::V1
     def update
       if @resource_shift.nil?
         render json: {
-          errors: ["Resource shift #{params[:id]} does not exist."]
+          # errors: ["Resource shift #{params[:id]} does not exist."]
+          errors: ["Escala de recurso #{params[:id]} não existe!"]
         }, status: 404
 
       else
@@ -121,7 +127,8 @@ module Api::V1
     def destroy
       if @resource_shift.nil?
         render json: {
-          errors: ["Resource shift #{params[:id]} does not exist."]
+          # errors: ["Resource shift #{params[:id]} does not exist."]
+          errors: ["Escala de recurso #{params[:id]} não existe!"]
         }, status: 404
       else
         authorize @resource_shift, :destroy?

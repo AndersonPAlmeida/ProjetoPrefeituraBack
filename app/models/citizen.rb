@@ -40,7 +40,7 @@ class Citizen < ApplicationRecord
   validates_length_of :rg, maximum: 13
   validates_length_of :address_number, within: 0..10, allow_blank: true
 
-  validates_numericality_of :address_number, only_integer: true, 
+  validates_numericality_of :address_number, only_integer: true,
     allow_blank: true
 
   validates_format_of       :name,
@@ -64,16 +64,16 @@ class Citizen < ApplicationRecord
   before_validation :set_address
 
   # Scopes #
-  scope :all_active, -> { 
-    where(active: true, responsible_id: nil) 
+  scope :all_active, -> {
+    where(active: true, responsible_id: nil)
   }
 
-  scope :local, ->(city_id) { 
-    where(city_id: city_id) 
+  scope :local, ->(city_id) {
+    where(city_id: city_id)
   }
 
-  scope :dependants, -> { 
-    where(responsible_id: self.id) 
+  scope :dependants, -> {
+    where(responsible_id: self.id)
   }
 
 
@@ -170,7 +170,7 @@ class Citizen < ApplicationRecord
   # @params params [ActionController::Parameters] Parameters for searching
   # @params npage [String] number of page to be returned
   # @params permission [String] Permission of current user
-  # @return [ActiveRecords] filtered citizens 
+  # @return [ActiveRecords] filtered citizens
   def self.filter(params, npage, permission)
     return search(search_params(params, permission), npage)
   end
@@ -192,7 +192,7 @@ class Citizen < ApplicationRecord
       filter = {"name" => "name_cont", "cpf" => "cpf_eq", "s" => "s"}
     end
 
-    return filter_search_params(params, filter, sortable) 
+    return filter_search_params(params, filter, sortable)
   end
 
 
@@ -207,7 +207,8 @@ class Citizen < ApplicationRecord
   # @return [Boolean] true if provided CEP is correct, false otherwise
   def set_address
     if self.cep.nil? or self.cep.empty?
-      self.errors["cep"] << "Cep can't be blank."
+      # self.errors["cep"] << "Cep can't be blank."
+      self.errors["cep"] << "CEP não pode ficar em branco!"
       return false
     end
 
@@ -220,11 +221,16 @@ class Citizen < ApplicationRecord
         self.address_street = address.address
       end
 
+      if not address.number.nil?
+        self.address_number = address.number
+      end
+
       if not address.neighborhood.empty?
         self.neighborhood = address.neighborhood
       end
     else
-      self.errors["cep"] << "#{self.cep} is invalid."
+      # self.errors["cep"] << "#{self.cep} is invalid."
+      self.errors["cep"] << "#{self.cep} é inválido!"
       return false
     end
   end

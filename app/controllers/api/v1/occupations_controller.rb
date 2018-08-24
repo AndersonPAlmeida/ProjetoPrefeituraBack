@@ -14,19 +14,20 @@
 # along with Agendador.  If not, see <https://www.gnu.org/licenses/>.
 
 module Api::V1
-  class OccupationsController < ApplicationController 
+  class OccupationsController < ApplicationController
     include Authenticable
 
     before_action :set_occupation, only: [:show, :update, :destroy]
 
     # GET /occupations
     def index
-      @occupations = policy_scope(Occupation.filter(params[:q], params[:page], 
+      @occupations = policy_scope(Occupation.filter(params[:q], params[:page],
         Professional.get_permission(current_user[1])))
 
       if @occupations.nil?
         render json: {
-          errors: ["You don't have the permission to view occupations."]
+          # errors: ["You don't have the permission to view occupations."]
+          errors: ["Você não tem permissão para listar cargos!"]
         }, status: 403
       else
         response = Hash.new
@@ -41,14 +42,16 @@ module Api::V1
     def show
       if @occupation.nil?
         render json: {
-          errors: ["Occupation #{params[:id]} does not exist."]
+          # errors: ["Occupation #{params[:id]} does not exist."]
+          errors: ["Cargo #{params[:id]} não existe!"]
         }, status: 404
       else
         begin
           authorize @occupation, :show?
         rescue
           render json: {
-            errors: ["You're not allow to see this occupation."]
+            # errors: ["You're not allow to see this occupation."]
+            errors: ["Você não tem permissão para visualizar este cargo!"]
           }, status: 403
           return
         end
@@ -65,7 +68,8 @@ module Api::V1
         authorize @occupation, :create?
       rescue
         render json: {
-          errors: ["You're not allow to create this occupation."]
+          # errors: ["You're not allow to create this occupation."]
+          errors: ["Você não tem permissão para criar este cargo!"]
         }, status: 403
         return
       end
@@ -81,14 +85,16 @@ module Api::V1
     def update
       if @occupation.nil?
         render json: {
-          errors: ["Occupation #{params[:id]} does not exist."]
+          # errors: ["Occupation #{params[:id]} does not exist."]
+          errors: ["Cargo #{params[:id]} não existe!"]
         }, status: 404
       else
         begin
           authorize @occupation, :update?
         rescue
           render json: {
-            errors: ["You're not allow to update this occupation."]
+            # errors: ["You're not allow to update this occupation."]
+            errors: ["Você não tem permissão para atualizar este cargo!"]
           }, status: 403
           return
         end
@@ -105,7 +111,8 @@ module Api::V1
     def destroy
       if @occupation.nil?
         render json: {
-          errors: ["Occupation #{params[:id]} does not exist."]
+          # errors: ["Occupation #{params[:id]} does not exist."]
+          errors: ["Cargo #{params[:id]} não existe!"]
         }, status: 404
       else
         @occupation.active = false

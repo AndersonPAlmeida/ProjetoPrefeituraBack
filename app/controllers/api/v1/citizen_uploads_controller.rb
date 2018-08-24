@@ -39,7 +39,8 @@ module Api::V1
       # Check if uploads are not null for current citizen
       if @uploads.nil?
         render json: {
-          errors: ["You don't have the permission to view citizen uploads."]
+          # errors: ["You don't have the permission to view citizen uploads."]
+          errors: ["Você não tem permissão para visualizar os uploads de cidadão!"]
         }, status: 403
         return
       end
@@ -79,7 +80,8 @@ module Api::V1
           authorize @upload_id, :show?
         rescue
           render json: {
-            errors: ["You're not allowed to view this citizen upload log."]
+            # errors: ["You're not allowed to view this citizen upload log."]
+            errors: ["Você não tem permissão para visualizar este log de upload de cidadão!"]
           }, status: 403
           return
         end
@@ -90,7 +92,8 @@ module Api::V1
         # If log not found, displays not found message
         if path.nil?
           render json: {
-            errors: ["Log not found for current task."]
+            # errors: ["Log not found for current task."]
+            errors: ["Log não encontrado para tarefa atual!"]
           }, status: 404
 
         # Otherwise, send file
@@ -134,7 +137,8 @@ module Api::V1
           authorize upload_object, :create?
         rescue
           render json: {
-            errors: ["You're not allowed to perform citizen uploads."]
+            # errors: ["You're not allowed to perform citizen uploads."]
+            errors: ["Você não tem permissão para fazer upload de cidadão!"]
           }, status: 403
           return
         end
@@ -146,11 +150,13 @@ module Api::V1
         CitizenUploadWorker.perform_async(upload_object.id, content, permission, city_id)
 
         render json: {
-          errors: ["Citizens scheduled to be imported!"]
+          # errors: ["Citizens scheduled to be imported!"]
+          errors: ["Cidadãos agendados para serem importados!"]
         }, status: 201
       else
         render json: {
-          errors: ["Undefined citizens to import."]
+          # errors: ["Undefined citizens to import."]
+          errors: ["Cidadãos para importar indefinidos!"]
         }, status: 404
       end
     end

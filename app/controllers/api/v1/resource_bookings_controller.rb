@@ -27,7 +27,8 @@ module Api::V1
 
       if @resource_booking.nil?
         render json: {
-          errors: ["You don't have the permission to view resource bookings."]
+          # errors: ["You don't have the permission to view resource bookings."]
+          errors: ["Você não tem permissão para listar agendamentos de recursos!"]
         }, status: 403
       else
         @resource_booking.each do |rb|
@@ -59,7 +60,8 @@ module Api::V1
 
       if @resource_booking.nil?
         render json: {
-          errors: ["You don't have the permission to view resource bookings."]
+          # errors: ["You don't have the permission to view resource bookings."]
+          errors: ["Você não tem permissão para visualizar agendamentos de recursos!"]
         }, status: 403
       else
         render json: @resource_booking
@@ -70,7 +72,8 @@ module Api::V1
     def show
       if @resource_booking.nil?
         render json: {
-          errors: ["Resource booking #{params[:id]} does not exist."]
+          # errors: ["Resource booking #{params[:id]} does not exist."]
+          errors: ["Agendamento de recurso #{params[:id]} não existe!"]
         }, status: 404
         return
       end
@@ -79,7 +82,8 @@ module Api::V1
         authorize @resource_booking, :show?
       rescue
         render json: {
-          errors: ["You do not have permission to see this booking"]
+          # errors: ["You do not have permission to see this booking"]
+          errors: ["Você não tem permissão para visualizar este agendamento!"]
         }, status: :unprocessable_entity
         return
       end
@@ -97,7 +101,8 @@ module Api::V1
         authorize @resource_booking, :create?
       rescue
         render json: {
-          errors: ["You do not have permission to create this booking"]
+          # errors: ["You do not have permission to create this booking"]
+          errors: ["Você não tem permissão para criar este agendamento!"]
         }, status: :unprocessable_entity
         return
       end
@@ -113,7 +118,8 @@ module Api::V1
     def update
       if @resource_booking.nil?
         render json: {
-          errors: ["Resource booking #{params[:id]} does not exist."]
+          # errors: ["Resource booking #{params[:id]} does not exist."]
+          errors: ["Agendamento de recurso #{params[:id]} não existe!"]
         }, status: 404
         return
       end
@@ -122,7 +128,8 @@ module Api::V1
         authorize @resource_booking, :update?
       rescue
         render json: {
-          errors: ["You do not have permission to update this booking"]
+          # errors: ["You do not have permission to update this booking"]
+          errors: ["Você não tem permissão para atualizar este agendamento!"]
         }, status: :unprocessable_entity
         return
       end
@@ -138,7 +145,8 @@ module Api::V1
     def destroy
       if @resource_booking.nil?
         render json: {
-          errors: ["Resource booking #{params[:id]} does not exist."]
+          # errors: ["Resource booking #{params[:id]} does not exist."]
+          errors: ["Agendamento de recurso #{params[:id]} não existe!"]
         }, status: 404
         return
       end
@@ -147,7 +155,8 @@ module Api::V1
         authorize @resource_booking, :destroy?
       rescue
         render json: {
-          errors: ["You do not have permission to delete this booking"]
+          # errors: ["You do not have permission to delete this booking"]
+          errors: ["Você não tem permissão para remover este agendamento!"]
         }, status: :unprocessable_entity
         return
       end

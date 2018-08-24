@@ -34,7 +34,8 @@ module Api::V1
 
       if @resources.nil?
         render json: {
-          errors: ["You don't have the permission to view resources."]
+          # errors: ["You don't have the permission to view resources."]
+          errors: ["Você não tem permissão para listar recursos!"]
         }, status: 403
       else
         resources_local = {
@@ -113,14 +114,16 @@ module Api::V1
         authorize @resources, :show?
       rescue
         render json: {
-          errors: ["You're not allowed to view this resource."]
+          # errors: ["You're not allowed to view this resource."]
+          errors: ["Você não tem permissão para visualizar este recurso!"]
         }, status: 403
         return
       end
 
       if @resources.nil?
         render json: {
-          errors: ["Resource #{params[:id]} does not exist."]
+          # errors: ["Resource #{params[:id]} does not exist."]
+          errors: ["Recurso #{params[:id]} não existe!"]
         }, status: 404
       else
         render json: @resources
@@ -150,7 +153,8 @@ module Api::V1
         authorize @resources, :create?
       rescue
         render json: {
-          errors: ["You're not allowed to create a resource in this service place."]
+          # errors: ["You're not allowed to create a resource in this service place."]
+          errors: ["Você não tem permissão para criar um recurso neste local de atendimento!"]
         }, status: 403
         return
       end
@@ -168,7 +172,8 @@ module Api::V1
         authorize @resources, :update?
       rescue
         render json: {
-          errors: ["You're not allowed to update a resource in this service place."]
+          # errors: ["You're not allowed to update a resource in this service place."]
+          errors: ["Você não tem permissão para atualizar um recurso neste local de atendimento!"]
         }, status: 403
         return
       end
@@ -184,14 +189,16 @@ module Api::V1
     def destroy
       if @resources.nil?
         render json: {
-          errors: ["Resource #{params[:id]} does not exist."]
+          # errors: ["Resource #{params[:id]} does not exist."]
+          errors: ["Recurso #{params[:id]} não existe!"]
         }, status: 404
       else
         begin
           authorize @resources, :destroy?
         rescue
           render json: {
-            errors: ["You're not allowed to deactivate a resource in this service place."]
+            # errors: ["You're not allowed to deactivate a resource in this service place."]
+            errors: ["Você não tem permissão para desativar um recurso neste local de atendimento!"]
           }, status: 403
           return
         end

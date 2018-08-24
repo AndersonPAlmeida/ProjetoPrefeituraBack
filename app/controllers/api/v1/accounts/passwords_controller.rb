@@ -106,7 +106,9 @@ module Api::V1
 
         redirect_to(url)
       else
-        render_edit_error
+        url = gen_url(params[:redirect_url] + "/invalid")
+
+        redirect_to(url)
       end
     end
 
@@ -114,7 +116,7 @@ module Api::V1
 
     def gen_url(url, params = {})
       uri = URI(url)
-      res = "http://#{uri.path}"
+      res = "#{uri}"
       query = [uri.query, params.to_query].reject(&:blank?).join('&')
       res += "?#{query}"
       res += "##{uri.fragment}" if uri.fragment
@@ -127,6 +129,10 @@ module Api::V1
 
       recoverable.reset_password_token = token if recoverable && recoverable.reset_password_token.present?
       recoverable
+    end
+
+    def render_edit_error
+      render_error(404, "Token not found or expired!")
     end
   end
 end

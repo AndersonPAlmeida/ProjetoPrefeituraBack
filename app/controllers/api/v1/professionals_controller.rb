@@ -24,13 +24,14 @@ module Api::V1
 
     # GET /professionals
     def index
-      @professionals = policy_scope(Professional.filter(params[:q], params[:page], 
+      @professionals = policy_scope(Professional.filter(params[:q], params[:page],
         Professional.get_permission(current_user[1])))
 
 
       if @professionals.nil?
         render json: {
-          errors: ["You don't have the permission to view professionals."]
+          # errors: ["You don't have the permission to view professionals."]
+          errors: ["Você não tem permissão para listar profissionais!"]
         }, status: 403
       else
         response = Hash.new
@@ -48,7 +49,8 @@ module Api::V1
 
       if not CpfValidator.validate_cpf(cpf)
         render json: {
-          errors: ["The given cpf is not valid."]
+          # errors: ["The given cpf is not valid."]
+          errors: ["O CPF informado não é válido!"]
         }, status: 422
         return
       end
@@ -57,14 +59,16 @@ module Api::V1
 
       if @citizen.nil?
         render json: {
-          errors: ["The citizen doesn't exist."]
+          # errors: ["The citizen doesn't exist."]
+          errors: ["O cidadão não existe!"]
         }, status: 404
       else
         if @citizen.professional.nil?
           render json: @citizen.complete_info_response
         else
           render json: {
-            errors: ["The citizen already is a professional."]
+            # errors: ["The citizen is already a professional."]
+            errors: ["O cidadão já é um profissional!"]
           }, status: 409
         end
       end
@@ -75,14 +79,16 @@ module Api::V1
     def show
       if @professional.nil?
         render json: {
-          errors: ["Professional #{params[:id]} does not exist."]
+          # errors: ["Professional #{params[:id]} does not exist."]
+          errors: ["Profissional #{params[:id]} não existe!"]
         }, status: 404
       else
         begin
           authorize @professional, :show?
         rescue
           render json: {
-            errors: ["You're not allowed to view this professional."]
+            # errors: ["You're not allowed to view this professional."]
+            errors: ["Você não tem permissão para visualizar este profissional!"]
           }, status: 403
           return
         end
@@ -96,6 +102,16 @@ module Api::V1
     def create
       success = false
       error_message = nil
+
+      # Check if the roles list is not empty, if it is, displays
+      # an error message
+      if params[:professional][:roles].blank?
+        render json: {
+          # errors: ["You must inform at least one role!"]
+          errors: ["É necessário informar pelo menos uma permissão!"]
+        }, status: 422
+        return
+      end
 
       raise_rollback = -> (error) {
         error_message = error
@@ -138,7 +154,6 @@ module Api::V1
           @citizen.account_id = @account.id
           raise_rollback.call(@citizen.errors.to_hash) unless @citizen.save
 
-
           # Creates professional
           @professional = Professional.new(professional_params)
 
@@ -146,18 +161,20 @@ module Api::V1
           @professional.active = true
           raise_rollback.call(@professional.errors.to_hash) unless @professional.save
 
-
+          # Professional service places list
           psp_id_list = []
+
           # Creates professionals service places
           params[:professional][:roles].each do |item|
             psp = ProfessionalsServicePlace.new({
-              professional_id: @professional.id, 
+              professional_id: @professional.id,
               service_place_id: item[:service_place_id],
               role: item[:role]
             })
 
             if psp_id_list.include?(item[:service_place_id])
-              raise_rollback.call(["Only one role per service place is allowed"])
+              # raise_rollback.call(["Only one role per service place is allowed"])
+              raise_rollback.call(["Apenas uma role por local de atendimento é permitido!"])
             end
 
             psp_id_list << item[:service_place_id]
@@ -165,8 +182,11 @@ module Api::V1
             begin
               authorize psp, :create_psp?
             rescue
+              # raise_rollback.call(
+              #   ["You're not allowed to register this professional in the given service place."]
+              # )
               raise_rollback.call(
-                ["You're not allowed to register this professional in the given service place."]
+                ["Você não tem permissão para registrar este profissional no local de atendimento informado!"]
               )
             end
 
@@ -181,10 +201,11 @@ module Api::V1
       else # If the citizen already exists
         ActiveRecord::Base.transaction do
           @account = Account.find_by(uid: params[:cpf])
-        
+
           if @account.nil?
             render json: {
-              errors: "Account #{params[:cpf]} doesn't exist."
+              # errors: "Account #{params[:cpf]} doesn't exist."
+              errors: "Conta #{params[:cpf]} não existe!"
             }, status: 404
             return
           end
@@ -199,13 +220,14 @@ module Api::V1
           # Creates professionals service places
           params[:professional][:roles].each do |item|
             psp = ProfessionalsServicePlace.new({
-              professional_id: @professional.id, 
+              professional_id: @professional.id,
               service_place_id: item[:service_place_id],
               role: item[:role]
             })
 
             if psp_id_list.include?(item[:service_place_id])
-              raise_rollback.call(["Only one role per service place is allowed"])
+              # raise_rollback.call(["Only one role per service place is allowed"])
+              raise_rollback.call(["Apenas uma role por local de atendimento é permitido!"])
             end
 
             psp_id_list << item[:service_place_id]
@@ -213,8 +235,11 @@ module Api::V1
             begin
               authorize psp, :create_psp?
             rescue
+              # raise_rollback.call(
+              #   ["You're not allowed to register this professional in the given service place."]
+              # )
               raise_rollback.call(
-                ["You're not allowed to register this professional in the given service place."]
+                ["Você não tem permissão para registrar este profissional no local de atendimento informado!"]
               )
             end
 
@@ -231,7 +256,7 @@ module Api::V1
         render json: @professional.complete_info_response, status: :created
       else
         render json: {
-          errors: error_message 
+          errors: error_message
         }, status: 422
       end
     end
@@ -241,14 +266,16 @@ module Api::V1
     def update
       if @professional.nil?
         render json: {
-          errors: ["Professional #{params[:id]} does not exist."]
+          # errors: ["Professional #{params[:id]} does not exist."]
+          errors: ["Profissional #{params[:id]} não existe!"]
         }, status: 404
       else
         begin
           authorize @professional, :update?
         rescue
           render json: {
-            errors: ["You're not allowed to update this professional."]
+            # errors: ["You're not allowed to update this professional."]
+            errors: ["Você não tem permissão para atualizar este profissional!"]
           }, status: 403
           return
         end
@@ -271,13 +298,14 @@ module Api::V1
           # Creates professionals service places
           params[:professional][:roles].each do |item|
             psp = ProfessionalsServicePlace.new({
-              professional_id: @professional.id, 
+              professional_id: @professional.id,
               service_place_id: item[:service_place_id],
               role: item[:role]
             })
 
             if psp_id_list.include?(item[:service_place_id])
-              raise_rollback.call(["Only one role per service place is allowed"])
+              # raise_rollback.call(["Only one role per service place is allowed"])
+              raise_rollback.call(["Apenas uma role por local de atendimento é permitido!"])
             end
 
             psp_id_list << item[:service_place_id]
@@ -285,8 +313,11 @@ module Api::V1
             begin
               authorize psp, :create_psp?
             rescue
+              # raise_rollback.call(
+              #   ["You're not allowed to register this professional in the given service place."]
+              # )
               raise_rollback.call(
-                ["You're not allowed to register this professional in the given service place."]
+                ["Você não tem permissão para registrar este profissional no local de atendimento informado!"]
               )
             end
 
@@ -304,7 +335,7 @@ module Api::V1
           render json: @professional.complete_info_response
         else
           render json: {
-            errors: error_message 
+            errors: error_message
           }, status: 422
           return
         end
@@ -316,14 +347,16 @@ module Api::V1
     def destroy
       if @professional.nil?
         render json: {
-          errors: ["Professional #{params[:id]} does not exist."]
+          # errors: ["Professional #{params[:id]} does not exist."]
+          errors: ["Profissional #{params[:id]} não existe!"]
         }, status: 404
       else
         begin
           authorize @professional, :deactivate?
         rescue
           render json: {
-            errors: ["You're not allowed to delete this professional."]
+            # errors: ["You're not allowed to delete this professional."]
+            errors: ["Você não tem permissão para remover este profissional!"]
           }, status: 403
           return
         end
@@ -344,7 +377,8 @@ module Api::V1
       when "show?"
       when "create?"
         render json: {
-          errors: ["You're not allowed to create this professional."]
+          # errors: ["You're not allowed to create this professional."]
+          errors: ["Você não tem permissão para criar este profissional!"]
         }, status: 403
       when "deactivate?"
       when "update?"
