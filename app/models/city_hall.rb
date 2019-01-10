@@ -147,9 +147,15 @@ class CityHall < ApplicationRecord
     # self.active = true
     if not address.nil?
       self.city_id = address.city_id
-      self.address_street = address.address
-      self.neighborhood = address.neighborhood
+      
+      
 
+      if address.address.present?
+        self.address_street = address.address
+      end
+      if address.neighborhood.present?
+        self.neighborhood = address.neighborhood
+      end
       if not address.number.nil?
         self.address_number = address.number
       end

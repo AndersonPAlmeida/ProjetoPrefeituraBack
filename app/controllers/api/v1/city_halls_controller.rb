@@ -245,6 +245,7 @@ module Api::V1
       params.require(:city_hall).permit(
         :active,
         :address_number,
+        :address_street,
         :address_complement,
         :block_text,
         :citizen_access,
