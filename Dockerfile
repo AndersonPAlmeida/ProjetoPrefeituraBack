@@ -11,10 +11,10 @@ ENV LANG C.UTF-8
 # - wget curl and gnupg is used to get newest postgres client
 # - software-properties-common to use the command lsb_release
 #- Get newest postgres client
-RUN apt-get -y update -qq && apt-get install -y -qq libpq-dev wget gnupg software-properties-common curl build-essential --fix-missing --no-install-recommends && \
-echo "deb http://apt.postgresql.org/pub/repos/apt/ `lsb_release -cs`-pgdg main" > /etc/apt/sources.list.d/pgdg.list && \
-wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - && \
-apt-get -y update -qq && apt-get install -y -qq postgresql-client-9.6
+RUN printf "deb http://archive.debian.org/debian/ jessie main\ndeb-src http://archive.debian.org/debian/ jessie main\ndeb http://security.debian.org jessie/updates main\ndeb-src http://security.debian.org jessie/updates main" > /etc/apt/sources.list
+
+
+RUN apt-get upgrade && apt-get -y update -qq && apt-get install -y -qq libpq-dev wget gnupg software-properties-common curl build-essential --fix-missing --no-install-recommends && apt-get install git && apt-get -y update -qq && apt-get install -y -qq phppgadmin
 
 # Set an environment variable to store where the app is installed to inside of the Docker image.
 ENV INSTALL_PATH /app
@@ -26,11 +26,9 @@ WORKDIR $INSTALL_PATH
 
 COPY . .
 
-RUN gem install rails -v 5.0.0 && \
-         gem install bundler && \
-         /app/bin/bundle install -j 4
+RUN gem install rails -v 5.0.0 && gem install bundler && cd bin && bundle install -j 4
 
-EXPOSE 3000
+EXPOSE 3000:8080
 VOLUME ["/app/images/citizens", "/app/images/city_halls", "/data/citizen_upload"]
 ENTRYPOINT ["/app/agendador-entrypoint.sh"]
 CMD ["CREATE"]
