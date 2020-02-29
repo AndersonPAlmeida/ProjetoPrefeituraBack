@@ -4,7 +4,7 @@ source 'https://rubygems.org'
 gem 'rails', '~> 5.0.0'
 
 #add to test
-gem 'rake', '12.3.0'
+gem 'rake', '12.3.3'
 gem 'concurrent-ruby', '1.0.5'
 gem 'i18n', '1.0.1'
 gem 'activesupport', '5.0.7'
